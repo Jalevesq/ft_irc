@@ -1,3 +1,8 @@
+-- Docker Problem --
+Ouvrir Docker: https://42born2code.slack.com/archives/C0179EZHJD9/p1683296868572799
+Docker goinfre?  https://42born2code.slack.com/archives/C7P0Z4F3L/p1598870161038600?thread_ts=1598869782.037900&cid=C7P0Z4F3L
+----
+
 https://modern.ircdocs.horse
 https://datatracker.ietf.org/doc/html/rfc1459.html#section-1.1
 

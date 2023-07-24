@@ -3,6 +3,10 @@ Ouvrir Docker: https://42born2code.slack.com/archives/C0179EZHJD9/p1683296868572
 Docker goinfre?  https://42born2code.slack.com/archives/C7P0Z4F3L/p1598870161038600?thread_ts=1598869782.037900&cid=C7P0Z4F3L
 ----
 
+docker run -ti weechat/weechat
+/server add myirc c1r8p6.42quebec.com/6667 -notls
+
+https://ircgod.com/docs/irc/to_know/
 https://modern.ircdocs.horse
 https://datatracker.ietf.org/doc/html/rfc1459.html#section-1.1
 

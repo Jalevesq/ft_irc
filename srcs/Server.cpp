@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../include/Server.hpp"
 #include <stdexcept>
 #include <string>
 #include <sys/socket.h>
@@ -30,7 +30,7 @@ void Server::initServer(char **argv){
 	int fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");
-	address_.sin_port = htons(stoi(port));
+  address_.sin_port = htons(stoi(port));
   address_.sin_family = AF_INET;
   address_.sin_addr.s_addr = htonl(INADDR_ANY);
 	fcntl(fdSocket, F_SETFL, O_NONBLOCK);
@@ -52,7 +52,6 @@ void Server::serverRun()
 		poll(poll_, userCount_ + 1, 100);
 		//	throw std::runtime_error("Poll failure"); // fix later
 		if (poll_[0].revents & POLLIN){ // if more than max user fix later
-			cout << "Hello" << endl;
 			int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
 			if (newFd == -1)
 				throw std::runtime_error("Accept failure"); // fix later

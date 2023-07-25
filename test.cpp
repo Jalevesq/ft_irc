@@ -18,6 +18,8 @@ int main(int ac, char **av) {
 		std::cerr << "./a.out <port>" << std::endl;
 		return (1);
 	}
+	std::string name = "user";
+	int lol = 0;
 	int port = atoi(av[1]);
     struct sockaddr_in address;
     int currUserNbr = 0;
@@ -60,7 +62,7 @@ int main(int ac, char **av) {
                 mypoll[currUserNbr].fd = newFd;
                 mypoll[currUserNbr].events = POLLIN;
                 connectionFd[currUserNbr] = newFd;
-				std::string welcomeMessage = "001 :user\r\n";
+				std::string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
 				// std::string nickNameChange = ":user NICK Balls\r\n";
             	send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 				// send(newFd, nickNameChange.c_str(), nickNameChange.size(), 0);
@@ -81,6 +83,14 @@ int main(int ac, char **av) {
                 } else {
                     buffer[ret] = '\0';
 					std::string sBuffer = buffer;
+					if (sBuffer.find("NICK") != std::string::npos && lol < 1) {
+						std::string newName = sBuffer.substr(5);
+						std::string response = ":" + name + " NICK " + newName + "\r\n";
+						send(mypoll[i].fd, response.c_str(), response.size(), 0);
+						name = newName;
+						continue ;
+					}
+					lol++;
                     std::cout << "Received from socket fd " << connectionFd[i] << ": " << buffer;
                 }
             }

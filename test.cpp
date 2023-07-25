@@ -34,7 +34,7 @@ int main(int ac, char **av) {
     // Assign port 6667 to struct
     address.sin_port = htons(port);
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_addr.s_addr = htonl(INADDR_A NY);
     addrlen = sizeof(address);
     // bind the empty socket to port 6667
     bind(fdSocket, (struct sockaddr*)&address, sizeof(address));

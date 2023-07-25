@@ -1,25 +1,20 @@
+#include "Server.hpp"
 #include <iostream>
-#include <poll.h>
-#include <unistd.h>
 
-int main(void) {
-	char name[255];
-	struct pollfd mypoll;
-	int counter = 0;
+using std::cerr;
+using std::endl;
 
-	mypoll.fd = 1;
-	mypoll.events = POLLIN;
-
-	while (1) {
-		poll(&mypoll, 1, 100);
-		if (mypoll.revents & POLLIN) {
-			read(0, name, sizeof(name));
-			printf("Hello %s\n", name);
-			break;
-		}
-		else {
-			counter++;
-		}
+int main(int argc, char **argv) {
+	if (argc != 2){
+		cerr << "Wrong number of argument" << endl;
+		return 1;
 	}
-	printf("It took you %d ms to type in your name.\n", counter * 100);
+	try{
+		Server server;
+		server.initServer(argv);
+		server.serverRun();
+	} catch (std::exception &e){
+		cerr << e.what() << endl;
+	}
+	return 0;
 }

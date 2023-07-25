@@ -13,12 +13,12 @@ class User
 {
 
 	public:
-		User(string newNickname, string newUsername, int newFileDescriptor);
+		User(string newNickname, string newUsername, int newFdSocket);
 		~User();
 		const string& getNickname() const;
 		const string& getUsername() const;
 		const bool& getOperator() const;
-		const int& getFdUser() const;
+		const int& getFdSocket() const;
 
 		void setNickname(string newNickname);
 		void setUsername(string newUsername);
@@ -32,9 +32,7 @@ class User
 		string	nickname_;
 		string	username_;
 		bool	operator_;
-		struct	pollfd userPoll_;
-	//	int		id_;      ?
-
+		int		fdSocket_;
 };
 
 // std::ostream &			operator<<( std::ostream & o, User const & i );

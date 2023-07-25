@@ -4,11 +4,9 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-User::User(string newNickname, string newUsername, int newFileDescriptor) : nickname_(newNickname), username_(newUsername) {
+User::User(string newNickname, string newUsername, int newFdSocket) : nickname_(newNickname), username_(newUsername) {
 	this->operator_ = false;
-	this->userPoll_.fd = newFileDescriptor;
-	this->userPoll_.events = POLLIN;
-	// this->id_ = ?
+	this->fdSocket_= newFdSocket;
 }
 
 User::User()
@@ -26,7 +24,7 @@ User::User()
 
 User::~User()
 {
-	close(this->userPoll_.fd);
+	close(this->fdSocket_);
 }
 
 
@@ -66,8 +64,8 @@ const string& User::getUsername() const {
 	return (this->username_);
 }
 
-const int& User::getFdUser() const {
-	return (this->userPoll_.fd);
+const int& User::getFdSocket() const {
+	return (this->fdSocket_);
 }
 
 const bool& User::getOperator() const {

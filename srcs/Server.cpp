@@ -71,7 +71,6 @@ void Server::serverRun()
 				delete userVector_[i - 1];
 				userVector_.erase(userVector_.begin() + (i - 1));
 				userCount_--;
-				cout << userCount_ << endl;
 				cout << "user " << i << " disconnected" << endl;
 			}
 			else if (poll_[i].revents & POLLIN){
@@ -93,6 +92,7 @@ void Server::createUser(int& newFd){
 	struct pollfd newPoll;
 	newPoll.fd = newFd;
 	newPoll.events = POLLIN;
+	newPoll.revents = 0;
 	this->poll_.push_back(newPoll);
 
 	User *newUser = new User("user", "user", newFd);

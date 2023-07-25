@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include "User.hpp"
 
 #define MAX_USER 10
 
@@ -30,11 +30,14 @@ public:
 
 	void setUserCount(int count);
 	void setChannelCount(int count);
+	void createUser();
+
 
 private:
+ std::vector<User> userVector_;
+ std::vector<struct pollfd> poll_;
  int userCount_;
  int channelCount_;
- struct pollfd poll_[MAX_USER + 1];
  struct sockaddr_in address_;
  socklen_t addressLength_;
  //std::string password_;

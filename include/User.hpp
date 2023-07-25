@@ -14,21 +14,22 @@ class User
 
 	public:
 		User(string newNickname, string newUsername, int newFdSocket);
+		User();
 		~User();
 		const string& getNickname() const;
 		const string& getUsername() const;
 		const bool& getOperator() const;
 		const int& getFdSocket() const;
 
-		void setNickname(string newNickname);
-		void setUsername(string newUsername);
-		void setOperator(bool newOperator);
+		void setNickname(const string &newNickname);
+		void setUsername(const string &newUsername);
+		void setOperator(const bool &newOperator);
+		void setfdSocket(const int &fd);
 		// User( User const & src  );
 
 		// User &		operator=( User const & rhs );
 
 	private:
-		User();
 		string	nickname_;
 		string	username_;
 		bool	operator_;

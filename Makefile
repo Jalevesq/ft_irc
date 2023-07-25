@@ -9,7 +9,8 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 RM = rm -rf
 
 SRC =	main.cpp \
-			Server.cpp
+			./srcs/Server.cpp \
+			./srcs/User.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

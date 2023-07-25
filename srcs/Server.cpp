@@ -12,10 +12,12 @@ using std::endl;
 using std::cerr;
 
 Server::Server(): userCount_(0), channelCount_(0){
+	poll_.resize(MAX_USER + 1);
 	for (int i = 0; i < MAX_USER + 1; i++){
 		poll_[i].events = POLLIN;
 		poll_[i].fd = -1;
 	}
+	userVector_.resize(MAX_USER);
 }
 
 Server::~Server(){ close(poll_[0].fd); }
@@ -49,7 +51,7 @@ void Server::serverRun()
 	char buffer[1024];
 	while (true)
 	{
-		poll(poll_, userCount_ + 1, 100);
+		poll(poll_.data(), userCount_ + 1, 100);
 		//	throw std::runtime_error("Poll failure"); // fix later
 		if (poll_[0].revents & POLLIN){ // if more than max user fix later
 			int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
@@ -58,10 +60,18 @@ void Server::serverRun()
 			std::cout << "New connection accepted, socket fd: " << newFd << std::endl;
 			userCount_++;
 			poll_[userCount_].fd = newFd;
+			createUser();
 			string welcomeMessage = "001 user" + std::to_string(userCount_) + " :Welcome on ft_irc !\r\n"; // fix later
 			send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 		}
 		for (int i = 1; i <= userCount_; i++){
+			if (poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
+				close(poll_[i].fd);
+				poll_.erase(poll_.begin() + i);
+				userVector_.erase(userVector_.begin() + i - 1);
+				userCount_--;
+				cout << "user " << i << " disconnected" << endl;
+			}
 			if (poll_[i].revents & POLLIN){
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
 				if (ret == -1)
@@ -73,6 +83,12 @@ void Server::serverRun()
 			}
 		}
 	}
+}
+
+void Server::createUser(){
+	this->userVector_[userCount_].setNickname("user" + std::to_string(userCount_));
+	this->userVector_[userCount_].setfdSocket(poll_[userCount_].fd); // IF FUCK COME HERE
+
 }
 
 const int &Server::getUserCount() const { return userCount_; }

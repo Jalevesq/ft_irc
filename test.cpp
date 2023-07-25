@@ -2,9 +2,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include <unistd.h>
 #include <poll.h>
 #include <string>
+#include <unistd.h>
+#include <fcntl.h>
 #include <iostream>
 #define MAX_USER 10
 // #define PORT 6690
@@ -27,6 +28,7 @@ int main(int ac, char **av) {
     int fdSocket;
     // Open an empty socket
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
+	fcntl(fdSocket, F_SETFL, O_NONBLOCK);
     // Assign port 6667 to struct
     address.sin_port = htons(port);
     address.sin_family = AF_INET;
@@ -59,9 +61,9 @@ int main(int ac, char **av) {
                 mypoll[currUserNbr].events = POLLIN;
                 connectionFd[currUserNbr] = newFd;
 				std::string welcomeMessage = "001 :user\r\n";
-				// std::string usernameMessage = "USER :balls 0 * :balls\r\n";
-
+				// std::string nickNameChange = ":user NICK Balls\r\n";
             	send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+				// send(newFd, nickNameChange.c_str(), nickNameChange.size(), 0);
 				// send(newFd, usernameMessage.c_str(), usernameMessage.size(), 0);
 				
                 // send(newFd, message, strlen(message), 0);
@@ -79,10 +81,6 @@ int main(int ac, char **av) {
                 } else {
                     buffer[ret] = '\0';
 					std::string sBuffer = buffer;
-					// if (sBuffer.find("NICK") != std::string::npos) {
-					// 	send(mypoll[i].fd, sBuffer.c_str(), sBuffer.size(), 0);
-					// 	continue ;
-					// }
                     std::cout << "Received from socket fd " << connectionFd[i] << ": " << buffer;
                 }
             }

@@ -1,0 +1,2 @@
+- Comprendre comment bien login (handshake, username, nickname)
+- Quand weechat envoi ping, on doit renvoyer pong.

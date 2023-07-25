@@ -12,15 +12,17 @@ using std::endl;
 using std::cerr;
 
 Server::Server(): userCount_(0), channelCount_(0){
-	poll_.resize(MAX_USER + 1);
-	for (int i = 0; i < MAX_USER + 1; i++){
-		poll_[i].events = POLLIN;
-		poll_[i].fd = -1;
-	}
-	userVector_.resize(MAX_USER);
+	struct pollfd listennerPoll;
+	listennerPoll.events = POLLIN;
+	listennerPoll.fd = -1;
+	this->poll_.push_back(listennerPoll);
 }
 
-Server::~Server(){ close(poll_[0].fd); }
+Server::~Server(){ 
+	for (int i = 0; i < this->userCount_; i++)
+		delete this->userVector_[i];
+	close(poll_[0].fd); 
+}
 
 void Server::initServer(char **argv){
 	int ret;
@@ -59,23 +61,25 @@ void Server::serverRun()
 				throw std::runtime_error("Accept failure"); // fix later
 			std::cout << "New connection accepted, socket fd: " << newFd << std::endl;
 			userCount_++;
-			poll_[userCount_].fd = newFd;
-			createUser();
+			createUser(newFd);
 			string welcomeMessage = "001 user" + std::to_string(userCount_) + " :Welcome on ft_irc !\r\n"; // fix later
 			send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 		}
 		for (int i = 1; i <= userCount_; i++){
 			if (poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
-				close(poll_[i].fd);
 				poll_.erase(poll_.begin() + i);
-				userVector_.erase(userVector_.begin() + i - 1);
+				delete userVector_[i - 1];
+				userVector_.erase(userVector_.begin() + (i - 1));
 				userCount_--;
+				cout << userCount_ << endl;
 				cout << "user " << i << " disconnected" << endl;
 			}
-			if (poll_[i].revents & POLLIN){
+			else if (poll_[i].revents & POLLIN){
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
-				if (ret == -1)
-					throw std::runtime_error("Recv failure"); // fix later
+				if (ret == -1) {
+					cout << errno << endl;
+				throw std::runtime_error("Recv failure"); // fix later
+				}
 				else{
 					buffer[ret] = '\0';
 					std::cout << "Received from socket fd " << poll_[i].fd << ": " << buffer;
@@ -85,10 +89,14 @@ void Server::serverRun()
 	}
 }
 
-void Server::createUser(){
-	this->userVector_[userCount_].setNickname("user" + std::to_string(userCount_));
-	this->userVector_[userCount_].setfdSocket(poll_[userCount_].fd); // IF FUCK COME HERE
+void Server::createUser(int& newFd){
+	struct pollfd newPoll;
+	newPoll.fd = newFd;
+	newPoll.events = POLLIN;
+	this->poll_.push_back(newPoll);
 
+	User *newUser = new User("user", "user", newFd);
+	this->userVector_.push_back(newUser);
 }
 
 const int &Server::getUserCount() const { return userCount_; }

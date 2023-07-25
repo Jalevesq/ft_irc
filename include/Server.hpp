@@ -30,11 +30,11 @@ public:
 
 	void setUserCount(int count);
 	void setChannelCount(int count);
-	void createUser();
+	void createUser(int &newFd);
 
 
 private:
- std::vector<User> userVector_;
+ std::vector<User *> userVector_;
  std::vector<struct pollfd> poll_;
  int userCount_;
  int channelCount_;

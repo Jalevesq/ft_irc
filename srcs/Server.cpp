@@ -16,8 +16,8 @@ Server::~Server(){
 	for (int i = 0; i < this->userCount_; i++)
 		delete this->userVector_[i];
 	close(poll_[0].fd); 
-	std::map<string, Command *> ::iterator it;
 
+	std::map<string, Command *> ::iterator it;
 	it = this->commandList_.begin();
 	for (; it != this->commandList_.end(); it++) {
 		delete it->second;

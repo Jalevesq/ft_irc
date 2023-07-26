@@ -6,6 +6,7 @@
 
 Ping::Ping()
 {
+	this->commandName_ = PING;
 }
 
 // Ping::Ping( const Ping & src )
@@ -39,6 +40,13 @@ Ping::~Ping()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+std::string Ping::execute(const std::string& message, User& liveUser) {
+	string pingMessage;
+	(void)liveUser;
+
+	pingMessage = "PONG " + message.substr(5) + "\r\n"; // think it works?
+	return (pingMessage);
+}
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------

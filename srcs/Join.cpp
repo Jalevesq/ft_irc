@@ -6,6 +6,7 @@
 
 Join::Join()
 {
+	this->commandName_ = JOIN;
 }
 
 // Join::Join( const Join & src )
@@ -41,6 +42,13 @@ Join::~Join()
 /*
 ** --------------------------------- METHODS ----------------------------------
 */
+
+std::string Join::execute(const std::string& message, User& liveUser) {
+	string join;
+
+	join = ":" + liveUser.getNickname() + " " + message + "\r\n";
+	return (join);
+}
 
 
 /*

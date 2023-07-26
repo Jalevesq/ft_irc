@@ -6,8 +6,6 @@
 # include <map>
 # include "User.hpp"
 
-
-
 using std::string;
 using std::cout;
 using std::endl;
@@ -27,13 +25,12 @@ class Command
 		virtual ~Command();
 	
 		virtual std::string execute(const std::string& message, User& liveUser) = 0;
-		// const string parseCommand(const string& message, const string& command, User& liveUser);
-		// const string isCommand(const std::string &message) const;
 
 		// Command( Command const & src );
 		// Command &		operator=( Command const & rhs );
 
-	private:
+	protected:
+		string commandName_;
 
 };
 

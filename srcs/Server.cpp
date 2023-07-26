@@ -86,43 +86,6 @@ void Server::serverRun()
 	}
 }
 
-///////////////////////////////////////////////////////////////////////
-//	   Deleting user because 'Disconnect' signal recieve from fd     //
-///////////////////////////////////////////////////////////////////////
-
-void Server::disconnectUser(int index) {
-	this->poll_.erase(poll_.begin() + index);
-	delete this->userVector_[index - 1];
-	this->userVector_.erase(userVector_.begin() + (index - 1));
-	this->userCount_--;
-}
-
-//////////////////////////////////////
-//	   Accept & Create new User   	//
-//////////////////////////////////////
-
-void Server::acceptUser(){
-	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
-	if (newFd == -1)
-		throw std::runtime_error("Accept failure"); // fix later
-	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
-	userCount_++;
-	createUser(newFd);
-	// string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
-	// send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
-}
-
-void Server::createUser(int& newFd){
-	struct pollfd newPoll;
-	newPoll.fd = newFd;
-	newPoll.events = POLLIN;
-	newPoll.revents = 0;
-	this->poll_.push_back(newPoll);
-
-	User *newUser = new User("user", "user", newFd);
-	this->userVector_.push_back(newUser);
-}
-
 //////////////////////////////////////////////////////////////////////
 //	   Handle each message. Is it a command or a normal message?  	//
 //////////////////////////////////////////////////////////////////////
@@ -160,6 +123,43 @@ const string Server::isCommand(const std::string &message) const {
 	} else {
 		return ("");
 	}
+}
+
+///////////////////////////////////////////////////////////////////////
+//	   Deleting user because 'Disconnect' signal recieve from fd     //
+///////////////////////////////////////////////////////////////////////
+
+void Server::disconnectUser(int index) {
+	this->poll_.erase(poll_.begin() + index);
+	delete this->userVector_[index - 1];
+	this->userVector_.erase(userVector_.begin() + (index - 1));
+	this->userCount_--;
+}
+
+//////////////////////////////////////
+//	   Accept & Create new User   	//
+//////////////////////////////////////
+
+void Server::acceptUser(){
+	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
+	if (newFd == -1)
+		throw std::runtime_error("Accept failure"); // fix later
+	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
+	userCount_++;
+	createUser(newFd);
+	// string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	// send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+}
+
+void Server::createUser(int& newFd){
+	struct pollfd newPoll;
+	newPoll.fd = newFd;
+	newPoll.events = POLLIN;
+	newPoll.revents = 0;
+	this->poll_.push_back(newPoll);
+
+	User *newUser = new User("user", "user", newFd);
+	this->userVector_.push_back(newUser);
 }
 
 //////////////////////////////////////////////////////////////////////

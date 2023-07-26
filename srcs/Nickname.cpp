@@ -6,6 +6,7 @@
 
 Nickname::Nickname()
 {
+	this->commandName_ = NICK;
 }
 
 // Nickname::Nickname( const Nickname & src )
@@ -42,6 +43,17 @@ Nickname::~Nickname()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+std::string Nickname::execute(const std::string& message, User& liveUser) {
+	string nickMessage;
+	string newNickname;
+	
+	// Add protection to check if newNickname is valid
+	newNickname = message.substr(5);
+	nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + newNickname + "\r\n";
+	// cout << "newNickname: '" << newNickname << "'" << endl; 
+	liveUser.setNickname(newNickname);
+	return (nickMessage);
+}
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------

@@ -19,11 +19,7 @@ class Nickname : public Command
 
 		Nickname();
 		// Nickname( Nickname const & src );
-		virtual std::string execute(const std::string& message, User& liveUser) {
-			(void)message;
-			(void)liveUser;
-			return "fuck NICKNAME";
-		};
+		virtual std::string execute(const std::string& message, User& liveUser);
 		~Nickname();
 
 		// Nickname &		operator=( Nickname const & rhs );

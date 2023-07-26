@@ -19,11 +19,9 @@ class Join : public Command
 
 		Join();
 		// Join( Join const & src );
-		virtual std::string execute(const std::string& message, User& liveUser) {
-			(void)message;
-			(void)liveUser;
-			return "BALLS fuck";
-		};
+	
+		// need to set permision and all that, far from done at all
+		virtual std::string execute(const std::string& message, User& liveUser);
 		~Join();
 
 		// Join &		operator=( Join const & rhs );

@@ -6,6 +6,7 @@
 
 Username::Username()
 {
+	this->commandName_ = USER;
 }
 
 // Username::Username( const Username & src )
@@ -42,6 +43,14 @@ Username::~Username()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+std::string  Username::execute(const std::string& message, User& liveUser) {
+	string welcomeMessage;
+	(void)liveUser;
+	(void)message;
+	
+	welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	return (welcomeMessage);
+}
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------

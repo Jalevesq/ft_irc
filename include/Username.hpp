@@ -20,11 +20,7 @@ class Username : public Command
 		Username();
 		// Username( Username const & src );
 		~Username();
-		virtual std::string execute(const std::string& message, User& liveUser) {
-			(void)message;
-			(void)liveUser;
-			return "USERNAME fuck";
-		};
+		virtual std::string execute(const std::string& message, User& liveUser);
 		Username &		operator=( Username const & rhs );
 
 	private:

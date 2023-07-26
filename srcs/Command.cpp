@@ -47,7 +47,6 @@ Command::~Command()
 const string Command::nickCommand(const string& message, const User& liveUser) {
 	std::string nickMessage;
 	
-	cout << "hey, i'm in nickCommand" << endl;
 	nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + message.substr(5) + "\r\n";
 	return (nickMessage);
 }

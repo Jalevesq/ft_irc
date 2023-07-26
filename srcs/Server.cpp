@@ -80,7 +80,7 @@ void Server::serverRun()
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
-				handleMessage(buffer, poll_[i].fd, i);
+				handleMessage(buffer, poll_[i].fd, *this->userVector_[i - 1]);
 			}
 		}
 	}
@@ -90,26 +90,26 @@ void Server::serverRun()
 //	   Handle each message. Is it a command or a normal message?  	//
 //////////////////////////////////////////////////////////////////////
 
-void Server::handleMessage(const std::string &message, const int &fd, const int &index) {
+void Server::handleMessage(const std::string &message, const int &fd, User& liveUser) {
 	string command = "";
 	string finalMessage = "";
 	Command *newCommand = nullptr;
 
+	std::cout << "User '" << liveUser.getNickname() << "' says: " << message;
 	command = isCommand(message);
 	if (!command.empty()) {
 		newCommand = this->commandList_[command];
-		finalMessage = newCommand->execute(message, *this->userVector_[index - 1]);
+		finalMessage = newCommand->execute(message, liveUser);
 		send(fd, finalMessage.c_str(), finalMessage.size(), 0);
 	} else {
 		// std::cout << "Received from user " << (fd - 3) << ": " << message;
 		// Dispatch to all user on the current channel of the user
 		;
 	}
-	std::cout << "Received from user " << (fd - 3) << ": " << message;
 }
 
 const string Server::isCommand(const std::string &message) const {
-	// Need more checkup for each command.
+	// Need more checkup for each command. add method in each command to parse their own and use the map to access this method?
 	if (message.empty())
 		return ("");
 	else if (message.find(NICK) == 0) {

@@ -68,7 +68,7 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
     }
 
     nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + newNickname + "\r\n";
-    // liveUser.setNickname(newNickname);
+    liveUser.setNickname(newNickname);
     return nickMessage;
 }
 

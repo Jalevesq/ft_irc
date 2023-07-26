@@ -52,7 +52,7 @@ public:
 	void disconnectUser(int index);
 
 	// Eveything related to message recieved
-	void handleMessage(const std::string &message, const int &fd, const int &index);
+	void handleMessage(const std::string &message, const int &fd, User& liveUser);
 	const string isCommand(const std::string &message) const;
 
 

@@ -6,6 +6,8 @@
 # include <map>
 # include "User.hpp"
 
+
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -15,28 +17,23 @@ using std::cerr;
 # define JOIN "JOIN"
 # define USER "USER"
 # define PING "PING"
+# define CMD_NBR 4
 
 class Command
 {
 
 	public:
-	    typedef const std::string (Command::*MemberFunction)(const std::string&, const User&);
 		Command();
+		virtual ~Command();
+	
+		virtual std::string execute(const std::string& message, User& liveUser) = 0;
+		// const string parseCommand(const string& message, const string& command, User& liveUser);
+		// const string isCommand(const std::string &message) const;
+
 		// Command( Command const & src );
-		~Command();
-
-		const string isCommand(const string &message) const;
-		const string parseCommand(const string& message, const string& command, const User& liveUser);
-
-		const string nickCommand(const string& message, const User& liveUser);
-		const string joinCommand(const string& message, const User& liveUser);
-		const string userCommand(const string& message, const User& liveUser);
-		const string pingCommand(const string& message, const User& liveUSer);
 		// Command &		operator=( Command const & rhs );
 
 	private:
-		// instead of int, put function prototype
-	    std::map<std::string, MemberFunction> _commandList;
 
 };
 

@@ -5,12 +5,19 @@ Server::Server(): userCount_(0), channelCount_(0){
 	listennerPoll.events = POLLIN;
 	listennerPoll.fd = -1;
 	this->poll_.push_back(listennerPoll);
+
+	this->commandList_[NICK] = new Nickname;
+	this->commandList_[JOIN] = new Join;
+	this->commandList_[USER] = new Username;
+	this->commandList_[PING] = new Ping;
 }
 
 Server::~Server(){ 
 	for (int i = 0; i < this->userCount_; i++)
 		delete this->userVector_[i];
 	close(poll_[0].fd); 
+
+	
 }
 
 void Server::initServer(char **argv){
@@ -111,17 +118,36 @@ void Server::createUser(int& newFd){
 void Server::handleMessage(const std::string &message, const int &fd, const int &index) {
 	string command = "";
 	string finalMessage = "";
+	Command *newCommand = nullptr;
 
-	command = allCommand.isCommand(message);
+	command = isCommand(message);
 	if (!command.empty()) {
-		finalMessage = allCommand.parseCommand(message, command, *this->userVector_[index - 1]);
+		newCommand = this->commandList_[command];
+		finalMessage = newCommand->execute(message, *this->userVector_[index - 1]);
 		send(fd, finalMessage.c_str(), finalMessage.size(), 0);
 	} else {
 		// std::cout << "Received from user " << (fd - 3) << ": " << message;
-		// Dispatch to all user on current channel of the user
+		// Dispatch to all user on the current channel
 		;
 	}
 	std::cout << "Received from user " << (fd - 3) << ": " << message;
+}
+
+const string Server::isCommand(const std::string &message) const {
+	// Need more checkup for each command.
+	if (message.empty())
+		return ("");
+	else if (message.find(NICK) == 0) {
+		return (NICK);
+	} else if (message.find(PING) == 0) {
+		return (PING);
+	} else if (message.find(USER) == 0) {
+		return (USER);
+	} else if (message.find(JOIN) == 0) {
+		return (JOIN);
+	} else {
+		return ("");
+	}
 }
 
 const int &Server::getUserCount() const { return userCount_; }

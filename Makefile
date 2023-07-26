@@ -11,7 +11,11 @@ RM = rm -rf
 SRC =	main.cpp \
 			./srcs/Server.cpp \
 			./srcs/User.cpp \
-			./srcs/Command.cpp
+			./srcs/Command.cpp \
+			./srcs/Nickname.cpp \
+			./srcs/Join.cpp \
+			./srcs/Ping.cpp \
+			./srcs/Username.cpp \
 
 OBJS = $(SRC:.cpp=.o)
 

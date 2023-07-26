@@ -13,6 +13,11 @@
 # include "User.hpp"
 # include "Command.hpp"
 
+# include "Join.hpp"
+# include "Nickname.hpp"
+# include "Ping.hpp"
+# include "Username.hpp"
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -28,29 +33,36 @@ public:
 
 	// Server &operator=(const Server &rhs);
 
+	// Main function
 	void initServer(char **argv);
 	void serverRun();
 
+	// Getter
 	const int &getUserCount() const;
 	const int &getChannelCount() const;
 	const int &getFd() const;
 
+	// Setter
 	void setUserCount(int count);
 	void setChannelCount(int count);
+
+	// Everything related to user
 	void createUser(int &newFd);
 	void acceptUser();
 	void disconnectUser(int index);
-	string	 isCommand(const std::string &message, const int &fd, const int &index);
+
+	// Eveything related to message recieved
 	void handleMessage(const std::string &message, const int &fd, const int &index);
+	const string isCommand(const std::string &message) const;
 
 
 private:
- Command allCommand;
- std::vector<User *> userVector_;
- std::vector<struct pollfd> poll_;
- int userCount_;
- int channelCount_;
- struct sockaddr_in address_;
- socklen_t addressLength_;
- //std::string password_;
+	std::map<std::string, Command *> commandList_;
+	std::vector<User *> userVector_;
+	std::vector<struct pollfd> poll_;
+	int userCount_;
+	int channelCount_;
+	struct sockaddr_in address_;
+	socklen_t addressLength_;
+	//std::string password_;
 };

@@ -47,7 +47,7 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
     string nickMessage;
     string newNickname;
 
-    // Add protection to check if newNickname is valid
+    // Add protection to check if newNickname is valid (already in use? not authorized char?)
     newNickname = message.substr(5);
 
     // Find the position of the first non-whitespace character

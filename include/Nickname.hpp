@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <string>
+# include <set>
 # include "Command.hpp"
 
 using std::string;
@@ -23,7 +24,10 @@ class Nickname : public Command
 		// Nickname &		operator=( Nickname const & rhs );
 
 		virtual std::string execute(const std::string& message, User& liveUser);
+		void addNickname(const string& newNickname);
+		void removeNickname(const string& rmNickname);
 	private:
+		std::set<string> nicknameList_;
 
 };
 

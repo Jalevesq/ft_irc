@@ -4,4 +4,7 @@
 - Optimiser la façon d'ajouter commande? Possible utiliser enum au lieu de define?
 - On ouvre et set bien les ports ? Mieux comprendre les fonctions de socket/port. Voir examrank06. Utilise des fonctions de socket qui semble utile que nous n'utilisons pas.
 
+- Trouver une façon de gérer première connection. changer le nickname a ("user" + (fd - 3)) OU l'empêcher de faire quoi que ce soit (sauf /nick) tant que son nickname est pareil à celui de quelqu'un d'autre.
+- Comment stocker tous les noms ?
+
 - Structure de la classe channel

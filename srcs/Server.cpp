@@ -72,7 +72,7 @@ void Server::serverRun()
 			acceptUser();
 		for (int i = 1; i <= userCount_; i++){
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
-				cout << "user " << (poll_[i].fd - 3) << " disconnected" << endl;
+				cout << "user " << this->userVector_[i - 1]->getNickname() << " (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i);
 			}
 			else if (poll_[i].revents & POLLIN){
@@ -95,7 +95,7 @@ void Server::handleMessage(const std::string &message, const int &fd, User& live
 	string finalMessage = "";
 	Command *newCommand = nullptr;
 
-	std::cout << "User '" << liveUser.getNickname() << "' says: " << message;
+	std::cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
 	command = isCommand(message);
 	if (!command.empty()) {
 		newCommand = this->commandList_[command];
@@ -103,7 +103,7 @@ void Server::handleMessage(const std::string &message, const int &fd, User& live
 		send(fd, finalMessage.c_str(), finalMessage.size(), 0);
 	} else {
 		// std::cout << "Received from user " << (fd - 3) << ": " << message;
-		// Dispatch to all user on the current channel of the user
+		// Dispatch to all user on the current channel of the user. Make a message class?
 		;
 	}
 }
@@ -158,6 +158,9 @@ void Server::createUser(int& newFd){
 	newPoll.revents = 0;
 	this->poll_.push_back(newPoll);
 
+
+	// Nickname* nameList = static_cast<Nickname *>(this->commandList_[NICK]);
+	// nameList->addNickname("user");
 	User *newUser = new User("user", "user", newFd);
 	this->userVector_.push_back(newUser);
 }

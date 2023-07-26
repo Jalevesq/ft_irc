@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cstdlib>
 
 using std::string;
 using std::cout;
@@ -34,7 +35,7 @@ void Server::initServer(char **argv){
 	int fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");
-  address_.sin_port = htons(stoi(port));
+  address_.sin_port = htons(atoi(port.c_str())); //if this doesn't compile on mac put stoi instead
   address_.sin_family = AF_INET;
   address_.sin_addr.s_addr = htonl(INADDR_ANY);
 	fcntl(fdSocket, F_SETFL, O_NONBLOCK);
@@ -71,10 +72,8 @@ void Server::serverRun()
 			}
 			else if (poll_[i].revents & POLLIN){
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
-				if (ret == -1) {
-					cout << errno << endl;
-				throw std::runtime_error("Recv failure"); // fix later
-				}
+				if (ret == -1)
+					throw std::runtime_error("Recv failure"); // fix later
 				else{
 					buffer[ret] = '\0';
 					checkMessage(buffer, poll_[i].fd, i);
@@ -103,8 +102,8 @@ void Server::acceptUser(){
 	std::cout << "New connection accepted, socket fd: " << newFd << std::endl;
 	userCount_++;
 	createUser(newFd);
-	string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
-	send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+	// string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	// send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 }
 
 void Server::checkMessage(const std::string &message, const int &fd, const int &index){
@@ -118,14 +117,14 @@ void Server::checkMessage(const std::string &message, const int &fd, const int &
 		string pingMessage = "PONG " + message.substr(5) + "\r\n"; // think it works?
 		send(fd, pingMessage.c_str(), pingMessage.size(), 0);
 	}
-	// else if (message.find("USER ") == 0){
-	// 	std::string userMessage = ":" + userVector_[index - 1]->getNickname() + " " + message + "\r\n";
-	// 	send(fd, userMessage.c_str(), userMessage.size(), 0);
-	// }
-	// else if (message.find("JOIN ") == 0){
-	// 	std::string test = "JOIN #general\r\n";
-	// 	send(fd, test.c_str(), test.size(), 0);
-	// }
+	else if (message.find("USER ") == 0){ // might need refacto so it works with the default name weechat give us
+		string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+		send(fd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+	}
+	else if (message.find("JOIN ") == 0){// need to set permision and all that, far from done at all
+		std::string test = ":" + userVector_[index -1]->getNickname() + " " + message + "\r\n";
+		send(fd, test.c_str(), test.size(), 0);
+	}
 }
 
 const int &Server::getUserCount() const { return userCount_; }

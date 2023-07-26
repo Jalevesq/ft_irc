@@ -78,9 +78,9 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
         // addNickname(newNickname);
         liveUser.setNickname(newNickname);
         std::set<std::string>::iterator itt = this->nicknameList_.begin();
-        for (; itt != nicknameList_.end(); itt++)
-            cout << *itt << endl;
-        cout << this << endl;
+        // for (; itt != nicknameList_.end(); itt++)
+        //     cout << *itt << endl;
+        // cout << this << endl;
     }
     return nickMessage;
 }

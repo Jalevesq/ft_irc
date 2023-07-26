@@ -31,7 +31,8 @@ public:
 	void setUserCount(int count);
 	void setChannelCount(int count);
 	void createUser(int &newFd);
-
+	void acceptUser();
+	void checkMessage(const std::string &message, const int &fd, const int &index);
 
 private:
  std::vector<User *> userVector_;

@@ -39,11 +39,15 @@ void Server::initServer(char **argv){
   address_.sin_addr.s_addr = htonl(INADDR_ANY);
 	fcntl(fdSocket, F_SETFL, O_NONBLOCK);
 	ret = bind(fdSocket, (struct sockaddr*)&address_, sizeof(address_));
-	if (ret == -1)
+	if (ret == -1){
+		close(fdSocket);
 		throw std::runtime_error("Bind failure"); // check later to close fd maybe?
+	}
 	ret = listen(fdSocket, MAX_USER);
-	if (ret == -1)
+	if (ret == -1){
+		close(fdSocket);
 		throw std::runtime_error("Listen failure"); // check later to close fd maybe?
+	}
 	poll_[0].fd = fdSocket;
 	addressLength_ = sizeof(address_);
 }
@@ -55,16 +59,8 @@ void Server::serverRun()
 	{
 		poll(poll_.data(), userCount_ + 1, 100);
 		//	throw std::runtime_error("Poll failure"); // fix later
-		if (poll_[0].revents & POLLIN){ // if more than max user fix later
-			int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
-			if (newFd == -1)
-				throw std::runtime_error("Accept failure"); // fix later
-			std::cout << "New connection accepted, socket fd: " << newFd << std::endl;
-			userCount_++;
-			createUser(newFd);
-			string welcomeMessage = "001 user" + std::to_string(userCount_) + " :Welcome on ft_irc !\r\n"; // fix later
-			send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
-		}
+		if (poll_[0].revents & POLLIN)
+			acceptUser();
 		for (int i = 1; i <= userCount_; i++){
 			if (poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
 				poll_.erase(poll_.begin() + i);
@@ -81,6 +77,7 @@ void Server::serverRun()
 				}
 				else{
 					buffer[ret] = '\0';
+					checkMessage(buffer, poll_[i].fd, i);
 					std::cout << "Received from socket fd " << poll_[i].fd << ": " << buffer;
 				}
 			}
@@ -97,6 +94,38 @@ void Server::createUser(int& newFd){
 
 	User *newUser = new User("user", "user", newFd);
 	this->userVector_.push_back(newUser);
+}
+
+void Server::acceptUser(){
+	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
+	if (newFd == -1)
+		throw std::runtime_error("Accept failure"); // fix later
+	std::cout << "New connection accepted, socket fd: " << newFd << std::endl;
+	userCount_++;
+	createUser(newFd);
+	string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+}
+
+void Server::checkMessage(const std::string &message, const int &fd, const int &index){
+	if (message.empty())
+		return;
+	if (message.find("NICK") == 0){ //need to do error checking but works for now
+		std::string nickMessage = ":" + userVector_[index - 1]->getNickname() + " NICK " + ":" + message.substr(5) + "\r\n";
+		send(fd, nickMessage.c_str(), nickMessage.size(), 0);
+	}
+	else if (message.find("PING ") == 0){
+		string pingMessage = "PONG " + message.substr(5) + "\r\n"; // think it works?
+		send(fd, pingMessage.c_str(), pingMessage.size(), 0);
+	}
+	// else if (message.find("USER ") == 0){
+	// 	std::string userMessage = ":" + userVector_[index - 1]->getNickname() + " " + message + "\r\n";
+	// 	send(fd, userMessage.c_str(), userMessage.size(), 0);
+	// }
+	// else if (message.find("JOIN ") == 0){
+	// 	std::string test = "JOIN #general\r\n";
+	// 	send(fd, test.c_str(), test.size(), 0);
+	// }
 }
 
 const int &Server::getUserCount() const { return userCount_; }

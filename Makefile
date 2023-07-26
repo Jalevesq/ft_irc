@@ -10,7 +10,8 @@ RM = rm -rf
 
 SRC =	main.cpp \
 			./srcs/Server.cpp \
-			./srcs/User.cpp
+			./srcs/User.cpp \
+			./srcs/Command.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

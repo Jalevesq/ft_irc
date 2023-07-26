@@ -1,17 +1,24 @@
 #pragma once
-#include <vector>
-#include <iostream>
-#include <poll.h>
+# include <vector>
+# include <iostream>
+# include <poll.h>
+# include <stdexcept>
+# include <string>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <cstdlib>
 
-#include <stdexcept>
-#include <string>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include "User.hpp"
+# include "User.hpp"
+# include "Command.hpp"
 
-#define MAX_USER 10
+using std::string;
+using std::cout;
+using std::endl;
+using std::cerr;
+
+#define MAX_USER 99
 
 class Server{
 public:
@@ -32,9 +39,13 @@ public:
 	void setChannelCount(int count);
 	void createUser(int &newFd);
 	void acceptUser();
-	void checkMessage(const std::string &message, const int &fd, const int &index);
+	void disconnectUser(int index);
+	string	 isCommand(const std::string &message, const int &fd, const int &index);
+	void handleMessage(const std::string &message, const int &fd, const int &index);
+
 
 private:
+ Command allCommand;
  std::vector<User *> userVector_;
  std::vector<struct pollfd> poll_;
  int userCount_;

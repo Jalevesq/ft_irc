@@ -16,9 +16,17 @@ Server::~Server(){
 	for (int i = 0; i < this->userCount_; i++)
 		delete this->userVector_[i];
 	close(poll_[0].fd); 
+	std::map<string, Command *> ::iterator it;
 
-	
+	it = this->commandList_.begin();
+	for (; it != this->commandList_.end(); it++) {
+		delete it->second;
+	}
 }
+
+//////////////////////////////////////////////////////////////////////////////
+//	   Init Socket, bind it with port & init our listenner to connection	 //
+//////////////////////////////////////////////////////////////////////////////
 
 void Server::initServer(char **argv){
 	int ret;
@@ -48,6 +56,10 @@ void Server::initServer(char **argv){
 	this->poll_[0].fd = fdSocket;
 	this->addressLength_ = sizeof(address_);
 }
+
+//////////////////////////////////////////////
+//	   Main loop that handle everything   	//
+//////////////////////////////////////////////
 
 void Server::serverRun()
 {
@@ -86,7 +98,7 @@ void Server::disconnectUser(int index) {
 }
 
 //////////////////////////////////////
-//	   Accept & Create new User  	//
+//	   Accept & Create new User   	//
 //////////////////////////////////////
 
 void Server::acceptUser(){
@@ -127,7 +139,7 @@ void Server::handleMessage(const std::string &message, const int &fd, const int 
 		send(fd, finalMessage.c_str(), finalMessage.size(), 0);
 	} else {
 		// std::cout << "Received from user " << (fd - 3) << ": " << message;
-		// Dispatch to all user on the current channel
+		// Dispatch to all user on the current channel of the user
 		;
 	}
 	std::cout << "Received from user " << (fd - 3) << ": " << message;
@@ -149,6 +161,8 @@ const string Server::isCommand(const std::string &message) const {
 		return ("");
 	}
 }
+
+//////////////////////////////////////////////////////////////////////
 
 const int &Server::getUserCount() const { return userCount_; }
 

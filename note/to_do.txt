@@ -1,2 +1,7 @@
 - Comprendre comment bien login (handshake, username, nickname)
-- Quand weechat envoi ping, on doit renvoyer pong.
+
+- Check leaks?
+- Optimiser la façon d'ajouter commande? Possible utiliser enum au lieu de define?
+- On ouvre et set bien les ports ? Mieux comprendre les fonctions de socket/port. Voir examrank06. Utilise des fonctions de socket qui semble utile que nous n'utilisons pas.
+
+- Structure de la classe channel

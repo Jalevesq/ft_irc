@@ -18,13 +18,13 @@ class Join : public Command
 	public:
 
 		Join();
+		~Join();
 		// Join( Join const & src );
+		// Join &		operator=( Join const & rhs );
 	
 		// need to set permision and all that, far from done at all
-		virtual std::string execute(const std::string& message, User& liveUser);
-		~Join();
+		virtual string execute(const string& message, User& liveUser);
 
-		// Join &		operator=( Join const & rhs );
 
 	private:
 

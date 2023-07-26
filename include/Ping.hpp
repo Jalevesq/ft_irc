@@ -19,9 +19,10 @@ class Ping : public Command
 
 		Ping();
 		~Ping();
-		virtual std::string execute(const std::string& message, User& liveUser);
 		// Ping( Ping const & src );
 		// Ping &		operator=( Ping const & rhs );
+	
+		virtual std::string execute(const std::string& message, User& liveUser);
 
 	private:
 

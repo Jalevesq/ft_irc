@@ -24,7 +24,8 @@ class Command
 		Command();
 		virtual ~Command();
 	
-		virtual std::string execute(const std::string& message, User& liveUser) = 0;
+		virtual string execute(const string& message, User& liveUser) = 0;
+		virtual const string& getName();
 
 		// Command( Command const & src );
 		// Command &		operator=( Command const & rhs );

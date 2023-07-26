@@ -28,10 +28,10 @@ using std::cerr;
 class Server{
 public:
  	Server();
-	// Server(const Server &rhs);
 	~Server();
-
+	// Server(const Server &rhs);
 	// Server &operator=(const Server &rhs);
+
 
 	// Main function
 	void initServer(char **argv);

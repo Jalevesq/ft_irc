@@ -18,12 +18,11 @@ class Nickname : public Command
 	public:
 
 		Nickname();
-		// Nickname( Nickname const & src );
-		virtual std::string execute(const std::string& message, User& liveUser);
 		~Nickname();
-
+		// Nickname( Nickname const & src );
 		// Nickname &		operator=( Nickname const & rhs );
 
+		virtual std::string execute(const std::string& message, User& liveUser);
 	private:
 
 };

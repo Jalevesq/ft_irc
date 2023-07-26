@@ -18,10 +18,10 @@ class Username : public Command
 	public:
 
 		Username();
-		// Username( Username const & src );
 		~Username();
+		// Username( Username const & src );
+		// Username &		operator=( Username const & rhs );
 		virtual std::string execute(const std::string& message, User& liveUser);
-		Username &		operator=( Username const & rhs );
 
 	private:
 

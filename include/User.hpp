@@ -25,8 +25,8 @@ class User
 		void setUsername(const string &newUsername);
 		void setOperator(const bool &newOperator);
 		void setfdSocket(const int &fd);
-		// User( User const & src  );
 
+		// User( User const & src  );
 		// User &		operator=( User const & rhs );
 
 	private:

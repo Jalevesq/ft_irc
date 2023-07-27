@@ -54,7 +54,6 @@ public:
 
 	// Eveything related to message recieved
 	void handleMessage(const std::string &message, User& liveUser);
-	const string isCommand(const std::string &message) const;
 
 
 private:

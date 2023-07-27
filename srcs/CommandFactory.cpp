@@ -37,7 +37,7 @@ void CommandFactory::SplitCommand(const std::string &command){
 	for (size_t index = 0; index < command.size(); index++){
 		if (command[index] == '\r' && command[index + 1] == '\n'){
 			endPosition = index;
-			cmd_.push_back(command.substr(startPosition, endPosition));
+			cmd_.push_back(command.substr(startPosition, endPosition - startPosition));
 			startPosition = endPosition + 2;
 		}
 	}

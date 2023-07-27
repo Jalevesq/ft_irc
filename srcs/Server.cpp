@@ -94,7 +94,6 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 	string finalMessage = "";
 	string userMessage = "";
 	std::vector<string> cmd;
-	//Command *newCommand;
 
 	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") says: " << message;
 
@@ -117,23 +116,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 		}
 		factory_.popCommand();
 	}
-}
 
-const string Server::isCommand(const std::string &message) const {
-	// Need more checkup for each command. add method in each command to parse their own and use the map to access this method?
-	if (message.empty())
-		return ("");
-	else if (message.find(NICK) == 0) {
-		return (NICK);
-	} else if (message.find(PING) == 0) {
-		return (PING);
-	} else if (message.find(USER) == 0) {
-		return (USER);
-	} else if (message.find(JOIN) == 0) {
-		return (JOIN);
-	} else {
-		return ("");
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////

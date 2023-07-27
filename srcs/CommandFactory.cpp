@@ -31,13 +31,14 @@ std::string CommandFactory::ParseCommand(const std::string &command){
 	return command.substr(0, position);
 }
 
-// void CommandFactory::SplitCommand(const std::string &command){
-// 	// size_t index = 0;
-// 	// size_t position = 0;
-// 	// do
-// 	// {
-// 	// 	position = command.find("\r\n");
-// 	// 	if (position == std::string::npos)
-// 	// 		cmd_.push_back(command);
-// 	// } while (index != std::string::npos);
-// }
+void CommandFactory::SplitCommand(const std::string &command){
+	size_t endPosition = 0;
+	size_t startPosition = 0;
+	for (size_t index = 0; index < std::string::npos; index++){
+		if (command[index] == '\r' && command[index + 1] == '\n'){
+			endPosition = index;
+			cmd_.push_back(command.substr(startPosition, endPosition));
+			startPosition = endPosition + 2;
+		}
+	}
+}

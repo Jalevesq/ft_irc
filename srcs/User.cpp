@@ -51,6 +51,14 @@ User::~User()
 */
 
 
+void User::clearMessage() {
+	this->message_ = "";
+}
+
+void User::appendMessage(const string& appendMessage) {
+	this->message_.append(appendMessage);
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
@@ -68,6 +76,10 @@ const int& User::getFdSocket() const {
 
 const bool& User::getOperator() const {
 	return (this->operator_);
+}
+
+const string& User::getMessage() const {
+	return (this->message_);
 }
 
 void User::setNickname(const string &newNickname) {

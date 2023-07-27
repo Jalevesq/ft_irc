@@ -80,7 +80,7 @@ void Server::serverRun()
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
-				handleMessage(buffer, poll_[i].fd, *this->userVector_[i - 1]);
+				handleMessage(buffer, *this->userVector_[i - 1]);
 			}
 		}
 	}
@@ -90,27 +90,28 @@ void Server::serverRun()
 //	   Handle each message. Is it a command or a normal message?  	//
 //////////////////////////////////////////////////////////////////////
 
-void Server::handleMessage(const std::string &message, const int &fd, User& liveUser) {
-// 	string command = "";
-// 	string finalMessage = "";
-// //	Command *newCommand = nullptr;
-(void)fd;
+void Server::handleMessage(const std::string &message, User& liveUser) {
+	string finalMessage = "";
+	string userMessage = "";
+	Command *newCommand;
 
-	//cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
+	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") says: " << message;
+
+	liveUser.appendMessage(message);
+	userMessage = liveUser.getMessage();
+	if (!factory_.checkDelimiter(userMessage)) {
+		return ;
+	}
+
+	// While loop what will iterate though factory vector only 
 	Command *cmd = factory_.CreateCommand(message);
-	if (cmd)
-		cmd->execute(message, liveUser);
-	// command = isCommand(message);
-	// if (!command.empty()) {
-	// 	newCommand = this->commandList_[command];
-	// 	finalMessage = newCommand->execute(message, liveUser);
-	// 	send(fd, finalMessage.c_str(), finalMessage.size(), 0);
-	// } else {
-	// 	// std::cout << "Received from user " << (fd - 3) << ": " << message;
-	// 	// Dispatch to all user on the current channel of the user. Make a message class?
-	// 	;
-	// }
-	// std::cout << "Received from user " << (fd - 3) << ": " << message;
+	if (cmd) {
+		finalMessage = cmd->execute(message, liveUser);
+		send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
+	} else {
+		// Dispatch to all user on the current channel of the user. Make a message class?
+		;
+	}
 }
 
 const string Server::isCommand(const std::string &message) const {

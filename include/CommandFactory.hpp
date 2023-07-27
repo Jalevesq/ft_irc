@@ -11,6 +11,7 @@ public:
 
 	Command *CreateCommand(const std::string &command);
 	std::string ParseCommand(const std::string &command);
+	const bool& checkDelimiter(const string& userMessage);
 	void SplitCommand(const std::string &command);
 
 private:

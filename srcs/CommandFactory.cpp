@@ -31,6 +31,13 @@ std::string CommandFactory::ParseCommand(const std::string &command){
 	return command.substr(0, position);
 }
 
+const bool& CommandFactory::checkDelimiter(const string& userMessage) {
+	std::size_t found = userMessage.find("\r");
+	if (found != string::npos && found + 1 < userMessage.length() && userMessage[found + 1] == '\n') {
+		return (true);
+	}
+	return (false);
+}
 // void CommandFactory::SplitCommand(const std::string &command){
 // 	// size_t index = 0;
 // 	// size_t position = 0;

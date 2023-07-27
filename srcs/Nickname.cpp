@@ -67,20 +67,11 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
         newNickname = "";
     }
 
-    std::set<std::string>::iterator it = this->nicknameList_.find(newNickname);
     if (newNickname.find_first_of(":\t\n\v\f\r ") != string::npos) {
         nickMessage = "432 "  + newNickname + ":Erroneus nickname\r\n";
-    } else if (it != this->nicknameList_.end()) {
-        nickMessage = "433 " + newNickname + " :Nickname is already in use\r\n";
     } else {
         nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + newNickname + "\r\n";
-        // removeNickname(liveUser.getNickname());
-        // addNickname(newNickname);
         liveUser.setNickname(newNickname);
-        std::set<std::string>::iterator itt = this->nicknameList_.begin();
-        // for (; itt != nicknameList_.end(); itt++)
-        //     cout << *itt << endl;
-        // cout << this << endl;
     }
     return nickMessage;
 }
@@ -88,20 +79,6 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
-
-void Nickname::addNickname(const string& newNickname) {
-    std::set<std::string>::iterator it = this->nicknameList_.find(newNickname);
-    if (it == this->nicknameList_.end()) {
-        this->nicknameList_.insert(newNickname);
-    }
-}
-
-void Nickname::removeNickname(const std::string& rmNickname) {
-    std::set<std::string>::iterator it = this->nicknameList_.find(rmNickname);
-    if (it != this->nicknameList_.end()) {
-        this->nicknameList_.erase(it);
-    }
-}
 
 
 /* ************************************************************************** */

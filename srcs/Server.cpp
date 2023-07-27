@@ -95,7 +95,7 @@ void Server::handleMessage(const std::string &message, const int &fd, User& live
 	string finalMessage = "";
 	Command *newCommand = nullptr;
 
-	std::cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
+	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
 	command = isCommand(message);
 	if (!command.empty()) {
 		newCommand = this->commandList_[command];
@@ -106,6 +106,7 @@ void Server::handleMessage(const std::string &message, const int &fd, User& live
 		// Dispatch to all user on the current channel of the user. Make a message class?
 		;
 	}
+	std::cout << "Received from user " << (fd - 3) << ": " << message;
 }
 
 const string Server::isCommand(const std::string &message) const {

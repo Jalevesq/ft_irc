@@ -23,11 +23,8 @@ class Nickname : public Command
 		// Nickname( Nickname const & src );
 		// Nickname &		operator=( Nickname const & rhs );
 
-		virtual std::string execute(const std::string& message, User& liveUser);
-		void addNickname(const string& newNickname);
-		void removeNickname(const string& rmNickname);
+		virtual string execute(const string& message, User& liveUser);
 	private:
-		std::set<string> nicknameList_;
 
 };
 

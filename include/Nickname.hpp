@@ -1,6 +1,7 @@
 #ifndef NICKNAME_HPP
 # define NICKNAME_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include <set>
@@ -12,6 +13,7 @@ using std::endl;
 using std::cerr;
 
 // class Command;
+// class Server;
 
 class Nickname : public Command
 {
@@ -23,7 +25,7 @@ class Nickname : public Command
 		// Nickname( Nickname const & src );
 		// Nickname &		operator=( Nickname const & rhs );
 
-		virtual string execute(const string& message, User& liveUser);
+		virtual string execute(Server &server,const string& message, User& liveUser);
 	private:
 
 };

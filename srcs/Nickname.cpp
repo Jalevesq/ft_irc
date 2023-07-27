@@ -43,7 +43,7 @@ Nickname::~Nickname()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-std::string Nickname::execute(const std::string& message, User& liveUser) {
+std::string Nickname::execute(Server &server,const string& message, User& liveUser) {
     string nickMessage;
     string newNickname;
 

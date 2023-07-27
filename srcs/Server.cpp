@@ -111,7 +111,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 	for (; it != cmd.end(); ++it){
 		Command *cmd = factory_.CreateCommand();
 		if (cmd) {
-			finalMessage = cmd->execute(*it, liveUser);
+			finalMessage = cmd->execute(*this, *it, liveUser);
 			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
 		}
 		factory_.popCommand();

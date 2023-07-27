@@ -1,6 +1,7 @@
 #ifndef JOIN_HPP
 # define JOIN_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "Command.hpp"
@@ -10,7 +11,8 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-// class Command;
+class Command;
+// class Server;
 
 class Join : public Command
 {
@@ -23,7 +25,7 @@ class Join : public Command
 		// Join &		operator=( Join const & rhs );
 	
 		// need to set permision and all that, far from done at all
-		virtual string execute(const string& message, User& liveUser);
+		virtual string execute(Server &server,const string& message, User& liveUser);
 
 
 	private:

@@ -43,7 +43,7 @@ Username::~Username()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-std::string  Username::execute(const std::string& message, User& liveUser) {
+std::string  Username::execute(Server &server,const string& message, User& liveUser) {
 	string welcomeMessage;
 	(void)liveUser;
 	(void)message;

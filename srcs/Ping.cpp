@@ -40,7 +40,7 @@ Ping::~Ping()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-std::string Ping::execute(const std::string& message, User& liveUser) {
+std::string Ping::execute(Server &server,const string& message, User& liveUser) {
 	string pingMessage;
 	(void)liveUser;
 

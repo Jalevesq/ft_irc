@@ -1,6 +1,7 @@
 #ifndef USERNAME_HPP
 # define USERNAME_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "Command.hpp"
@@ -11,6 +12,7 @@ using std::endl;
 using std::cerr;
 
 // class Command;
+// class Server;
 
 class Username : public Command
 {
@@ -21,7 +23,7 @@ class Username : public Command
 		~Username();
 		// Username( Username const & src );
 		// Username &		operator=( Username const & rhs );
-		virtual std::string execute(const std::string& message, User& liveUser);
+		virtual std::string execute(Server &server,const string& message, User& liveUser);
 
 	private:
 

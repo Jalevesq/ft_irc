@@ -26,6 +26,8 @@ using std::cerr;
 
 #define MAX_USER 99
 
+
+class Command;
 class Server{
 public:
  	Server();

@@ -43,7 +43,7 @@ Join::~Join()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-std::string Join::execute(const std::string& message, User& liveUser) {
+std::string Join::execute(Server &server,const string& message, User& liveUser) {
 	string join;
 
 	join = ":" + liveUser.getNickname() + " " + message + "\r\n";

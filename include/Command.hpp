@@ -1,6 +1,7 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include <map>
@@ -17,6 +18,8 @@ using std::cerr;
 # define PING "PING"
 # define CMD_NBR 4
 
+class Server;
+
 class Command
 {
 
@@ -24,7 +27,7 @@ class Command
 		Command();
 		virtual ~Command();
 	
-		virtual string execute(const string& message, User& liveUser) = 0;
+		virtual string execute(Server &server, const string& message, User& liveUser) = 0;
 		virtual const string& getName();
 
 		// Command( Command const & src );

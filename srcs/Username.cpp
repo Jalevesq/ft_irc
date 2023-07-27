@@ -45,11 +45,12 @@ Username::~Username()
 
 std::string  Username::execute(Server &server,const string& message, User& liveUser) {
 	string welcomeMessage;
-	(void)liveUser;
+	string username = "user";
 	(void)message;
 	(void)server;
 
-	welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	welcomeMessage = "001 " + username + " :Welcome on ft_irc !\r\n";
+	liveUser.setUsername(username);
 	return (welcomeMessage);
 }
 

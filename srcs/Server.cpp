@@ -97,7 +97,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 
 	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") says: " << message;
 
-		liveUser.appendMessage(message);
+	liveUser.appendMessage(message);
     userMessage = liveUser.getMessage();
     string extractedMessage = factory_.checkDelimiter(liveUser);
     if (extractedMessage.empty()) {

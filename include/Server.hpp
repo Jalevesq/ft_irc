@@ -17,6 +17,7 @@
 # include "Nickname.hpp"
 # include "Ping.hpp"
 # include "Username.hpp"
+# include "CommandFactory.hpp"
 
 using std::string;
 using std::cout;
@@ -64,5 +65,6 @@ private:
 	int channelCount_;
 	struct sockaddr_in address_;
 	socklen_t addressLength_;
+	CommandFactory factory_;
 	//std::string password_;
 };

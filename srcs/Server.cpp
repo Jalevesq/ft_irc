@@ -91,22 +91,26 @@ void Server::serverRun()
 //////////////////////////////////////////////////////////////////////
 
 void Server::handleMessage(const std::string &message, const int &fd, User& liveUser) {
-	string command = "";
-	string finalMessage = "";
-	Command *newCommand = nullptr;
+// 	string command = "";
+// 	string finalMessage = "";
+// //	Command *newCommand = nullptr;
+(void)fd;
 
-	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
-	command = isCommand(message);
-	if (!command.empty()) {
-		newCommand = this->commandList_[command];
-		finalMessage = newCommand->execute(message, liveUser);
-		send(fd, finalMessage.c_str(), finalMessage.size(), 0);
-	} else {
-		// std::cout << "Received from user " << (fd - 3) << ": " << message;
-		// Dispatch to all user on the current channel of the user. Make a message class?
-		;
-	}
-	std::cout << "Received from user " << (fd - 3) << ": " << message;
+	//cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << fd << ") says: " << message;
+	Command *cmd = factory_.CreateCommand(message);
+	if (cmd)
+		cmd->execute(message, liveUser);
+	// command = isCommand(message);
+	// if (!command.empty()) {
+	// 	newCommand = this->commandList_[command];
+	// 	finalMessage = newCommand->execute(message, liveUser);
+	// 	send(fd, finalMessage.c_str(), finalMessage.size(), 0);
+	// } else {
+	// 	// std::cout << "Received from user " << (fd - 3) << ": " << message;
+	// 	// Dispatch to all user on the current channel of the user. Make a message class?
+	// 	;
+	// }
+	// std::cout << "Received from user " << (fd - 3) << ": " << message;
 }
 
 const string Server::isCommand(const std::string &message) const {

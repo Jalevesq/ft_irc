@@ -67,12 +67,12 @@ std::string Nickname::execute(const std::string& message, User& liveUser) {
         newNickname = "";
     }
 
-    if (newNickname.find_first_of(":\t\n\v\f\r ") != string::npos) {
-        nickMessage = "432 "  + newNickname + ":Erroneus nickname\r\n";
-    } else {
+    // if (newNickname.find_first_of(":\t\n\v\f\r ") != string::npos) {
+    //     nickMessage = "432 "  + newNickname + ":Erroneus nickname\r\n";
+    // } else {
         nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + newNickname + "\r\n";
         liveUser.setNickname(newNickname);
-    }
+    //}
     return nickMessage;
 }
 

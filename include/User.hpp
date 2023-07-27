@@ -20,16 +20,21 @@ class User
 		const string& getUsername() const;
 		const bool& getOperator() const;
 		const int& getFdSocket() const;
+		const string& getMessage() const;
 
 		void setNickname(const string &newNickname);
 		void setUsername(const string &newUsername);
 		void setOperator(const bool &newOperator);
 		void setfdSocket(const int &fd);
 
+		void appendMessage(const string& appendMessage);
+		void clearMessage();
+
 		// User( User const & src  );
 		// User &		operator=( User const & rhs );
 
 	private:
+		string	message_;
 		string	nickname_;
 		string	username_;
 		bool	operator_;

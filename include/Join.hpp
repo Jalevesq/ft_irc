@@ -1,7 +1,6 @@
 #ifndef JOIN_HPP
 # define JOIN_HPP
 
-# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "Command.hpp"

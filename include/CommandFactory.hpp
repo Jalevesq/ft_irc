@@ -1,3 +1,4 @@
+#pragma once
 #include "Command.hpp"
 #include <map>
 #include <vector>

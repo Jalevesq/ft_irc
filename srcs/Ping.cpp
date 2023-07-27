@@ -43,6 +43,7 @@ Ping::~Ping()
 std::string Ping::execute(Server &server,const string& message, User& liveUser) {
 	string pingMessage;
 	(void)liveUser;
+	(void)server;
 
 	pingMessage = "PONG " + message.substr(5) + "\r\n"; // think it works?
 	return (pingMessage);

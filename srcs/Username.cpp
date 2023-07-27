@@ -47,7 +47,8 @@ std::string  Username::execute(Server &server,const string& message, User& liveU
 	string welcomeMessage;
 	(void)liveUser;
 	(void)message;
-	
+	(void)server;
+
 	welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
 	return (welcomeMessage);
 }

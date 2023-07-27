@@ -1,7 +1,6 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
-# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include <map>

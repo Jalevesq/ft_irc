@@ -49,6 +49,7 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 
     // Add protection to check if newNickname is valid (already in use? not authorized char?)
     newNickname = message.substr(5);
+    (void)server;
 
     // Find the position of the first non-whitespace character
     size_t firstNonSpace = newNickname.find_first_not_of(" \r\n");

@@ -75,11 +75,12 @@ void Server::serverRun()
 				disconnectUser(i);
 			}
 			else if (poll_[i].revents & POLLIN){
+				User &liveUser = *this->userVector_[i - 1];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
-				handleMessage(buffer, *this->userVector_[i - 1]);
+				handleMessage(buffer, liveUser);
 			}
 		}
 	}
@@ -102,12 +103,6 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
     if (extractedMessage.empty()) {
         return ;
     }
-	cout << "Extracted Message: '" << extractedMessage << "'" << endl;
-	cout << "liveUser message: '";
-	for (unsigned long int i = 0; i < extractedMessage.size(); i++) {
-		cout << static_cast<int>(extractedMessage[i]) << " ";
-	}
-	cout << "'" << endl;
 	// While loop what will iterate though factory vector
 	factory_.SplitCommand(extractedMessage);
 	cmd = factory_.getVector();
@@ -117,6 +112,8 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 		if (cmd) {
 			finalMessage = cmd->execute(*this, *it, liveUser);
 			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
+		} else {
+			// Distribute to all user in channel. Check if is in a channel bc fuck nc
 		}
 		factory_.popCommand();
 	}
@@ -158,6 +155,10 @@ void Server::createUser(int& newFd){
 
 	User *newUser = new User("", "", newFd);
 	this->userVector_.push_back(newUser);
+
+	string newUserMessage;
+	newUserMessage = "You are not registered. Please give a Username (USER <user> 0 * :<user>) and a nickname (/nick <nickname>)\r\n";
+	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 	// this->listUser_.push_back(newUser);
 }
 

@@ -127,21 +127,22 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 }
 
 const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
-	std::string message = "";
+	string message = "";
+	string cmdName = cmd->getName(); 
 
-	if (cmd->getName() == USER || cmd->getName() == NICK)
+	if (cmdName == PING) {
 		message = cmd->execute(*this, argument, liveUser);
-	else
-		message = "BOZO\r\n";
-
-	cout << "Nick: " << liveUser.getNickname() << endl;
-	cout << "Username: " << liveUser.getUsername() << endl;
-	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
-		cout << "IN IF" << endl;
-		liveUser.setIsRegistered(true);
-		string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
-		send(liveUser.getFdSocket(), welcomeMessage.c_str(), welcomeMessage.size(), 0);
+		return (message);
 	}
+
+	if (cmdName != NICK && liveUser.getNickname().empty())
+		message = "451 PRIVMSG :You are not registered (Step 1/2). Please enter a nickname (/nick <nickname>)\r\n";
+	else if (cmdName == NICK)
+		message = cmd->execute(*this, argument, liveUser);
+	else if (cmdName != USER)
+		message = "451 PRIVMSG :You are not registered (Step 2/2). Please enter a Username (USER <user> 0 * :<user>\r\n";
+	else if (cmdName == USER)
+		message = message = cmd->execute(*this, argument, liveUser);
 
 	return message;
 }
@@ -184,7 +185,7 @@ void Server::createUser(int& newFd){
 	// this->userVector_.push_back(newUser);
 
 	string newUserMessage;
-	newUserMessage = "451 PRIVMSG :You are not registered. Please give a Username (USER <user> 0 * :<user>) and a nickname (/nick <nickname>)\r\n";
+	newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) THEN a Username (USER <user> 0 * :<user>)\r\n";
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 	// this->listUser_.push_back(newUser);
 }

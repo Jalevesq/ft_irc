@@ -69,8 +69,8 @@ public:
 private:
 	std::map<int, User *> listUser_;
 	std::map<std::string, Command *> commandList_;
-	std::set<std::string> nicknameList_;
-	// std::vector<User *> userVector_;
+	std::set<string> usernameList_;
+	std::set<string> nicknameList_;
 	std::vector<struct pollfd> poll_;
 	struct sockaddr_in address_;
 	CommandFactory factory_;

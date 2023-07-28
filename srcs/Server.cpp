@@ -74,7 +74,7 @@ void Server::serverRun()
 		for (int i = 1; i <= userCount_; i++){
 			userFd = this->poll_[i].fd;
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
-				cout << "user " << this->listUser_[userFd]->getMessage() << " (fd: " << poll_[i].fd << ") disconnected" << endl;
+				cout << "User '" << this->listUser_[userFd]->getNickname() << "' (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i, userFd);
 			}
 			else if (poll_[i].revents & POLLIN){

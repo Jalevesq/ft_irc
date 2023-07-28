@@ -92,7 +92,7 @@ std::string  Username::execute(Server &server, const string& message, User& live
 	// string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
 	liveUser.setUsername(tokens[1]);
 	liveUser.setIsRegistered(true);
-	string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
+	string welcomeMessage = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
 	return (welcomeMessage);
 }
 

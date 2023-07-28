@@ -4,9 +4,9 @@
 #include "../include/Username.hpp"
 #include "../include/Ping.hpp"
 
-CommandFactory::CommandFactory(){ // refacto later
+CommandFactory::CommandFactory(){
 	this->map_[NICK] = new Nickname;
-	this->map_[JOIN] = new Join;
+	this->map_[JOIN] = new Join; 
 	this->map_[USER] = new Username;
 	this->map_[PING] = new Ping;
 }

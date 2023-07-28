@@ -1,10 +1,10 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
+# include "User.hpp"
 # include <iostream>
 # include <string>
 # include <map>
-# include "User.hpp"
 
 using std::string;
 using std::cout;

@@ -1,5 +1,4 @@
 #include "../include/Ping.hpp"
-#include "../include/Server.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------

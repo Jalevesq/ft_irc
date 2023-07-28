@@ -10,9 +10,6 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-class Command;
-// class Server;
-
 class Join : public Command
 {
 

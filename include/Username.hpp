@@ -2,17 +2,16 @@
 # define USERNAME_HPP
 
 # include "Server.hpp"
+# include "Command.hpp"
 # include <iostream>
 # include <string>
-# include "Command.hpp"
+
+#define USERLEN 12
 
 using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
-
-// class Command;
-// class Server;
 
 class Username : public Command
 {

@@ -1,7 +1,6 @@
 #ifndef NICKNAME_HPP
 # define NICKNAME_HPP
 
-# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include <set>
@@ -11,9 +10,6 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
-
-// class Command;
-// class Server;
 
 class Nickname : public Command
 {

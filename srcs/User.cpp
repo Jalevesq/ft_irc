@@ -56,7 +56,14 @@ void User::clearMessage() {
 }
 
 void User::appendMessage(const string& appendMessage) {
-	this->message_.append(appendMessage);
+	string newMessage = "";
+	// rm \n if there is no \r before
+	for (unsigned long int i = 0; i < appendMessage.size(); i++) {
+		if (appendMessage[i] != '\n' || (appendMessage[i] == '\n'
+			&& ( i - 1 <= appendMessage.size() && appendMessage[i - 1] == '\r')))
+			newMessage += appendMessage[i];
+	}
+	this->message_.append(newMessage);
 }
 
 /*

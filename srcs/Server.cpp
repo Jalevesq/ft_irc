@@ -54,7 +54,6 @@ void Server::initServer(char **argv){
 		throw std::runtime_error("Listen failure"); // check later to close fd maybe?
 	}
 	this->poll_[0].fd = fdSocket;
-	this->addressLength_ = sizeof(address_);
 }
 
 //////////////////////////////////////////////
@@ -103,6 +102,12 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
     if (extractedMessage.empty()) {
         return ;
     }
+	cout << "Extracted Message: '" << extractedMessage << "'" << endl;
+	cout << "liveUser message: '";
+	for (unsigned long int i = 0; i < extractedMessage.size(); i++) {
+		cout << static_cast<int>(extractedMessage[i]) << " ";
+	}
+	cout << "'" << endl;
 	// While loop what will iterate though factory vector
 	factory_.SplitCommand(extractedMessage);
 	cmd = factory_.getVector();
@@ -123,6 +128,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 ///////////////////////////////////////////////////////////////////////
 
 void Server::disconnectUser(int index) {
+	removeNickname(this->userVector_[index - 1]->getNickname());
 	this->poll_.erase(poll_.begin() + index);
 	delete this->userVector_[index - 1];
 	this->userVector_.erase(userVector_.begin() + (index - 1));
@@ -134,14 +140,13 @@ void Server::disconnectUser(int index) {
 //////////////////////////////////////
 
 void Server::acceptUser(){
-	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength_);
+	socklen_t addressLength = sizeof(address_);;
+	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
 	if (newFd == -1)
 		throw std::runtime_error("Accept failure"); // fix later
 	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
 	userCount_++;
 	createUser(newFd);
-	// string welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
-	// send(newFd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 }
 
 void Server::createUser(int& newFd){
@@ -151,14 +156,27 @@ void Server::createUser(int& newFd){
 	newPoll.revents = 0;
 	this->poll_.push_back(newPoll);
 
-
-	// Nickname* nameList = static_cast<Nickname *>(this->commandList_[NICK]);
-	// nameList->addNickname("user");
-	User *newUser = new User("user", "user", newFd);
+	User *newUser = new User("", "", newFd);
 	this->userVector_.push_back(newUser);
+	// this->listUser_.push_back(newUser);
 }
 
 //////////////////////////////////////////////////////////////////////
+
+void Server::addNickname(const string& nickname) {
+    this->nicknameList_.insert(nickname);
+}
+bool Server::checkNickname(const string &nickname) const {
+	if (this->nicknameList_.find(nickname) != this->nicknameList_.end())
+		return (true);
+    return (false);
+}
+void Server::removeNickname(const string& nickname) {
+    std::set<std::string>::iterator it = this->nicknameList_.find(nickname);
+    if (it != this->nicknameList_.end()) {
+        this->nicknameList_.erase(it);
+    }
+}
 
 const int &Server::getUserCount() const { return userCount_; }
 

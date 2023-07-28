@@ -58,7 +58,7 @@ static bool isNotEmptyString(const std::string &str){
 
 std::string  Username::execute(Server &server, const string& message, User& liveUser){
 	std::vector<std::string> tokens;
-	string token, welcomeMessage = "";
+	string token, finalMessage = "";
 	size_t index = 0;
   	size_t end = message.find(" ");
 	(void)server;
@@ -75,21 +75,21 @@ std::string  Username::execute(Server &server, const string& message, User& live
 		tokens.push_back(token);
 
 	if (tokens.size() != 5)
-		welcomeMessage = "461 USER :Not enough parameters\r\n";
+		finalMessage = "461 USER :Not enough parameters\r\n";
 	else if (tokens[1].length() > USERLEN)
-		welcomeMessage = "005 letpun :User is too long\r\n";
+		finalMessage = "005 letpun :User is too long\r\n";
 	else if (!isUserAvailable(tokens[1]))
-		welcomeMessage = "462 :This user is already taken\r\n";
+		finalMessage = "462 :This user is already taken\r\n";
 	else if (tokens[2] != "0" || tokens[3] != "*")
-		welcomeMessage = "400 :Wrong character, follow the prototype given in register instruction.\r\n";
+		finalMessage = "400 :Wrong character, follow the prototype given in register instruction.\r\n";
 	else if (":" + tokens[1] != tokens[4])
-		welcomeMessage = "400 :the user is different at the end and at the second place. follow the prototype given in register instruction.\r\n";
+		finalMessage = "400 :the user is different at the end and at the second place. follow the prototype given in register instruction.\r\n";
 	else {
 		liveUser.setUsername(tokens[1]);
 		liveUser.setIsRegistered(true);
-		welcomeMessage = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
+		finalMessage = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
 	}
-	return (welcomeMessage);
+	return (finalMessage);
 }
 
 /*

@@ -90,6 +90,8 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 	// Mettre une protection pour les nickname trop long
 	// Que faire avec le /nick -all <name> ? Weechat le gère tout seul?
 
+	// Quand ':user' renvoie '::user'. why ?
+
     return nickMessage;
 }
 

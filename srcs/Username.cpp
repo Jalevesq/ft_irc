@@ -60,7 +60,7 @@ std::string  Username::execute(Server &server, const string& message, User& live
 	std::vector<std::string> tokens;
 	std::string token;
 	size_t index = 0;
-  size_t end = message.find(" ");
+  	size_t end = message.find(" ");
 	(void)liveUser;
 	(void)server;
 
@@ -91,7 +91,9 @@ std::string  Username::execute(Server &server, const string& message, User& live
 		return "wtf are you doing\r\n";
 	// string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
 	liveUser.setUsername(tokens[1]);
-	return "Bozo\r\n";
+	liveUser.setIsRegistered(true);
+	string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
+	return (welcomeMessage);
 }
 
 /*

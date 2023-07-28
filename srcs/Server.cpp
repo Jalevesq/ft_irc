@@ -80,6 +80,8 @@ void Server::serverRun()
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
+				for (int i = 1; i <= userCount_; i++)
+					send(this->poll_[i].fd, buffer, strlen(buffer), 0);
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
@@ -100,6 +102,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 
 	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") says: " << message;
 
+
 	liveUser.appendMessage(message);
     userMessage = liveUser.getMessage();
     string extractedMessage = factory_.checkDelimiter(liveUser);
@@ -117,7 +120,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 			if (liveUser.getIsRegistered() == false)
 				finalMessage = Auth(cmd, liveUser, *it);
 			else
-				finalMessage = cmd->execute(*this, *it, liveUser);
+				finalMessage = cmd->execute(*this, *it, liveUser); 
 			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
 		} else {
 			// Distribute to all user in channel. Check if is in a channel bc fuck nc

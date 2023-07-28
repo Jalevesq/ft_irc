@@ -13,7 +13,6 @@ public:
 	~Channel();
 
 	//Channel &operator=(const Channel &rhs);
-
 	
 private:
 	Channel();

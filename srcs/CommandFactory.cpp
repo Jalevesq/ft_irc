@@ -47,7 +47,7 @@ const string CommandFactory::checkDelimiter(User& liveUser) {
     string userMessage = liveUser.getMessage();
     string extractedMessage = "", newUserMessage = "";
     std::size_t found = userMessage.rfind("\r");
-    if (found != std::string::npos) {
+    if (found != std::string::npos && userMessage[found + 1] == '\n') {
         extractedMessage = userMessage.substr(0, found + 2);
         // Update userMessage to remove the extracted message and any leading whitespace
         newUserMessage = userMessage.substr(found + 2);

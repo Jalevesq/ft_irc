@@ -103,8 +103,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
     if (extractedMessage.empty()) {
         return ;
     }
-
-	// While loop what will iterate though factory vector only
+	// While loop what will iterate though factory vector
 	factory_.SplitCommand(extractedMessage);
 	cmd = factory_.getVector();
 	std::vector<string>::iterator it = cmd.begin();

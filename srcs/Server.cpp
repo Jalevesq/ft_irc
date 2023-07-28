@@ -106,7 +106,6 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
     if (extractedMessage.empty()) {
         return ;
     }
-	// While loop what will iterate though factory vector
 
 	factory_.SplitCommand(extractedMessage);
 	cmd = factory_.getVector();
@@ -182,12 +181,10 @@ void Server::createUser(int& newFd){
 	User *newUser = new User("", "", newFd);
 	this->listUser_[newFd] = newUser;
 	userCount_++;
-	// this->userVector_.push_back(newUser);
 
 	string newUserMessage;
 	newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) THEN a Username (USER <user> 0 * :<user>)\r\n";
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
-	// this->listUser_.push_back(newUser);
 }
 
 //////////////////////////////////////////////////////////////////////

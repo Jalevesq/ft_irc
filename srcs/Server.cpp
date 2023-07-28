@@ -12,15 +12,16 @@ Server::Server(): userCount_(0), channelCount_(0){
 	this->commandList_[PING] = new Ping;
 }
 
-Server::~Server(){ 
-	for (int i = 0; i < this->userCount_; i++)
-		delete this->userVector_[i];
+Server::~Server(){
+	std::map<int, User *>::iterator it = listUser_.begin();
+	for (; it != listUser_.end(); ++it)
+		delete it->second;
 	close(poll_[0].fd); 
 
-	std::map<string, Command *> ::iterator it;
-	it = this->commandList_.begin();
-	for (; it != this->commandList_.end(); it++) {
-		delete it->second;
+	std::map<string, Command *> ::iterator iterator;
+	iterator = this->commandList_.begin();
+	for (; iterator != this->commandList_.end(); iterator++) {
+		delete iterator->second;
 	}
 }
 
@@ -62,6 +63,7 @@ void Server::initServer(char **argv){
 
 void Server::serverRun()
 {
+	int userFd;
 	char buffer[1024];
 	while (true)
 	{
@@ -70,12 +72,13 @@ void Server::serverRun()
 		if (this->poll_[0].revents & POLLIN)
 			acceptUser();
 		for (int i = 1; i <= userCount_; i++){
+			userFd = this->poll_[i].fd;
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
-				cout << "user " << this->userVector_[i - 1]->getNickname() << " (fd: " << poll_[i].fd << ") disconnected" << endl;
-				disconnectUser(i);
+				cout << "user " << this->listUser_[userFd]->getMessage() << " (fd: " << poll_[i].fd << ") disconnected" << endl;
+				disconnectUser(i, userFd);
 			}
 			else if (poll_[i].revents & POLLIN){
-				User &liveUser = *this->userVector_[i - 1];
+				User &liveUser = *this->listUser_[userFd];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
@@ -104,13 +107,17 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
         return ;
     }
 	// While loop what will iterate though factory vector
+
 	factory_.SplitCommand(extractedMessage);
 	cmd = factory_.getVector();
 	std::vector<string>::iterator it = cmd.begin();
 	for (; it != cmd.end(); ++it){
 		Command *cmd = factory_.CreateCommand();
 		if (cmd) {
-			finalMessage = cmd->execute(*this, *it, liveUser);
+			if (liveUser.getIsRegistered() == false)
+				finalMessage = Auth(cmd, liveUser, *it);
+			else
+				finalMessage = cmd->execute(*this, *it, liveUser);
 			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
 		} else {
 			// Distribute to all user in channel. Check if is in a channel bc fuck nc
@@ -119,15 +126,35 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 	}
 }
 
+const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
+	std::string message = "";
+
+	if (cmd->getName() == USER || cmd->getName() == NICK)
+		message = cmd->execute(*this, argument, liveUser);
+	else
+		message = "BOZO\r\n";
+
+	cout << "Nick: " << liveUser.getNickname() << endl;
+	cout << "Username: " << liveUser.getUsername() << endl;
+	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
+		cout << "IN IF" << endl;
+		liveUser.setIsRegistered(true);
+		string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
+		send(liveUser.getFdSocket(), welcomeMessage.c_str(), welcomeMessage.size(), 0);
+	}
+
+	return message;
+}
+
 ///////////////////////////////////////////////////////////////////////
 //	   Deleting user because 'Disconnect' signal recieve from fd     //
 ///////////////////////////////////////////////////////////////////////
 
-void Server::disconnectUser(int index) {
-	removeNickname(this->userVector_[index - 1]->getNickname());
+void Server::disconnectUser(int index, int fd){
+	removeNickname(listUser_[fd]->getNickname());
 	this->poll_.erase(poll_.begin() + index);
-	delete this->userVector_[index - 1];
-	this->userVector_.erase(userVector_.begin() + (index - 1));
+	delete listUser_[fd];
+	listUser_.erase(fd); // double check
 	this->userCount_--;
 }
 
@@ -140,8 +167,7 @@ void Server::acceptUser(){
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
 	if (newFd == -1)
 		throw std::runtime_error("Accept failure"); // fix later
-	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
-	userCount_++;
+	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;	
 	createUser(newFd);
 }
 
@@ -153,10 +179,12 @@ void Server::createUser(int& newFd){
 	this->poll_.push_back(newPoll);
 
 	User *newUser = new User("", "", newFd);
-	this->userVector_.push_back(newUser);
+	this->listUser_[newFd] = newUser;
+	userCount_++;
+	// this->userVector_.push_back(newUser);
 
 	string newUserMessage;
-	newUserMessage = "You are not registered. Please give a Username (USER <user> 0 * :<user>) and a nickname (/nick <nickname>)\r\n";
+	newUserMessage = "451 PRIVMSG :You are not registered. Please give a Username (USER <user> 0 * :<user>) and a nickname (/nick <nickname>)\r\n";
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 	// this->listUser_.push_back(newUser);
 }

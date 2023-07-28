@@ -81,18 +81,17 @@ std::string  Username::execute(Server &server, const string& message, User& live
 	if (tokens.size() != 5)
 		return "461 USER :Not enough parameters\r\n";
 	if (tokens[1].length() > USERLEN)
-		return "005 letpun :User is too long";
+		return "005 letpun :User is too long\r\n";
 	if (!isUserAvailable(tokens[1]))
-		return "462 :This user is already taken";
+		return "462 :This user is already taken\r\n";
 	if (tokens[2] != "0" || tokens[3] != "*")
-		return "wrong character";
+		return "wrong character\r\n";
 	std::string delim = ":";
 	if (":" + tokens[1] != tokens[4])
-		return "wtf are you doing";
-	string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
+		return "wtf are you doing\r\n";
+	// string welcomeMessage = "001 " + liveUser.getNickname() + " :Welcome on ft_irc !\r\n";
 	liveUser.setUsername(tokens[1]);
-	cout << "NEW USERNAME:" << liveUser.getUsername() << endl;
-	return welcomeMessage;
+	return "Bozo\r\n";
 }
 
 /*

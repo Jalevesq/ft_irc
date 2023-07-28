@@ -73,6 +73,8 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 		nickMessage = "433 '" + newNickname + "' :Nickname is already in use\r\n";
     } else {
 		string liveNickname = liveUser.getNickname();
+		if (liveNickname.empty())
+			liveNickname = newNickname;
         nickMessage = ":" + liveNickname + " NICK " + ":" + newNickname + "\r\n";
 		if (server.checkNickname(liveNickname))
 			server.removeNickname(liveNickname);

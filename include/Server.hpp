@@ -1,4 +1,5 @@
 #pragma once
+# include <map>
 # include <vector>
 # include <set>
 # include <iostream>
@@ -53,10 +54,12 @@ public:
 	// Everything related to user
 	void createUser(int &newFd);
 	void acceptUser();
-	void disconnectUser(int index);
+	void disconnectUser(int index, int fd);
 
 	// Eveything related to message recieved
 	void handleMessage(const std::string &message, User& liveUser);
+	const string Auth(Command *cmd, User &liveUser, const string &argument);
+
 
 	// nicknameList_ manipulator
 	void addNickname(const string& nickname);
@@ -64,10 +67,10 @@ public:
 	void removeNickname(const string& nickname);
 
 private:
+	std::map<int, User *> listUser_;
 	std::map<std::string, Command *> commandList_;
 	std::set<std::string> nicknameList_;
-	std::vector<User *> userVector_;
-	// std::map<string, User *> listUser_;
+	// std::vector<User *> userVector_;
 	std::vector<struct pollfd> poll_;
 	struct sockaddr_in address_;
 	CommandFactory factory_;

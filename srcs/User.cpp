@@ -7,6 +7,7 @@
 User::User(string newNickname, string newUsername, int newFdSocket) : nickname_(newNickname), username_(newUsername) {
 	this->operator_ = false;
 	this->fdSocket_= newFdSocket;
+	this->isRegistered_ = false;
 }
 
 User::User() : nickname_("user"), username_("user"), operator_(false), fdSocket_(-1) {}
@@ -87,6 +88,14 @@ const bool& User::getOperator() const {
 
 const string& User::getMessage() const {
 	return (this->message_);
+}
+
+const bool& User::getIsRegistered() const {
+	return (this->isRegistered_);
+}
+
+void User::setIsRegistered(const bool &setIsRegistered) {
+	this->isRegistered_ = setIsRegistered;
 }
 
 void User::setNickname(const string &newNickname) {

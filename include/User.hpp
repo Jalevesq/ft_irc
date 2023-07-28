@@ -22,7 +22,9 @@ class User
 		const bool& getOperator() const;
 		const int& getFdSocket() const;
 		const string& getMessage() const;
+		const bool& getIsRegistered() const;
 
+		void setIsRegistered(const bool &setRegister);
 		void setNickname(const string &newNickname);
 		void setUsername(const string &newUsername);
 		void setOperator(const bool &newOperator);
@@ -39,6 +41,7 @@ class User
 		string	nickname_;
 		string	username_;
 		bool	operator_;
+		bool	isRegistered_;
 		int		fdSocket_;
 };
 

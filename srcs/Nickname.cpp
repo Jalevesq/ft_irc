@@ -1,4 +1,5 @@
 #include "../include/Nickname.hpp"
+#include "../include/Server.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -47,33 +48,46 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
     string nickMessage;
     string newNickname;
 
-    // Add protection to check if newNickname is valid (already in use? not authorized char?)
-    newNickname = message.substr(5);
-    (void)server;
+	newNickname = message.substr(4);
+    if (newNickname.empty() || (newNickname.size() == 1 && newNickname[0] == ' ')){
+		nickMessage = "431 :No nickname given\r\n"; 
+		return (nickMessage);
+	}
 
-    // Find the position of the first non-whitespace character
-    size_t firstNonSpace = newNickname.find_first_not_of(" \r\n");
+    size_t firstNonSpace = newNickname.find_first_not_of(" ");
     if (firstNonSpace != std::string::npos) {
-        // Find the position of the last non-whitespace character
-        size_t lastNonSpace = newNickname.find_last_not_of(" \r\n");
+        size_t lastNonSpace = newNickname.find_last_not_of("\r\n");
         if (lastNonSpace != std::string::npos) {
-            // Extract the trimmed nickname using substr
             newNickname = newNickname.substr(firstNonSpace, lastNonSpace - firstNonSpace + 1);
         } else {
-            // If the last non-whitespace character is not found, set the newNickname to an empty string
             newNickname = "";
         }
     } else {
-        // If the first non-whitespace character is not found, set the newNickname to an empty string
         newNickname = "";
     }
 
-    // if (newNickname.find_first_of(":\t\n\v\f\r ") != string::npos) {
-    //     nickMessage = "432 "  + newNickname + ":Erroneus nickname\r\n";
-    // } else {
-        nickMessage = ":" + liveUser.getNickname() + " NICK " + ":" + newNickname + "\r\n";
+	if (newNickname.find_first_of("\t\n\v\f\r ", 0) != string::npos || newNickname.empty()
+		|| newNickname[0] == '#' || newNickname[0] == '&' || newNickname[0] == ':') {
+        nickMessage = "432 '"  + newNickname + "' :Erroneus nickname\r\n";
+	} else if (server.checkNickname(newNickname)) {
+		nickMessage = "433 '" + newNickname + "' :Nickname is already in use\r\n";
+    } else {
+		string liveNickname = liveUser.getNickname();
+        nickMessage = ":" + liveNickname + " NICK " + ":" + newNickname + "\r\n";
+		if (server.checkNickname(liveNickname))
+			server.removeNickname(liveNickname);
+		server.addNickname(newNickname);
         liveUser.setNickname(newNickname);
-    //}
+    }
+
+    // Error nickname
+    // ERR_NONICKNAMEGIVEN (431) Returned when a nickname parameter is expected for a command but isn’t given.
+    // ERR_ERRONEUSNICKNAME (432) Returned when a NICK command cannot be successfully completed as the desired nickname contains characters that are disallowed by the server. See the NICK command for more information on characters which are allowed in various IRC servers. The text used in the last param of this message may vary.
+    // ERR_NICKNAMEINUSE (433) Returned when a NICK command cannot be successfully completed as the desired nickname is already in use on the network. The text used in the last param of this message may vary.
+
+	// Mettre une protection pour les nickname trop long
+	// Que faire avec le /nick -all <name> ? Weechat le gère tout seul?
+
     return nickMessage;
 }
 

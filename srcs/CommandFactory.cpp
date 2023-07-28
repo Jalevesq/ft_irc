@@ -28,7 +28,10 @@ std::string CommandFactory::ParseCommand(const std::string &command){
 	if (command.empty())
 		return command;
 	size_t position = command.find_first_of(" ");
-	return command.substr(0, position);
+	if (position == std::string::npos)
+		return (command);
+	else
+		return command.substr(0, position);
 }
 
 void CommandFactory::SplitCommand(const std::string &command){
@@ -46,17 +49,17 @@ void CommandFactory::SplitCommand(const std::string &command){
 const string CommandFactory::checkDelimiter(User& liveUser) {
     string userMessage = liveUser.getMessage();
     string extractedMessage = "", newUserMessage = "";
-    std::size_t found = userMessage.rfind("\r");
+    std::size_t found = userMessage.rfind("\n");
     if (found != std::string::npos) {
-        extractedMessage = userMessage.substr(0, found + 2);
-        // Update userMessage to remove the extracted message and any leading whitespace
-        newUserMessage = userMessage.substr(found + 2);
+        extractedMessage = userMessage.substr(0, found + 1);
+        newUserMessage = userMessage.substr(found + 1);
         liveUser.clearMessage();
         liveUser.appendMessage(newUserMessage);
         return (extractedMessage);
     }
     return ("");
 }
+
 
 std::vector<std::string>::iterator CommandFactory::getIteratorCmd() { return cmd_.begin(); }
 

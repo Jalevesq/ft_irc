@@ -1,5 +1,6 @@
 #pragma once
 # include <vector>
+# include <set>
 # include <iostream>
 # include <poll.h>
 # include <stdexcept>
@@ -57,15 +58,20 @@ public:
 	// Eveything related to message recieved
 	void handleMessage(const std::string &message, User& liveUser);
 
+	// nicknameList_ manipulator
+	void addNickname(const string& nickname);
+	bool checkNickname(const string &nickname) const;
+	void removeNickname(const string& nickname);
 
 private:
 	std::map<std::string, Command *> commandList_;
+	std::set<std::string> nicknameList_;
 	std::vector<User *> userVector_;
+	// std::map<string, User *> listUser_;
 	std::vector<struct pollfd> poll_;
+	struct sockaddr_in address_;
+	CommandFactory factory_;
 	int userCount_;
 	int channelCount_;
-	struct sockaddr_in address_;
-	socklen_t addressLength_;
-	CommandFactory factory_;
 	//std::string password_;
 };

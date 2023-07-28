@@ -25,3 +25,16 @@ classDiagram
     }
     Server--* Channel
     Server--* User
+
+
+classDiagram
+    direction TB
+    class Channel {
+        -set users
+        -set operator
+        -bool hasPassword
+        -std::string password
+        -std::string topic
+        -int mode
+        int limit
+    }

@@ -1,4 +1,5 @@
 #include "../include/Ping.hpp"
+#include "../include/Server.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -45,7 +46,7 @@ std::string Ping::execute(Server &server,const string& message, User& liveUser) 
 	(void)liveUser;
 	(void)server;
 
-	pingMessage = "PONG " + message.substr(5) + "\r\n"; // think it works?
+	pingMessage = "PONG " + message.substr(5) + "\r\n";
 	return (pingMessage);
 }
 

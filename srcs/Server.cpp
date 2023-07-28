@@ -116,7 +116,6 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 		}
 		factory_.popCommand();
 	}
-
 }
 
 ///////////////////////////////////////////////////////////////////////

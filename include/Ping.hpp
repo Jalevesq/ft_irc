@@ -1,7 +1,6 @@
 #ifndef PING_HPP
 # define PING_HPP
 
-# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "Command.hpp"
@@ -10,9 +9,6 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
-
-// class Command;
-// class Server;
 
 class Ping : public Command
 {

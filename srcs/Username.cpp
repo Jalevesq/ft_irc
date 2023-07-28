@@ -49,7 +49,7 @@ std::string  Username::execute(Server &server,const string& message, User& liveU
 	(void)message;
 	(void)server;
 
-	welcomeMessage = "001 user :Welcome on ft_irc !\r\n";
+	welcomeMessage = "001 dave :Welcome on ft_irc !\r\n"; //can't be user all the time
 	return (welcomeMessage);
 }
 

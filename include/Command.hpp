@@ -15,6 +15,7 @@ using std::cerr;
 # define JOIN "JOIN"
 # define USER "USER"
 # define PING "PING"
+# define PASSW "PASS"
 # define CMD_NBR 4
 
 class Server;

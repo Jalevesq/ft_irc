@@ -5,11 +5,8 @@ Server::Server(): userCount_(0), channelCount_(0){
 	listennerPoll.events = POLLIN;
 	listennerPoll.fd = -1;
 	this->poll_.push_back(listennerPoll);
+	this->password_ = "";
 
-	this->commandList_[NICK] = new Nickname;
-	this->commandList_[JOIN] = new Join;
-	this->commandList_[USER] = new Username;
-	this->commandList_[PING] = new Ping;
 }
 
 Server::~Server(){
@@ -18,11 +15,7 @@ Server::~Server(){
 		delete it->second;
 	close(poll_[0].fd); 
 
-	std::map<string, Command *> ::iterator iterator;
-	iterator = this->commandList_.begin();
-	for (; iterator != this->commandList_.end(); iterator++) {
-		delete iterator->second;
-	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -55,6 +48,8 @@ void Server::initServer(char **argv){
 		throw std::runtime_error("Listen failure"); // check later to close fd maybe?
 	}
 	this->poll_[0].fd = fdSocket;
+	if (argv[2])
+		this->password_ = argv[2];
 }
 
 //////////////////////////////////////////////
@@ -108,12 +103,12 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
     }
 
 	factory_.SplitCommand(extractedMessage);
-	cmd = factory_.getVector();
+	cmd = factory_.getCmd();
 	std::vector<string>::iterator it = cmd.begin();
 	for (; it != cmd.end(); ++it){
 		Command *cmd = factory_.CreateCommand();
 		if (cmd) {
-			if (liveUser.getIsRegistered() == false)
+			if (liveUser.getIsRegister() == false)
 				finalMessage = Auth(cmd, liveUser, *it);
 			else
 				finalMessage = cmd->execute(*this, *it, liveUser);
@@ -134,11 +129,18 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 		return (message);
 	}
 
+	if (liveUser.getIsPass() == false) {
+		if (cmd->getName() == PASSW) {
+			message = cmd->execute(*this, argument, liveUser);
+		}
+		return (message);
+	}
+
 	if (cmdName == NICK || cmdName == USER)
 		message = cmd->execute(*this, argument, liveUser);
 	
 	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
-		liveUser.setIsRegistered(true);
+		liveUser.setIsRegister(true);
 		send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);
 		message = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
 	}
@@ -184,7 +186,15 @@ void Server::createUser(int& newFd){
 	userCount_++;
 
 	string newUserMessage;
-	newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
+	if (this->password_.empty()) {
+		listUser_[newFd]->setIsPass(true);
+		newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
+	}
+	else {
+		newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
+		cout << "'" << this->password_ << "'" << endl;
+	}
+
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 }
 
@@ -204,6 +214,11 @@ void Server::removeNickname(const string& nickname) {
         this->nicknameList_.erase(it);
     }
 }
+
+const string& Server::getPassword() const {
+	return (this->password_);
+}
+
 
 const int &Server::getUserCount() const { return userCount_; }
 

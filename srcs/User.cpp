@@ -7,7 +7,8 @@
 User::User(string newNickname, string newUsername, int newFdSocket) : nickname_(newNickname), username_(newUsername) {
 	this->operator_ = false;
 	this->fdSocket_= newFdSocket;
-	this->isRegistered_ = false;
+	this->isRegistered_[PASS] = false;
+	this->isRegistered_[AUTH] = false;
 }
 
 User::User() : nickname_("user"), username_("user"), operator_(false), fdSocket_(-1) {}
@@ -90,12 +91,21 @@ const string& User::getMessage() const {
 	return (this->message_);
 }
 
-const bool& User::getIsRegistered() const {
-	return (this->isRegistered_);
+const bool& User::getIsPass() const {
+	return (this->isRegistered_[PASS]);
 }
 
-void User::setIsRegistered(const bool &setIsRegistered) {
-	this->isRegistered_ = setIsRegistered;
+const bool& User::getIsRegister() const {
+	return (this->isRegistered_[AUTH]);
+}
+
+
+void User::setIsPass(const bool &setPass) {
+	this->isRegistered_[PASS] = setPass;
+}
+
+void User::setIsRegister(const bool &setRegister) {
+	this->isRegistered_[AUTH] = setRegister;
 }
 
 void User::setNickname(const string &newNickname) {

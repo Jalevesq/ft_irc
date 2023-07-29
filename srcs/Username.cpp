@@ -43,11 +43,6 @@ Username::~Username()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-static bool isUserAvailable(const std::string &name){
-	(void)name;
-	return true;
-}
-
 static bool isNotEmptyString(const std::string &str){
  for (int index = 0; str[index]; index++){
 		if (str[index] != ' ' )
@@ -56,7 +51,7 @@ static bool isNotEmptyString(const std::string &str){
 	return false;
 }
 
-std::string  Username::execute(Server &server, const string& message, User& liveUser){
+string  Username::execute(Server &server, const string& message, User& liveUser){
 	std::vector<std::string> tokens;
 	string token, finalMessage = "";
 	size_t index = 0;
@@ -78,17 +73,17 @@ std::string  Username::execute(Server &server, const string& message, User& live
 		finalMessage = "461 USER :Not enough parameters\r\n";
 	else if (tokens[1].length() > USERLEN)
 		finalMessage = "005 letpun :User is too long\r\n";
-	else if (!isUserAvailable(tokens[1]))
-		finalMessage = "462 :This user is already taken\r\n";
 	else if (tokens[2] != "0" || tokens[3] != "*")
 		finalMessage = "400 :Wrong character, follow the prototype given in register instruction.\r\n";
-	else if (":" + tokens[1] != tokens[4])
-		finalMessage = "400 :the user is different at the end and at the second place. follow the prototype given in register instruction.\r\n";
 	else {
 		liveUser.setUsername(tokens[1]);
-		liveUser.setIsRegistered(true);
-		finalMessage = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
+		finalMessage = ""; // que renvoyer ?
 	}
+	// else if (":" + tokens[1] != tokens[4])
+		// finalMessage = "400 :the user . follow the prototype given in register instruction.\r\n";
+
+	// SI le username fail, how tf c'est possible de renvoyer la commande quand on se co avec weechat ? Déconnecter la personne si le user fail ou la laisser se démerder?
+
 	return (finalMessage);
 }
 

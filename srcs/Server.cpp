@@ -134,14 +134,14 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 		return (message);
 	}
 
-	if (cmdName != NICK && liveUser.getNickname().empty())
-		message = "451 PRIVMSG :You are not registered (Step 1/2). Please enter a nickname (/nick <nickname>)\r\n";
-	else if (cmdName == NICK)
+	if (cmdName == NICK || cmdName == USER)
 		message = cmd->execute(*this, argument, liveUser);
-	else if (cmdName != USER)
-		message = "451 PRIVMSG :You are not registered (Step 2/2). Please enter a Username (USER <user> 0 * :<user>\r\n";
-	else if (cmdName == USER)
-		message = message = cmd->execute(*this, argument, liveUser);
+	
+	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
+		liveUser.setIsRegistered(true);
+		send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);
+		message = "001 " + liveUser.getNickname() + " :Your are now register. Welcome on ft_irc !\r\n";
+	}
 
 	return message;
 }
@@ -151,7 +151,8 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 ///////////////////////////////////////////////////////////////////////
 
 void Server::disconnectUser(int index, int fd){
-	removeNickname(listUser_[fd]->getNickname());
+	if (checkNickname(listUser_[fd]->getNickname()))
+		removeNickname(listUser_[fd]->getNickname());
 	this->poll_.erase(poll_.begin() + index);
 	delete listUser_[fd];
 	listUser_.erase(fd); // double check
@@ -183,7 +184,7 @@ void Server::createUser(int& newFd){
 	userCount_++;
 
 	string newUserMessage;
-	newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) THEN a Username (USER <user> 0 * :<user>)\r\n";
+	newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 }
 

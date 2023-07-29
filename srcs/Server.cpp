@@ -30,6 +30,14 @@ void Server::initServer(char **argv){
 		throw std::runtime_error("Port provided is empty");
 	if (port.find_first_not_of("0123456789") != port.npos || port.size() != 4)
 		throw std::runtime_error("Port provided is invalid");
+
+	// SET LE PASSWORD OBLIGATOIRE AVANT DE PUSH
+	if (argv[2]) {
+		this->password_ = argv[2];
+		if (password_.length() > 10)
+			throw(std::runtime_error("Password too long"));
+	}
+
 	fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");
@@ -48,8 +56,6 @@ void Server::initServer(char **argv){
 		throw std::runtime_error("Listen failure"); // check later to close fd maybe?
 	}
 	this->poll_[0].fd = fdSocket;
-	if (argv[2])
-		this->password_ = argv[2];
 }
 
 //////////////////////////////////////////////

@@ -53,9 +53,10 @@ string Pass::execute(Server &server, const string& message, User& liveUser) {
 	else if (entryPassword == serverPassword) {
 		liveUser.setIsPass (true);
 		finalMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
-	} else 
-		finalMessage = "464 PRIVMSG :Wrong Password\r\n";
-	// Wtf do I send when successfull ? Can't privmsg cause no nickname and no numeric reply exist
+	} else {
+		finalMessage = "464 PRIVMSG :Wrong Password. If you're using a client, you might need to set the password in settings and reconnect.\r\n";
+	}
+	// Disconnect user quand bad passwd?
 	return (finalMessage);
 }
 

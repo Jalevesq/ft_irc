@@ -132,19 +132,17 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 
 	if (cmdName == PING) {
 		message = cmd->execute(*this, argument, liveUser);
-		return (message);
+		// return (message);
 	}
-
-	if (liveUser.getIsPass() == false) {
+	else if (liveUser.getIsPass() == false) {
 		if (cmd->getName() == PASSW) {
 			message = cmd->execute(*this, argument, liveUser);
 		}
-		return (message);
+		// return (message);
 	}
-
-	if (cmdName == NICK || cmdName == USER)
+	else if (cmdName == NICK || cmdName == USER)
 		message = cmd->execute(*this, argument, liveUser);
-	
+
 	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
 		liveUser.setIsRegister(true);
 		send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);

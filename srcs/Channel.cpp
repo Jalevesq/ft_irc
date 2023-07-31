@@ -41,8 +41,6 @@ void Channel::sendUserList(const User *user){
 			regularStream << it->first->getNickname() << " ";
 	regularList = ":localhost 353 " + user->getNickname() + " = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
-	endList = ":localhost 315 " + user->getNickname() + " is :End of WHO list.\r\n";
-	send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
 }
 
 //:dave!~dave@localhost PART #general :gay
@@ -81,7 +79,7 @@ const std::string Channel::addUser(User *user){
 	user->addChannelUser(channelName_);
 	users_[user] = false;
 	if (!topic_.empty())
-		sendTopic(user);;
+		sendTopic(user);
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	sendUserList(user);

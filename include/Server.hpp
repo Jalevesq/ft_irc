@@ -50,6 +50,7 @@ public:
 	const int &getFd() const;
 	Channel *getChannel(const std::string &name);
 	const string& getPassword() const;
+	const string& getHostname() const;
 
 	// Setter
 	void setUserCount(int count);
@@ -86,5 +87,6 @@ private:
 	CommandFactory factory_;
 	int userCount_;
 	int channelCount_;
-	std::string password_;
+	string password_;
+	string hostname_;
 };

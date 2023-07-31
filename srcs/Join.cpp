@@ -73,9 +73,11 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 
 	tokenizeJoin(message);
 	if (tokens_.size() == 1)
-		return "461 " + liveUser.getNickname() + " JOIN :Not enough parameters\r\n";
-	if (tokens_[1][0] != '#') {
-		joinMessage = "403 " + tokens_[1] + " :Channel name does not have '#' has prefix.\r\n";
+		return "461 PRIVMSG" + liveUser.getNickname() + " JOIN :Not enough parameters\r\n";
+	else if (tokens_[1][0] != '#') {
+		joinMessage = "403 PRIVMSG" + tokens_[1] + " :Channel name does not have '#' has prefix.\r\n";
+	} else if (tokens_[1].length() <= 1) {
+		joinMessage = "403 PRIVMSG" + tokens_[1] + " :Channel name is too short.\r\n";
 	} else if (server.doesChannelExist(tokens_[1])){
 		Channel* channel = server.getChannel(tokens_[1]);
 		joinMessage = channel->addUser(&liveUser);

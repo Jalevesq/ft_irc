@@ -67,7 +67,7 @@ void Channel::sendUserJoin(const User *user, const std::string &reason){
 const std::string Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
 	if (it != users_.end())
-		return ""; //do nothing? unsure if the server I used is correct about that
+		return ("443 :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
 	sendUserJoin(user, "bozo.com");
 	user->addChannelUser(channelName_);
 	users_[user] = false;

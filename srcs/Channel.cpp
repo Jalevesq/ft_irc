@@ -58,6 +58,14 @@ void Channel::sendUserJoin(const User *user, const std::string &reason){
 	(void)reason;
 }
 
+void Channel::sendMessage(const User *user, const std::string &message){
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it){
+		if (it->first->getFdSocket() != user->getFdSocket())
+			send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
+	}
+}
+
 /*
  *****************************************************************************
  **                            user methods                                 **
@@ -76,6 +84,8 @@ const std::string Channel::addUser(User *user){
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	sendUserList(user);
+	// while (true)
+	// 	sendMessage(user, "PRIVMSG #a :kys");
 	return "";
 }
 

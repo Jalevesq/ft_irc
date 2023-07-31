@@ -15,7 +15,7 @@ public:
 	const string checkDelimiter(User& liveUser);
 	void SplitCommand(const std::string &command);
 	void popCommand();
-	const std::vector<std::string> &getVector() const;
+	const std::vector<std::string> &getCmd() const;
 
 	std::vector<std::string>::iterator getIteratorCmd(); 
 	std::vector<std::string>::iterator getItEndteratorCmd();

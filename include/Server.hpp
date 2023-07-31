@@ -19,6 +19,7 @@
 # include "Nickname.hpp"
 # include "Ping.hpp"
 # include "Username.hpp"
+# include "Pass.hpp"
 # include "CommandFactory.hpp"
 # include "Channel.hpp"
 
@@ -48,6 +49,7 @@ public:
 	const int &getChannelCount() const;
 	const int &getFd() const;
 	Channel *getChannel(const std::string &name);
+	const string& getPassword() const;
 
 	// Setter
 	void setUserCount(int count);
@@ -77,12 +79,12 @@ private:
 	std::map<int, User *> listUser_;
 	std::map<std::string, Command *> commandList_;
 	std::map<std::string, Channel *> channels_;
-	std::set<std::string> nicknameList_;
 	// std::vector<User *> userVector_;
+	std::set<string> nicknameList_;
 	std::vector<struct pollfd> poll_;
 	struct sockaddr_in address_;
 	CommandFactory factory_;
 	int userCount_;
 	int channelCount_;
-	//std::string password_;
+	std::string password_;
 };

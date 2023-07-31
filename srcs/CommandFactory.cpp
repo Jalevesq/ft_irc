@@ -9,6 +9,7 @@ CommandFactory::CommandFactory(){
 	this->map_[JOIN] = new Join; 
 	this->map_[USER] = new Username;
 	this->map_[PING] = new Ping;
+	this->map_[PASSW] = new Pass;
 }
 
 CommandFactory::~CommandFactory(){
@@ -67,4 +68,4 @@ std::vector<std::string>::iterator CommandFactory::getItEndteratorCmd() { return
 
 void CommandFactory::popCommand() { cmd_.erase(cmd_.begin()); }
 
-const std::vector<std::string> &CommandFactory::getVector() const { return cmd_; }
+const std::vector<std::string> &CommandFactory::getCmd() const { return cmd_; }

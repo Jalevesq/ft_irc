@@ -134,8 +134,6 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 			else
 				finalMessage = cmd->execute(*this, *it, liveUser); 
 			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
-		} else {
-			// Distribute to all user in channel. Check if is in a channel bc fuck nc
 		}
 		factory_.popCommand();
 	}

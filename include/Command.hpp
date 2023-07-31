@@ -16,6 +16,7 @@ using std::cerr;
 # define USER "USER"
 # define PING "PING"
 # define PASSW "PASS"
+# define PART "PART"
 # define CMD_NBR 4
 
 class Server;

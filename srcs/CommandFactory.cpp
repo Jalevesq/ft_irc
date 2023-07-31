@@ -3,8 +3,10 @@
 #include "../include/Join.hpp"
 #include "../include/Username.hpp"
 #include "../include/Ping.hpp"
+#include "../include/Part.hpp"
 
 CommandFactory::CommandFactory(){
+	this->map_[PART] = new Part;
 	this->map_[NICK] = new Nickname;
 	this->map_[JOIN] = new Join; 
 	this->map_[USER] = new Username;

@@ -19,7 +19,8 @@ SRC =	main.cpp \
 			./srcs/CommandFactory.cpp \
 			./srcs/Channel.cpp \
 			./srcs/Utulity.cpp \
-			./srcs/Pass.cpp
+			./srcs/Pass.cpp \
+			./srcs/Part.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

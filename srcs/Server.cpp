@@ -169,6 +169,10 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 void Server::disconnectUser(int index, int fd){
 	if (checkNickname(listUser_[fd]->getNickname()))
 		removeNickname(listUser_[fd]->getNickname());
+	std::set<string> set = listUser_[fd]->getChannelSet();
+	std::set<string>::iterator it = set.begin();
+	for (; it != set.end(); ++it)
+		channels_[*it]->removeUser(listUser_[fd], "Has disconnected");
 	this->poll_.erase(poll_.begin() + index);
 	delete listUser_[fd];
 	listUser_.erase(fd); // double check
@@ -184,7 +188,7 @@ void Server::acceptUser(){
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
 	if (newFd == -1)
 		throw std::runtime_error("Accept failure"); // fix later
-	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;	
+	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
 	createUser(newFd);
 }
 

@@ -125,3 +125,15 @@ void User::setfdSocket(const int &fd) {
 }
 
 /* ************************************************************************** */
+
+void User::addChannelUser(const string &name){
+	channels_.insert(name);
+}
+
+void User::removeChannelUser(const string &name){
+	channels_.erase(name);
+}
+
+std::set<string> User::getChannelSet() { return channels_;}
+
+/* ************************************************************************** */

@@ -11,6 +11,7 @@
 Channel::Channel(const std::string &name, User *user) : channelName_(name), topic_(""),
 	userTopic_(""), password_(""), hasPassword_(false), mode_(0), userLimit_(0){
 	users_[user] = true;
+	user->addChannelUser(channelName_);
 }
 
 Channel::~Channel() {}
@@ -29,10 +30,6 @@ void Channel::sendTopic(const User *user) const{
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
-//:irc.localhost 353 LOL = #general :LOL dave // FIX LATER WITH REAL STATUS instead of = ?
-//:localhost 353 a = #a :a b
-//:localhost 353 a = #c :dave dave1
-//:localhost 315 LOL is :End of WHO list.
 //:localhost 315 LOL is :End of WHO list.
 void Channel::sendUserList(const User *user){
 	std::map<User *, bool>::iterator it = users_.begin();
@@ -52,6 +49,7 @@ void Channel::sendUserList(const User *user){
 void Channel::sendUserLeft(const User *user, const std::string &reason){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::string message;
+	cout << "HELLO" << endl;
 	for (; it != users_.end(); ++it){
 		message = "PART " + channelName_ + " :" + reason + "\r\n";
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
@@ -80,6 +78,7 @@ const std::string Channel::addUser(User *user){
 	if (it != users_.end())
 		return ""; //do nothing? unsure if the server I used is correct about that
 	sendUserJoin(user, "bozo.com");
+	user->addChannelUser(channelName_);
 	users_[user] = false;
 	if (!topic_.empty())
 		sendTopic(user);;
@@ -91,6 +90,7 @@ const std::string Channel::addUser(User *user){
 
 //:gu!~a@localhost PART #B :
 const std::string Channel::removeUser(User *user, const std::string &reason){
+	cout << "removeUSER" << endl;
 	users_.erase(user);
 	sendUserLeft(user, reason);
 	return "PART " + channelName_ + " :" + reason + "\r\n"; // double check

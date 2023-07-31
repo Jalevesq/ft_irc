@@ -4,6 +4,7 @@
 # include <iostream>
 # include <string>
 # include <poll.h>
+# include <set>
 # include <unistd.h>
 
 using std::string;
@@ -40,6 +41,10 @@ class User
 		void appendMessage(const string& appendMessage);
 		void clearMessage();
 
+		void addChannelUser(const string &name);
+		void removeChannelUser(const string &name);
+		std::set<string> getChannelSet();
+		//std::set<string>::iterator getChannelEnd();
 		// User( User const & src  );
 		// User &		operator=( User const & rhs );
 
@@ -50,6 +55,7 @@ class User
 		bool	operator_;
 		bool	isRegistered_[2];
 		int		fdSocket_;
+		std::set<string> channels_;
 };
 
 // std::ostream &			operator<<( std::ostream & o, User const & i );

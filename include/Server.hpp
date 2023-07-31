@@ -20,6 +20,7 @@
 # include "Ping.hpp"
 # include "Username.hpp"
 # include "CommandFactory.hpp"
+# include "Channel.hpp"
 
 using std::string;
 using std::cout;
@@ -46,6 +47,7 @@ public:
 	const int &getUserCount() const;
 	const int &getChannelCount() const;
 	const int &getFd() const;
+	Channel *getChannel(const std::string &name);
 
 	// Setter
 	void setUserCount(int count);
@@ -66,9 +68,15 @@ public:
 	bool checkNickname(const string &nickname) const;
 	void removeNickname(const string& nickname);
 
+	//Channels
+	bool doesChannelExist(const std::string &name);
+	void addChannel(const std::string &name, Channel *channel);
+	User *getUserPointer(int fd);
+
 private:
 	std::map<int, User *> listUser_;
 	std::map<std::string, Command *> commandList_;
+	std::map<std::string, Channel *> channels_;
 	std::set<std::string> nicknameList_;
 	// std::vector<User *> userVector_;
 	std::vector<struct pollfd> poll_;

@@ -17,7 +17,8 @@ SRC =	main.cpp \
 			./srcs/Ping.cpp \
 			./srcs/Username.cpp \
 			./srcs/CommandFactory.cpp \
-			./srcs/Channel.cpp
+			./srcs/Channel.cpp \
+			./srcs/Utulity.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

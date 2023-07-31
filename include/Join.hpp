@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <string>
+# include <vector>
 # include "Command.hpp"
 
 using std::string;
@@ -24,8 +25,12 @@ class Join : public Command
 		virtual string execute(Server &server,const string& message, User& liveUser);
 
 
-	private:
+		void tokenizeJoin(const string &message);
+		const std::string createChannel(Server &server, User &liveUser) const;
 
+
+	private:
+		std::vector<string> tokens_;
 };
 
 

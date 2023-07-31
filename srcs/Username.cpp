@@ -1,4 +1,5 @@
 #include "../include/Username.hpp"
+#include "../include/Utulity.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -48,19 +49,11 @@ static bool isUserAvailable(const std::string &name){
 	return true;
 }
 
-static bool isNotEmptyString(const std::string &str){
- for (int index = 0; str[index]; index++){
-		if (str[index] != ' ' && str[index] != '\0')
-			return true;
-	}
-	return false;
-}
-
 std::string  Username::execute(Server &server, const string& message, User& liveUser){
 	std::vector<std::string> tokens;
 	std::string token;
 	size_t index = 0;
-  	size_t end = message.find(" ");
+  size_t end = message.find(" ");
 	(void)liveUser;
 	(void)server;
 

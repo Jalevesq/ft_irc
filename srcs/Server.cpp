@@ -23,6 +23,10 @@ Server::~Server(){
 	for (; iterator != this->commandList_.end(); iterator++) {
 		delete iterator->second;
 	}
+	std::map<string, Channel *> ::iterator channelIt;
+	channelIt = channels_.begin();
+	for (; channelIt != channels_.end(); ++channelIt)
+		delete channelIt->second;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -68,7 +72,7 @@ void Server::serverRun()
 	while (true)
 	{
 		poll(this->poll_.data(), this->userCount_ + 1, 100);
-		//	throw std::runtime_error("Poll failure"); // fix later
+			// throw std::runtime_error("Poll failure"); // fix later
 		if (this->poll_[0].revents & POLLIN)
 			acceptUser();
 		for (int i = 1; i <= userCount_; i++){
@@ -76,12 +80,11 @@ void Server::serverRun()
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
 				cout << "user " << this->listUser_[userFd]->getMessage() << " (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i, userFd);
+				break;
 			}
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
-				for (int i = 1; i <= userCount_; i++)
-					send(this->poll_[i].fd, buffer, strlen(buffer), 0);
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
@@ -155,6 +158,7 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 ///////////////////////////////////////////////////////////////////////
 
 void Server::disconnectUser(int index, int fd){
+	cout << "BOZO" << endl;
 	removeNickname(listUser_[fd]->getNickname());
 	this->poll_.erase(poll_.begin() + index);
 	delete listUser_[fd];
@@ -210,6 +214,19 @@ void Server::removeNickname(const string& nickname) {
     }
 }
 
+//////////////////////////////////////////////////////////////////////
+
+bool Server::doesChannelExist(const std::string &name){
+	std::map<std::string, Channel *>::iterator it = channels_.find(name);
+	return it != channels_.end();
+}
+
+void Server::addChannel(const std::string &name, Channel *channel) { channels_[name] = channel; }
+
+User *Server::getUserPointer(int fd) { return listUser_[fd]; }
+
+//////////////////////////////////////////////////////////////////////
+
 const int &Server::getUserCount() const { return userCount_; }
 
 const int &Server::getChannelCount() const { return channelCount_; }
@@ -219,3 +236,5 @@ const int &Server::getFd() const { return poll_[0].fd; }
 void Server::setUserCount(int count){ userCount_ += count; }
 
 void Server::setChannelCount(int count){ channelCount_ += count; }
+
+Channel *Server::getChannel(const std::string &name) { return channels_[name];}

@@ -81,7 +81,7 @@ void Server::serverRun()
 	char buffer[1024];
 	while (true)
 	{
-		poll(this->poll_.data(), this->userCount_ + 1, 100);
+		poll(this->poll_.data(), this->userCount_ + 1, 25);
 			// throw std::runtime_error("Poll failure"); // fix later
 		if (this->poll_[0].revents & POLLIN)
 			acceptUser();
@@ -133,7 +133,8 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 				finalMessage = Auth(cmd, liveUser, *it);
 			else
 				finalMessage = cmd->execute(*this, *it, liveUser); 
-			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
+			if (!finalMessage.empty())
+				send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
 		}
 		factory_.popCommand();
 	}
@@ -174,6 +175,7 @@ void Server::disconnectUser(int index, int fd){
 		removeNickname(listUser_[fd]->getNickname());
 	std::set<string> set = listUser_[fd]->getChannelSet();
 	std::set<string>::iterator it = set.begin();
+	// Check si dernier user du channel et rm si oui
 	for (; it != set.end(); ++it)
 		channels_[*it]->removeUser(listUser_[fd], "Has disconnected");
 	this->poll_.erase(poll_.begin() + index);

@@ -4,6 +4,7 @@
 #include "../include/Username.hpp"
 #include "../include/Ping.hpp"
 #include "../include/Part.hpp"
+#include "../include/Privmsg.hpp"
 
 CommandFactory::CommandFactory(){
 	this->map_[PART] = new Part;
@@ -12,6 +13,7 @@ CommandFactory::CommandFactory(){
 	this->map_[USER] = new Username;
 	this->map_[PING] = new Ping;
 	this->map_[PASSW] = new Pass;
+	this->map_[PRIV] = new Privmsg;
 }
 
 CommandFactory::~CommandFactory(){

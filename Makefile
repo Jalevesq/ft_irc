@@ -2,7 +2,7 @@ NAME = irc
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
 #CFLAGS = -std=c++98
 
@@ -20,7 +20,8 @@ SRC =	main.cpp \
 			./srcs/Channel.cpp \
 			./srcs/Utulity.cpp \
 			./srcs/Pass.cpp \
-			./srcs/Part.cpp
+			./srcs/Part.cpp \
+			./srcs/Privmsg.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

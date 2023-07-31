@@ -45,9 +45,6 @@ Part::~Part()
 */
 
 string Part::execute(Server &server,const string& message, User& liveUser) {
-	(void)server;
-	(void)message;
-	(void)liveUser;
 	string channelName, info, partMessage;
 
 	size_t start = message.find('#');

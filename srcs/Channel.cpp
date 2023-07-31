@@ -22,7 +22,6 @@ Channel::~Channel() {}
  *****************************************************************************
 */
 
-//:irc.localhost 333 gurr #general dave!~dave@localhost 1690755553
 void Channel::sendTopic(const User *user) const{
 	std::string topic = ":ft_irc 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
@@ -30,7 +29,6 @@ void Channel::sendTopic(const User *user) const{
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
-//:localhost 315 LOL is :End of WHO list.
 void Channel::sendUserList(const User *user){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::ostringstream regularStream;
@@ -43,16 +41,12 @@ void Channel::sendUserList(const User *user){
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
 }
 
-//:dave!~dave@localhost PART #general :gay
+//:dave!~dave@localhost PART #general :left
 void Channel::sendUserLeft(const User *user, const std::string &reason){
 	std::map<User *, bool>::iterator it = users_.begin();
-	std::string message;
-	cout << "HELLO" << endl;
-	for (; it != users_.end(); ++it){
-		message = "PART " + channelName_ + " :" + reason + "\r\n";
+	std::string message = ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
+	for (; it != users_.end(); ++it)
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
-	}
-	(void)user;
 }
 
 //:a!~a@localhost JOIN :#a
@@ -70,7 +64,6 @@ void Channel::sendUserJoin(const User *user, const std::string &reason){
  *****************************************************************************
 */
 
-//:dave!~user5@localhost JOIN :#general
 const std::string Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
 	if (it != users_.end())
@@ -86,12 +79,10 @@ const std::string Channel::addUser(User *user){
 	return "";
 }
 
-//:gu!~a@localhost PART #B :
 const std::string Channel::removeUser(User *user, const std::string &reason){
-	cout << "removeUSER" << endl;
 	users_.erase(user);
 	sendUserLeft(user, reason);
-	return "PART " + channelName_ + " :" + reason + "\r\n"; // double check
+	return ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
 }
 
 /*

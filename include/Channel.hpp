@@ -29,6 +29,7 @@ public:
 	void sendUserList(const User *user);
 	void sendUserLeft(const User *user, const std::string &reason);
 	void sendUserJoin(const User *user, const std::string &reason);
+	void sendMessage(const User *user, const std::string &message);
 
 	//setter
 	const std::string setMode(const unsigned char &mode, User *user);

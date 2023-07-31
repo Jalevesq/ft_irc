@@ -39,6 +39,7 @@ public:
 	const std::string &getTopic() const;
 	const std::string &getPassword() const;
 	const std::map<User *, bool> &getUserList() const;
+	int getUserCount() const;
 	bool isOperator(User *user);
 	bool hasPassword() const;
 	int getMode() const;

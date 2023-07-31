@@ -84,8 +84,6 @@ const std::string Channel::addUser(User *user){
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	sendUserList(user);
-	// while (true)
-	// 	sendMessage(user, "PRIVMSG #a :kys");
 	return "";
 }
 
@@ -129,6 +127,8 @@ const std::string &Channel::getTopic() const { return topic_; }
 const std::string &Channel::getPassword() const { return password_; }
 
 const std::map<User *, bool> &Channel::getUserList() const { return users_; }
+
+int Channel::getUserCount() const { return users_.size(); }
 
 bool Channel::hasPassword() const { return hasPassword_; }
 

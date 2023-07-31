@@ -175,9 +175,11 @@ void Server::disconnectUser(int index, int fd){
 		removeNickname(listUser_[fd]->getNickname());
 	std::set<string> set = listUser_[fd]->getChannelSet();
 	std::set<string>::iterator it = set.begin();
-	// Check si dernier user du channel et rm si oui
-	for (; it != set.end(); ++it)
+	for (; it != set.end(); ++it){
 		channels_[*it]->removeUser(listUser_[fd], "Has disconnected");
+		if (channels_[*it]->getUserCount() == 0)
+			removeChannel(channels_[*it]->getChannelName());
+	}
 	this->poll_.erase(poll_.begin() + index);
 	delete listUser_[fd];
 	listUser_.erase(fd); // double check
@@ -246,6 +248,12 @@ bool Server::doesChannelExist(const std::string &name){
 }
 
 void Server::addChannel(const std::string &name, Channel *channel) { channels_[name] = channel; }
+
+void Server::removeChannel(const std::string &name){
+	Channel *channel = channels_[name];
+	channels_.erase(name);
+	delete channel;
+}
 
 User *Server::getUserPointer(int fd) { return listUser_[fd]; }
 

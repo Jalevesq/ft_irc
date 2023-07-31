@@ -74,6 +74,7 @@ public:
 	//Channels
 	bool doesChannelExist(const std::string &name);
 	void addChannel(const std::string &name, Channel *channel);
+	void removeChannel(const std::string &name);
 	User *getUserPointer(int fd);
 
 private:

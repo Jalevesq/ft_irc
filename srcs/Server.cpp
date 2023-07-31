@@ -1,12 +1,17 @@
 #include "../include/Server.hpp"
 
 Server::Server(): userCount_(0), channelCount_(0){
+    char hostname[256];
+
 	struct pollfd listennerPoll;
 	listennerPoll.events = POLLIN;
 	listennerPoll.fd = -1;
 	this->poll_.push_back(listennerPoll);
 	this->password_ = "";
-
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        std::cerr << "Failed to get hostname." << std::endl;
+        throw (std::runtime_error("Error getting hostname"));
+    }
 }
 
 Server::~Server(){
@@ -241,6 +246,10 @@ void Server::addChannel(const std::string &name, Channel *channel) { channels_[n
 User *Server::getUserPointer(int fd) { return listUser_[fd]; }
 
 //////////////////////////////////////////////////////////////////////
+
+const string& Server::getHostname() const {
+	return (this->hostname_);
+}
 
 const int &Server::getUserCount() const { return userCount_; }
 

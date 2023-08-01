@@ -32,12 +32,15 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 }
 
 void Channel::sendTopic(const User *user) const{
-	std::string topic = ":ft_irc 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
-	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
-	topic = ":ft_irc 333 " + user->getNickname() + " " + channelName_ + userTopic_ + " insert time here\r\n";
+	std::string topic = ":localhost 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
+	size_t i = send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
+	cout << i << endl;
+	topic = ":localhost 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + "!~" +  user->getNickname()  + "@localhost 1690868717\r\n";
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
+//:retard!~dave@localhost NICK :aaa
+//:a!~a@localhost NICK :aa
 void Channel::sendUserList(const User *user){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::ostringstream regularStream;
@@ -48,6 +51,8 @@ void Channel::sendUserList(const User *user){
 			regularStream << it->first->getNickname() << " ";
 	regularList = ":localhost 353 " + user->getNickname() + " = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
+	// endList = "localhost 366 " + user->getNickname() + " " + channelName_ + " :End of Name list\r\n";;
+	// send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
 }
 
 //:dave!~dave@localhost PART #general :left
@@ -67,11 +72,14 @@ void Channel::sendUserJoin(const User *user, const std::string &reason){
 	(void)reason;
 }
 
+//:dave!~dave@localhost PRIVMSG #A :hey
 void Channel::sendMessage(const User *user, const std::string &message){
+	std::string messageToSend = ":" + user->getNickname() + " PRIVMSG " + channelName_ + " :" + message;
+	cout << messageToSend;
 	std::map<User *, bool>::iterator it = users_.begin();
 	for (; it != users_.end(); ++it){
 		if (it->first->getFdSocket() != user->getFdSocket())
-			send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
+			send(it->first->getFdSocket(), messageToSend.c_str(), messageToSend.size(), 0);
 	}
 }
 
@@ -114,6 +122,9 @@ const std::string Channel::setMode(const unsigned char &mode, User *user){
 	(void)mode;
 	return "BOZO";
 }
+
+//:aa!~a@localhost TOPIC #b :BUNCH OF BOZOS
+void Channel::setTopic(const std::string &topic) { topic_ = topic; }
 
 /*
  *****************************************************************************

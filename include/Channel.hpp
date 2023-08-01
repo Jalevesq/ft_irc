@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <ctime>
 
 class User;
 
@@ -34,7 +35,7 @@ public:
 
 	//setter
 	const std::string setMode(const unsigned char &mode, User *user);
-	void setTopic(const std::string &topic);
+	void setTopic(const std::string &topic, const std::string &userName);
 
 	//getter
 	const std::string &getChannelName() const;
@@ -53,6 +54,8 @@ private:
 	std::string topic_;
 	std::string userTopic_;
 	std::string password_;
+	std::string UserSetTopic_;
+	time_t time_;
 	std::map<User *, bool> users_;
 	bool hasPassword_;
 	unsigned char mode_;

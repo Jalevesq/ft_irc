@@ -61,8 +61,8 @@ void Channel::sendUserList(const User *user){
 	}
 	regularList = ":localhost 353 " + user->getNickname() + " = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
-	// endList = "localhost 366 " + user->getNickname() + " " + channelName_ + " :End of Name list\r\n";;
-	// send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
+	endList = ":localhost 366 " + user->getNickname() + " " + channelName_ + " :End of /NAMES list\r\n";
+	send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
 }
 
 //:dave!~dave@localhost PART #general :left

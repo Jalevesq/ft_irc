@@ -56,6 +56,8 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::vecto
 }
 
 // Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.
+// limite par commande de 5 channels d'une shot
+// TO DO ME: Refaire join, Topic puis Kick
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 	string joinMessage;
 	std::vector<string> tokens;

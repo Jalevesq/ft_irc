@@ -30,6 +30,8 @@ void Channel::sendTopic(const User *user) const{
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
+//:retard!~dave@localhost NICK :aaa
+//:a!~a@localhost NICK :aa
 void Channel::sendUserList(const User *user){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::ostringstream regularStream;
@@ -112,6 +114,7 @@ const std::string Channel::setMode(const unsigned char &mode, User *user){
 	return "BOZO";
 }
 
+//:aa!~a@localhost TOPIC #b :BUNCH OF BOZOS
 void Channel::setTopic(const std::string &topic) { topic_ = topic; }
 
 /*

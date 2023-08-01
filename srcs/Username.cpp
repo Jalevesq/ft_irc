@@ -70,6 +70,7 @@ string  Username::execute(Server &server, const string& message, User& liveUser)
 	if (isNotEmptyString(token) && token.find(" ") == std::string::npos)
 		tokens.push_back(token);
 
+	// Accepter les espaces dans le real name.
 	if (tokens.size() != 5)
 		finalMessage = "461 USER :Not enough parameters\r\n";
 	else if (tokens[1].length() > USERLEN)
@@ -80,8 +81,6 @@ string  Username::execute(Server &server, const string& message, User& liveUser)
 		liveUser.setUsername(tokens[1]);
 		finalMessage = ""; // que renvoyer ?
 	}
-	// else if (":" + tokens[1] != tokens[4])
-		// finalMessage = "400 :the user . follow the prototype given in register instruction.\r\n";
 
 	// SI le username fail, how tf c'est possible de renvoyer la commande quand on se co avec weechat ? Déconnecter la personne si le user fail ou la laisser se démerder?
 

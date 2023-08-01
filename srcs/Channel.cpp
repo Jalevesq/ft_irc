@@ -75,7 +75,6 @@ void Channel::sendUserJoin(const User *user, const std::string &reason){
 //:dave!~dave@localhost PRIVMSG #A :hey
 void Channel::sendMessage(const User *user, const std::string &message){
 	std::string messageToSend = ":" + user->getNickname() + " PRIVMSG " + channelName_ + " :" + message;
-	cout << messageToSend;
 	std::map<User *, bool>::iterator it = users_.begin();
 	for (; it != users_.end(); ++it){
 		if (it->first->getFdSocket() != user->getFdSocket())

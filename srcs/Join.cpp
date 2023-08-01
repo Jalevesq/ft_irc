@@ -50,6 +50,7 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::vecto
 	server.addChannel(tokens[1], channel);
 	std::string tmp = ":" + liveUser.getNickname() + " " + tokens[0] + " " + tokens[1] + "\r\n";
 	send(liveUser.getFdSocket(), tmp.c_str(), tmp.size(), 0);
+	channel->sendTopic(&liveUser);
 	channel->sendUserList(&liveUser);
 	return "";
 }

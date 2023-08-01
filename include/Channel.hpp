@@ -27,6 +27,7 @@ public:
 
 	//broadcast
 	void sendNameChange(const User *user, const std::string &message);
+	void sendNoTopic(const User *user) const;
 	void sendTopic(const User *user) const;
 	void sendUserList(const User *user);
 	void sendUserLeft(const User *user, const std::string &reason);

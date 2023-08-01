@@ -14,12 +14,15 @@ Topic::~Topic(){}
 std::string Topic::execute(Server &server, const string &message, User &liveUser){
 	std::string sendTopicMessage;
 	std::string topic;
-	std::vector<std::string> token = tokenize(message);
+	std::vector<std::string> token = tokenize(message, " ");
 
-	if (token.size() == 1)
+	if (token.size() < 3)
 		return "461 " + liveUser.getNickname() + " TOPIC :Not enough parameters\r\n";
 	std::string channelName = token[1];
 	size_t position = 1 + message.find(":");
+
+	// Check si le gars est dans le channel
+
 	// Check que le channel existe
 	Channel * channel = server.getChannel(token[1]);
 

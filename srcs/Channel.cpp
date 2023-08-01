@@ -33,11 +33,17 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 }
 
 void Channel::sendTopic(const User *user) const{
-    std::string topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
-	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
-	// Le faire? Send qui a set le topic
-	topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + UserSetTopic_ + std::to_string(time_) + "\r\n"; //fix later
-	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
+	std::string topic;
+	int userSocket = user->getFdSocket();
+	if (topic_.empty()) {
+		topic = "331 " + channelName_ + " :" + channelName_ +"\r\n";
+		send(userSocket, topic.c_str(), topic.size(), 0);
+	} else {
+    	topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
+		send(userSocket, topic.c_str(), topic.size(), 0);
+		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
+		send(userSocket, topic.c_str(), topic.size(), 0);
+	}
 }
 
 //:retard!~dave@localhost NICK :aaa
@@ -70,7 +76,7 @@ void Channel::sendUserLeft(const User *user, const std::string &reason){
 //:a!~a@localhost JOIN :#a
 void Channel::sendUserJoin(const User *user, const std::string &reason){
 	std::map<User *, bool>::iterator it = users_.begin();
-	std::string message = ":" + user->getNickname() + "!~a@localhost JOIN :" + channelName_ + "\r\n";
+	std::string message = ":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n";
 	for (; it != users_.end(); ++it)
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 	(void)reason;
@@ -102,8 +108,7 @@ const std::string Channel::addUser(User *user){
 	users_[user] = false;
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
-	if (!topic_.empty())
-		sendTopic(user);
+	sendTopic(user);
 	sendUserList(user);
 	return "";
 }

@@ -80,7 +80,7 @@ bool Privmsg::isUserInChannel(User& liveUser, string &destination) {
 
 std::string Privmsg::execute(Server &server,const string& message, User& liveUser) {
 	std::string privMessage = "";
-	std::vector<string> messageToken = tokenize(message);
+	std::vector<string> messageToken = tokenize(message, " ");
 	std::vector<string> infoMessage;
 
 	if (messageToken.size() < 2) {

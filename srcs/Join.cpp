@@ -54,11 +54,12 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::vecto
 	return "";
 }
 
+// Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 	string joinMessage;
 	std::vector<string> tokens;
 
-	tokens = tokenize(message);
+	tokens = tokenize(message, " ");
 	if (tokens.size() == 1)
 		return "461 PRIVMSG " + liveUser.getNickname() + " JOIN :Not enough parameters\r\n";
 	else if (tokens[1][0] != '#') {

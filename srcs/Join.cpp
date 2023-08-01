@@ -48,7 +48,10 @@ Join::~Join()
 const std::string Join::createChannel(Server &server, User &liveUser, std::vector<string> tokens) const{
 	Channel *channel = new Channel(tokens[1], server.getUserPointer(liveUser.getFdSocket()));
 	server.addChannel(tokens[1], channel);
-	return ":" + liveUser.getNickname() + " " + tokens[0] + " " + tokens[1] + "\r\n";
+	std::string tmp = ":" + liveUser.getNickname() + " " + tokens[0] + " " + tokens[1] + "\r\n";
+	send(liveUser.getFdSocket(), tmp.c_str(), tmp.size(), 0);
+	channel->sendUserList(&liveUser);
+	return "";
 }
 
 // Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.

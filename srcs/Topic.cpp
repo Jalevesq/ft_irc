@@ -7,6 +7,7 @@ Topic::Topic(){}
 
 Topic::~Topic(){}
 
+//:gurr!~gurr@3263-666e-c7c8-29e5-42c9.67.68.ip TOPIC #42 :DUMBASS
 //:irc.localhost 461 dave TOPIC :Not enough parameters
 
 // Error Parsing + dispatch a tt le monde quand topic change
@@ -26,7 +27,7 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 	Channel * channel = server.getChannel(token[1]);
 
 	topic = message.substr(position);
-	channel->setTopic(topic);
+	channel->setTopic(topic, liveUser.getNickname());
 	std::map<User *, bool> userList = channel->getUserList();
 	std::map<User *, bool>::iterator it = userList.begin();
 

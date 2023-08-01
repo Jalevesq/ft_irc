@@ -2,6 +2,7 @@
 #include "../include/User.hpp"
 #include <sys/socket.h>
 #include <sstream>
+#include <string>
 
 /*
  *****************************************************************************
@@ -9,7 +10,7 @@
  *****************************************************************************
 */
 Channel::Channel(const std::string &name, User *user) : channelName_(name), topic_(""),
-	userTopic_(""), password_(""), hasPassword_(false), mode_(0), userLimit_(0){
+	userTopic_(""), password_(""), UserSetTopic_(""), time_(0), hasPassword_(false), mode_(0), userLimit_(0){
 	users_[user] = true;
 	user->addChannelUser(channelName_);
 }
@@ -26,7 +27,7 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 	std::string message = ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
 	std::map<User *, bool>::iterator it = users_.begin();
 	for (; it != users_.end(); ++it){
-	//	if (it->first->getFdSocket() != user->getFdSocket())
+		// if (it->first->getFdSocket() != user->getFdSocket())
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 	}
 }
@@ -40,7 +41,7 @@ void Channel::sendTopic(const User *user) const{
 	} else {
     	topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " 1690868717\r\n";
+		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
@@ -53,8 +54,11 @@ void Channel::sendUserList(const User *user){
 	std::string regularList;
 	std::string endList;
 
-	for (; it != users_.end(); ++it)
-			regularStream << it->first->getNickname() << " ";
+	for (; it != users_.end(); ++it){
+		if (it->second)
+			regularStream << "@";
+		regularStream << it->first->getNickname() << " ";
+	}
 	regularList = ":localhost 353 " + user->getNickname() + " = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
 	// endList = "localhost 366 " + user->getNickname() + " " + channelName_ + " :End of Name list\r\n";;
@@ -125,11 +129,15 @@ const std::string Channel::setMode(const unsigned char &mode, User *user){
 	if (users_[user] == false)
 		return ":irc.localhost 482 " + user->getNickname() + " " + channelName_ + " :You're not channel operator" + "\r\n"; //fix later to get real hostname
 	(void)mode;
-	return "BOZO";
+	return "BOZO\r\n";
 }
 
 //:aa!~a@localhost TOPIC #b :BUNCH OF BOZOS
-void Channel::setTopic(const std::string &topic) { topic_ = topic; }
+void Channel::setTopic(const std::string &topic, const std::string &userName) {
+	topic_ = topic;
+	time_ = time(NULL);
+	userTopic_ = userName;
+}
 
 /*
  *****************************************************************************

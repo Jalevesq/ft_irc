@@ -2,6 +2,7 @@
 #include "../include/User.hpp"
 #include <sys/socket.h>
 #include <sstream>
+#include <string>
 
 /*
  *****************************************************************************
@@ -26,16 +27,16 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 	std::string message = ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
 	std::map<User *, bool>::iterator it = users_.begin();
 	for (; it != users_.end(); ++it){
-		if (it->first->getFdSocket() != user->getFdSocket())
+		// if (it->first->getFdSocket() != user->getFdSocket())
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 	}
 }
 
 void Channel::sendTopic(const User *user) const{
-	std::string topic = ":localhost 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
-	size_t i = send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
-	cout << i << endl;
-	topic = ":localhost 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + "!~" +  user->getNickname()  + "@localhost 1690868717\r\n";
+    std::string topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
+	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
+	// Le faire? Send qui a set le topic
+	topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + UserSetTopic_ + std::to_string(time_) + "\r\n"; //fix later
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
@@ -52,7 +53,6 @@ void Channel::sendUserList(const User *user){
 			regularStream << "@";
 		regularStream << it->first->getNickname() << " ";
 	}
-	cout << regularStream.str();
 	regularList = ":localhost 353 " + user->getNickname() + " = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	send(user->getFdSocket(), regularList.c_str(), regularList.size(), 0);
 	// endList = "localhost 366 " + user->getNickname() + " " + channelName_ + " :End of Name list\r\n";;
@@ -95,14 +95,15 @@ void Channel::sendMessage(const User *user, const std::string &message){
 const std::string Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
 	if (it != users_.end())
-		return ("443 :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
+		return ("443 PRIVMSG :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
+	// ajouter raison de join?
 	sendUserJoin(user, "bozo.com");
 	user->addChannelUser(channelName_);
 	users_[user] = false;
-	if (!topic_.empty())
-		sendTopic(user);
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
+	if (!topic_.empty())
+		sendTopic(user);
 	sendUserList(user);
 	return "";
 }
@@ -130,7 +131,6 @@ const std::string Channel::setMode(const unsigned char &mode, User *user){
 void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	topic_ = topic;
 	time_ = time(NULL);
-	cout << time_ << endl;
 	userTopic_ = userName;
 }
 

@@ -81,6 +81,7 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 			server.removeNickname(liveNickname);
 		server.addNickname(newNickname);
         liveUser.setNickname(newNickname);
+        //sendChannelNickChange(server, liveNickname, liveUser); //Broadcast to other users
     }
 
     // Error nickname
@@ -94,6 +95,17 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 	// Quand ':user' renvoie '::user'. why ?
 
     return nickMessage;
+}
+
+void Nickname::sendChannelNickChange(Server &server, const string &oldNick, User &liveUser){
+  std::set<std::string> set = liveUser.getChannelSet();
+  if (set.size() == 0)
+      return;
+  std::set<std::string>::iterator it = set.begin();
+  for (; it != set.end(); it++){
+      Channel *channel = server.getChannel(*it);
+      channel->sendNameChange(&liveUser, oldNick);
+  }
 }
 
 /*

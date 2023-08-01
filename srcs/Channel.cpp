@@ -22,6 +22,15 @@ Channel::~Channel() {}
  *****************************************************************************
 */
 
+void Channel::sendNameChange(const User *user, const std::string &oldNickname){
+	std::string message = ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it){
+	//	if (it->first->getFdSocket() != user->getFdSocket())
+		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
+	}
+}
+
 void Channel::sendTopic(const User *user) const{
 	std::string topic = ":localhost 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 	size_t i = send(user->getFdSocket(), topic.c_str(), topic.size(), 0);

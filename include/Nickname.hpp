@@ -22,6 +22,7 @@ class Nickname : public Command
 		// Nickname &		operator=( Nickname const & rhs );
 
 		virtual string execute(Server &server,const string& message, User& liveUser);
+		void sendChannelNickChange(Server &server, const string &oldNick, User &liveUser);
 	private:
 
 };

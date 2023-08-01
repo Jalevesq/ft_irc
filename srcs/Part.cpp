@@ -67,6 +67,7 @@ string Part::execute(Server &server,const string& message, User& liveUser) {
 		partMessage = channel->removeUser(&liveUser, info);
 		if (channel->getUserCount() == 0)
 			server.removeChannel(channel->getChannelName());
+		liveUser.removeChannelUser(channelName);
 	}
 
 	return (partMessage);

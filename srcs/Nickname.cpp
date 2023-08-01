@@ -44,6 +44,7 @@ Nickname::~Nickname()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+
 std::string Nickname::execute(Server &server,const string& message, User& liveUser) {
     string nickMessage;
     string newNickname;

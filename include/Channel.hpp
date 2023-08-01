@@ -33,6 +33,7 @@ public:
 
 	//setter
 	const std::string setMode(const unsigned char &mode, User *user);
+	void setTopic(const std::string &topic);
 
 	//getter
 	const std::string &getChannelName() const;

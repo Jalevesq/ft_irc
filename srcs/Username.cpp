@@ -1,5 +1,5 @@
 #include "../include/Username.hpp"
-#include "../include/Utulity.hpp"
+#include "../include/Utility.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------

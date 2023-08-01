@@ -18,6 +18,7 @@ using std::cerr;
 # define PASSW "PASS"
 # define PART "PART"
 # define PRIV "PRIVMSG"
+# define TOPIC "TOPIC"
 # define CMD_NBR 4
 
 class Server;

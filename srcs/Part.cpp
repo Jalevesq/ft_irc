@@ -61,12 +61,13 @@ string Part::execute(Server &server,const string& message, User& liveUser) {
 	if (server.doesChannelExist(channelName) == false) {
 		partMessage = "403 PRIVMSG :No such channel\r\n";
 	} else if (userChannelName.find(channelName) == userChannelName.end()) {
-		partMessage = "442 PRIVMSG" + channelName + ":You're not on that channel\r\n";
+		partMessage = "442 PRIVMSG " + channelName + " :You're not on that channel\r\n";
 	} else {
 		Channel *channel = server.getChannel(channelName);
 		partMessage = channel->removeUser(&liveUser, info);
 		if (channel->getUserCount() == 0)
 			server.removeChannel(channel->getChannelName());
+		liveUser.removeChannelUser(channelName);
 	}
 
 	return (partMessage);

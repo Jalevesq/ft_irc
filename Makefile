@@ -18,10 +18,11 @@ SRC =	main.cpp \
 			./srcs/Username.cpp \
 			./srcs/CommandFactory.cpp \
 			./srcs/Channel.cpp \
-			./srcs/Utulity.cpp \
+			./srcs/Utility.cpp \
 			./srcs/Pass.cpp \
 			./srcs/Part.cpp \
-			./srcs/Privmsg.cpp
+			./srcs/Privmsg.cpp \
+			./srcs/Topic.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

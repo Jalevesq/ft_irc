@@ -85,11 +85,16 @@ void Server::serverRun()
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
 				cout << "User '" << this->listUser_[userFd]->getNickname() << "' (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i, userFd);
+				return;
 				break;
 			}
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
+				if (ret == 0){
+					disconnectUser(i, userFd);
+					continue;
+				}
 				if (ret == -1)
 					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
@@ -175,8 +180,8 @@ void Server::disconnectUser(int index, int fd){
 		if (channels_[*it]->getUserCount() == 0)
 			removeChannel(channels_[*it]->getChannelName());
 	}
-	this->poll_.erase(poll_.begin() + index);
 	delete listUser_[fd];
+	this->poll_.erase(poll_.begin() + index);
 	listUser_.erase(fd); // double check
 	this->userCount_--;
 }

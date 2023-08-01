@@ -50,13 +50,13 @@ public:
 	const int &getFd() const;
 	Channel *getChannel(const std::string &name);
 	const string& getPassword() const;
-	const string& getHostname() const;
 
 	// Setter
 	void setUserCount(int count);
 	void setChannelCount(int count);
 
 	// Everything related to user
+	User *doesUserExist(const std::string &name);
 	void createUser(int &newFd);
 	void acceptUser();
 	void disconnectUser(int index, int fd);
@@ -89,5 +89,4 @@ private:
 	int userCount_;
 	int channelCount_;
 	string password_;
-	string hostname_;
 };

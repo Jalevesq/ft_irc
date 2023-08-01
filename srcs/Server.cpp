@@ -257,8 +257,13 @@ User *Server::getUserPointer(int fd) { return listUser_[fd]; }
 
 //////////////////////////////////////////////////////////////////////
 
-const string& Server::getHostname() const {
-	return (this->hostname_);
+User *Server::doesUserExist(const string &name) {
+	std::map<int, User *>::iterator it = listUser_.begin();
+	for (; it != listUser_.end(); it++) {
+		if (it->second->getNickname() == name)
+			return (it->second);
+	}
+	return (NULL);
 }
 
 const int &Server::getUserCount() const { return userCount_; }

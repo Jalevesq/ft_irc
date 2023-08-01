@@ -47,6 +47,7 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
 	(void)liveUser;
 	std::string destination, theMessage, privMessage;
 
+	privMessage = "";
 	size_t start = message.find(' ');
     size_t end = message.find(':', start);
 
@@ -57,12 +58,24 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
     destination = message.substr(start + 1, (end - start) - 2);
     theMessage = message.substr(end + 1);
 
+	if (destination.empty()) {
+		privMessage = "411 PRIVMSG :No recipient given\r\n";
+		return (privMessage);
+	} else if (theMessage.empty()) {
+		privMessage = "412 PRIVMSG :No text to send\r\n";
+		return (privMessage);
+	}
+
 	theMessage += "\r\n";
 	if (destination[0] == '#') {
 		Channel *desti = server.getChannel(destination);
 		desti->sendMessage(&liveUser, theMessage);
-	}
-	return ("");
+	} 
+	// else {
+		
+	// 	privMessage = ":" + liveUser.getNickname() + " PRIVMSG " + channelName_ + " :" + theMessage;
+	// }
+	return (privMessage);
 }
 
 /*

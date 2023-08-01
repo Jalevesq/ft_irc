@@ -91,12 +91,10 @@ void Server::serverRun()
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
 				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
-				if (ret == 0){
+				if (ret <= 0){
 					disconnectUser(i, userFd);
 					continue;
 				}
-				if (ret == -1)
-					throw std::runtime_error("Recv failure"); // fix later. Disconnect only the user that has a problem ? disconnectUser(i) ?
 				buffer[ret] = '\0';
 				handleMessage(buffer, liveUser);
 			}

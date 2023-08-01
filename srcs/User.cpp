@@ -99,7 +99,6 @@ const bool& User::getIsRegister() const {
 	return (this->isRegistered_[AUTH]);
 }
 
-
 void User::setIsPass(const bool &setPass) {
 	this->isRegistered_[PASS] = setPass;
 }

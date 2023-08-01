@@ -25,6 +25,7 @@ public:
 	const std::string removeUser(User *user, const std::string &reason);
 
 	//broadcast
+	void sendNameChange(const User *user, const std::string &message);
 	void sendTopic(const User *user) const;
 	void sendUserList(const User *user);
 	void sendUserLeft(const User *user, const std::string &reason);

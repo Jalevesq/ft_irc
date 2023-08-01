@@ -23,7 +23,7 @@ class Join : public Command
 	
 		// need to set permision and all that, far from done at all
 		virtual string execute(Server &server,const string& message, User& liveUser);
-		const std::string createChannel(Server &server, User &liveUser, std::vector<string> tokens) const;
+		const std::string createChannel(Server &server, User &liveUser,  std::unordered_map<string, string>::iterator tokens) const;
 
 
 	private:

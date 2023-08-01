@@ -85,8 +85,8 @@ void Server::serverRun()
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
 				cout << "User '" << this->listUser_[userFd]->getNickname() << "' (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i, userFd);
-				return;
-				break;
+				// return; // ?
+				// break; // ?
 			}
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];

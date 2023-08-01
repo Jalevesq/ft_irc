@@ -3,7 +3,11 @@
 #include <iostream>
 #include "Command.hpp"
 
-class Topic{
+using std::string;
+using std::cout;
+using std::endl;
+
+class Topic : public Command{
 public:
 	Topic();
 	~Topic();

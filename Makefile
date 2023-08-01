@@ -21,7 +21,8 @@ SRC =	main.cpp \
 			./srcs/Utility.cpp \
 			./srcs/Pass.cpp \
 			./srcs/Part.cpp \
-			./srcs/Privmsg.cpp
+			./srcs/Privmsg.cpp \
+			./srcs/Topic.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

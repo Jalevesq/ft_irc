@@ -5,6 +5,7 @@
 #include "../include/Ping.hpp"
 #include "../include/Part.hpp"
 #include "../include/Privmsg.hpp"
+#include "../include/Topic.hpp"
 
 CommandFactory::CommandFactory(){
 	this->map_[PART] = new Part;
@@ -14,6 +15,7 @@ CommandFactory::CommandFactory(){
 	this->map_[PING] = new Ping;
 	this->map_[PASSW] = new Pass;
 	this->map_[PRIV] = new Privmsg;
+	this->map_[TOPIC] = new Topic;
 }
 
 CommandFactory::~CommandFactory(){

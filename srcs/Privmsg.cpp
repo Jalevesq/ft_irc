@@ -96,8 +96,9 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
 
 	infoMessage.push_back(messageToken[1]);
 	infoMessage.push_back("");
+	// Changer le tokenizer pcq remove ' '. 
 	for (unsigned int i = 2; i < messageToken.size(); i++)
-		infoMessage[MSG] += messageToken[i];
+		infoMessage[MSG] += messageToken[i] + " ";
 
 	infoMessage[MSG].erase(0, 1);
 	if (infoMessage[MSG].length() > 100) {

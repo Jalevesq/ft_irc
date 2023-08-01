@@ -32,11 +32,11 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 }
 
 void Channel::sendTopic(const User *user) const{
-	std::string topic = ":localhost 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
-	size_t i = send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
-	cout << i << endl;
-	topic = ":localhost 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + "!~" +  user->getNickname()  + "@localhost 1690868717\r\n";
+    std::string topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 	send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
+	// Le faire? Send qui a set le topic
+	// topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " 1690868717\r\n";
+	// send(user->getFdSocket(), topic.c_str(), topic.size(), 0);
 }
 
 //:retard!~dave@localhost NICK :aaa
@@ -91,14 +91,15 @@ void Channel::sendMessage(const User *user, const std::string &message){
 const std::string Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
 	if (it != users_.end())
-		return ("443 :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
+		return ("443 PRIVMSG :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
+	// ajouter raison de join?
 	sendUserJoin(user, "bozo.com");
 	user->addChannelUser(channelName_);
 	users_[user] = false;
-	if (!topic_.empty())
-		sendTopic(user);
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
+	if (!topic_.empty())
+		sendTopic(user);
 	sendUserList(user);
 	return "";
 }

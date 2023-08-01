@@ -81,7 +81,7 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 			server.removeNickname(liveNickname);
 		server.addNickname(newNickname);
         liveUser.setNickname(newNickname);
-        //sendChannelNickChange(server, liveNickname, liveUser); //Broadcast to other users
+        sendChannelNickChange(server, liveNickname, liveUser); //Broadcast to other users
     }
 
     // Error nickname

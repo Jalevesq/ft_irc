@@ -23,14 +23,10 @@ class Join : public Command
 	
 		// need to set permision and all that, far from done at all
 		virtual string execute(Server &server,const string& message, User& liveUser);
-
-
-		void tokenizeJoin(const string &message);
-		const std::string createChannel(Server &server, User &liveUser) const;
+		const std::string createChannel(Server &server, User &liveUser, std::vector<string> tokens) const;
 
 
 	private:
-		std::vector<string> tokens_;
 };
 
 

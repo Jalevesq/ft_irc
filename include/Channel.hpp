@@ -45,6 +45,7 @@ public:
 	int getUserCount() const;
 	bool isOperator(User *user);
 	bool hasPassword() const;
+	bool isUserInChannel(const std::string& name);
 	int getMode() const;
 	int getUserLimit() const;
 	

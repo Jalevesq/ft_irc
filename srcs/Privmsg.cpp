@@ -84,23 +84,21 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
 	std::vector<string> infoMessage;
 
 	if (messageToken.size() < 2) {
-		privMessage = "411 PRIVMSG :No recipient\r\n";
-		return (privMessage);
+		return ("411 PRIVMSG :No recipient\r\n");
 	} else if (messageToken.size() < 3 || messageToken[2].size() <= 1) {
-		privMessage = "412 PRIVMSG :No text to send\r\n";
-		return (privMessage);
-	} else if (messageToken[2][0] != ':') {
-		privMessage = "461 PRIVMSG :Bad format of command. Need ':' before message to send.\r\n";
-		return (privMessage);
+		return ("412 PRIVMSG :No text to send\r\n");
 	}
 
+	// This is dest
 	infoMessage.push_back(messageToken[1]);
+	// this is msg
 	infoMessage.push_back("");
-	// Changer le tokenizer pcq remove ' '. 
-	for (unsigned int i = 2; i < messageToken.size(); i++)
-		infoMessage[MSG] += messageToken[i] + " ";
 
-	infoMessage[MSG].erase(0, 1);
+	size_t pos = message.find(":", 0) + 1;
+	if (pos == string::npos)
+		return ("461 PRIVMSG :Bad format of command. Need ':' before message to send.\r\n");
+	infoMessage[MSG] += message.substr(pos);
+
 	if (infoMessage[MSG].length() > 100) {
 		privMessage = "417 PRIVMSG :message is too long\r\n";
 		return (privMessage);

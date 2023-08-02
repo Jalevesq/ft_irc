@@ -47,7 +47,6 @@ string Pass::execute(Server &server, const string& message, User& liveUser) {
 	const string& serverPassword = server.getPassword();
 
 	entryPassword = message.substr(5);
-	cout << "compare entry with real: '" << entryPassword << "' and '" << serverPassword << "'"<< endl;
 	if (entryPassword.empty())
 		finalMessage = "461 PRIVMSG :Need more parameter\r\n";
 	else if (entryPassword == serverPassword) {

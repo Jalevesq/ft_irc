@@ -151,6 +151,14 @@ bool Channel::isOperator(User *user){
 		return false;
 }
 
+bool Channel::isUserInChannel(const std::string& name) {
+	std::map<User *, bool>::iterator it = this->users_.begin();
+	for (; it != users_.end(); it++) {
+		if (name == it->first->getNickname())
+			return (true);
+	}
+	return (false);
+}
 const std::string &Channel::getChannelName() const { return channelName_; }
 
 const std::string &Channel::getTopic() const { return topic_; }

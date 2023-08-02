@@ -50,6 +50,8 @@ string Part::execute(Server &server,const string& message, User& liveUser) {
 	size_t start = message.find('#');
     size_t end = message.find(':', start);
 
+
+	// NEED TO PATCH THIS ? Try to crash it with nc
     if (start == std::string::npos || end == std::string::npos) {
         // Handle error
         return ("");

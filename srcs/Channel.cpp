@@ -41,8 +41,8 @@ void Channel::sendTopic(const User *user) const{
 	} else {
     	topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
-		send(userSocket, topic.c_str(), topic.size(), 0);
+		// topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
+		// send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
 
@@ -120,19 +120,26 @@ const std::string Channel::removeUser(User *user, const std::string &reason){
  *****************************************************************************
 */
 
-const std::string Channel::setMode(const unsigned char &mode, User *user){
-	if (users_[user] == false)
-		return ":irc.localhost 482 " + user->getNickname() + " " + channelName_ + " :You're not channel operator" + "\r\n"; //fix later to get real hostname
-	(void)mode;
-	return "BOZO\r\n";
-}
-
 //:aa!~a@localhost TOPIC #b :BUNCH OF BOZOS
 void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	topic_ = topic;
 	time_ = time(NULL);
 	UserSetTopic_ = userName;
 }
+
+/*
+ *****************************************************************************
+ **                               mode                                      **
+ *****************************************************************************
+*/
+
+bool Channel::isModeFlagSet(const unsigned char &flag) const {
+	return (mode_ & flag) == flag;
+}
+
+void Channel::setMode(const unsigned char &flag){ mode_ |= flag; }
+
+void Channel::unsetMode(const unsigned char &flag){ mode_ &= ~flag; }
 
 /*
  *****************************************************************************

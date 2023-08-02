@@ -6,6 +6,7 @@
 #include "../include/Part.hpp"
 #include "../include/Privmsg.hpp"
 #include "../include/Topic.hpp"
+#include "../include/Mode.hpp"
 
 CommandFactory::CommandFactory(){
 	this->map_[PART] = new Part;
@@ -16,6 +17,7 @@ CommandFactory::CommandFactory(){
 	this->map_[PASSW] = new Pass;
 	this->map_[PRIV] = new Privmsg;
 	this->map_[TOPIC] = new Topic;
+	this->map_[MODE] = new Mode;
 }
 
 CommandFactory::~CommandFactory(){

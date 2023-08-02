@@ -41,8 +41,8 @@ void Channel::sendTopic(const User *user) const{
 	} else {
     	topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		// topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
-		// send(userSocket, topic.c_str(), topic.size(), 0);
+		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
+		send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
 

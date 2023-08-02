@@ -4,7 +4,9 @@
 # include <iostream>
 # include <string>
 # include <vector>
+# include <map>
 # include "Command.hpp"
+
 
 using std::string;
 using std::cout;

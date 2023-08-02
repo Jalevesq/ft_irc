@@ -74,12 +74,11 @@ void Channel::sendUserLeft(const User *user, const std::string &reason){
 }
 
 //:a!~a@localhost JOIN :#a
-void Channel::sendUserJoin(const User *user, const std::string &reason){
+void Channel::sendUserJoin(const User *user) {
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::string message = ":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n";
 	for (; it != users_.end(); ++it)
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
-	(void)reason;
 }
 
 //:dave!~dave@localhost PRIVMSG #A :hey
@@ -101,9 +100,8 @@ void Channel::sendMessage(const User *user, const std::string &message){
 const std::string Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
 	if (it != users_.end())
-		return ("443 PRIVMSG :You already are on this channel.\r\n"); //do nothing? unsure if the server I used is correct about that
-	// ajouter raison de join?
-	sendUserJoin(user, "bozo.com");
+		return ("443 PRIVMSG :You already are on this channel.\r\n");
+	sendUserJoin(user);
 	user->addChannelUser(channelName_);
 	users_[user] = false;
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";

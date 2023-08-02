@@ -30,7 +30,7 @@ public:
 	void sendTopic(const User *user) const;
 	void sendUserList(const User *user);
 	void sendUserLeft(const User *user, const std::string &reason);
-	void sendUserJoin(const User *user, const std::string &reason);
+	void sendUserJoin(const User *user);
 	void sendMessage(const User *user, const std::string &message);
 
 	//setter

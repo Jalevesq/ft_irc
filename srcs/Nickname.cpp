@@ -72,7 +72,9 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
         nickMessage = "432 '"  + newNickname + "' :Erroneus nickname\r\n";
 	} else if (server.checkNickname(newNickname)) {
 		nickMessage = "433 '" + newNickname + "' :Nickname is already in use\r\n";
-    } else {
+    } else if (newNickname.length() > 10) {
+		nickMessage = "432 '" + newNickname + "' :Nickname too long (> 10 char)\r\n"; 
+	} else {
 		string liveNickname = liveUser.getNickname();
 		if (liveNickname.empty())
 			liveNickname = newNickname;

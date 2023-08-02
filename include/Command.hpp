@@ -20,8 +20,7 @@ using std::cerr;
 # define PRIV "PRIVMSG"
 # define TOPIC "TOPIC"
 # define KICK "KICK"
-
-// # define CMD_NBR 4
+# define MODE "MODE"
 
 class Server;
 

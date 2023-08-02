@@ -46,8 +46,6 @@ void Channel::sendTopic(const User *user) const{
 	}
 }
 
-//:retard!~dave@localhost NICK :aaa
-//:a!~a@localhost NICK :aa
 void Channel::sendUserList(const User *user){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::ostringstream regularStream;
@@ -65,7 +63,6 @@ void Channel::sendUserList(const User *user){
 	send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
 }
 
-//:dave!~dave@localhost PART #general :left
 void Channel::sendUserLeft(const User *user, const std::string &reason){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::string message = ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
@@ -81,7 +78,6 @@ void Channel::sendUserJoin(const User *user) {
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
-//:dave!~dave@localhost PRIVMSG #A :hey
 void Channel::sendMessage(const User *user, const std::string &message){
 	std::string messageToSend = ":" + user->getNickname() + " PRIVMSG " + channelName_ + " :" + message;
 	std::map<User *, bool>::iterator it = users_.begin();
@@ -123,19 +119,26 @@ const std::string Channel::removeUser(User *user, const std::string &reason){
  *****************************************************************************
 */
 
-const std::string Channel::setMode(const unsigned char &mode, User *user){
-	if (users_[user] == false)
-		return ":irc.localhost 482 " + user->getNickname() + " " + channelName_ + " :You're not channel operator" + "\r\n"; //fix later to get real hostname
-	(void)mode;
-	return "BOZO\r\n";
-}
-
 //:aa!~a@localhost TOPIC #b :BUNCH OF BOZOS
 void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	topic_ = topic;
 	time_ = time(NULL);
 	this->userSetTopic_  = userName;
 }
+
+/*
+ *****************************************************************************
+ **                               mode                                      **
+ *****************************************************************************
+*/
+
+bool Channel::isModeFlagSet(const unsigned char &flag) const {
+	return (mode_ & flag) == flag;
+}
+
+void Channel::setMode(const unsigned char &flag){ mode_ |= flag; }
+
+void Channel::unsetMode(const unsigned char &flag){ mode_ &= ~flag; }
 
 /*
  *****************************************************************************

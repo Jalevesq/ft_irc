@@ -13,6 +13,7 @@ class User;
 #define MODE_CHANNEL_OPERATOR   0x08 // Bit 3 represents mode (o) ????
 #define MODE_USER_LIMIT         0x10 // Bit 4 represents mode (i) if user limit is on
 
+
 class Channel{
 public:
 	Channel(const std::string &name, User* user);
@@ -34,7 +35,6 @@ public:
 	void sendMessage(const User *user, const std::string &message);
 
 	//setter
-	const std::string setMode(const unsigned char &mode, User *user);
 	void setTopic(const std::string &topic, const std::string &userName);
 
 	//getter
@@ -48,6 +48,11 @@ public:
 	bool isUserInChannel(const std::string& name);
 	int getMode() const;
 	int getUserLimit() const;
+
+	//mode
+	bool isModeFlagSet(const unsigned char &flag) const;
+	void setMode(const unsigned char &flag);
+	void unsetMode(const unsigned char &flag);
 	
 private:
 	Channel();

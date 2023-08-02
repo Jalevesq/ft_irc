@@ -113,6 +113,18 @@ const std::string Channel::removeUser(User *user, const std::string &reason){
 	return ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
 }
 
+std::string Channel::kickUser(User *userOp, User *toKick, const std::string &reason) {
+	std::string message, partMessage = "";
+	message = ":" + userOp->getNickname() + " KICK " + channelName_ + " " +  toKick->getNickname() + " :" + reason + "\r\n";
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it){
+		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
+	}
+	removeUser(toKick, "");
+	return ("");
+}
+
+
 /*
  *****************************************************************************
  **                              setter                                     **

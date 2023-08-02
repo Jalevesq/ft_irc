@@ -60,9 +60,8 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::map<s
 
 // Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.
 // limite par commande de 3 channels d'une shot
-// TO DO ME: Kick, regarder si Part bien terminé en faisant des tests avec nc, ajouter /opper (ajouter un bool operator au user)
+// TO DO ME: finition part, essayer de tout fuck up avec nc, ajouter /opper (ajouter un bool operator au user)
 
-// Mettre un max de channel que le User peut join au total?
 // Quand MODE fait, ajouter: Impossible de join quand ban, invite only, limite utilisateur, password, etc.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 

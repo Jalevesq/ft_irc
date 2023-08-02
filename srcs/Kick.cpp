@@ -1,5 +1,6 @@
 #include "../include/Kick.hpp"
 #include "../include/Utility.hpp"
+#include "../include/Server.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -46,11 +47,45 @@ Kick::~Kick()
 string Kick::execute(Server &server,const string& message, User& liveUser) {
 	(void)server;
 	(void)message;
-	(void)liveUser;
+	User *userToKick;
+	Channel *channelFromKick;
+	string kickMessage = "";
+	string reason = "";
 	std::vector<string> messageTokens;
 
 	messageTokens = tokenize(message, " ");
-	return ("");
+	if (messageTokens.size() < 3) {
+		return ("461 PRIVMSG " + liveUser.getNickname() + " KICK :Not enough parameters.\r\n");
+	} else if (!server.doesChannelExist(messageTokens[1])) {
+		return ("401 PRIVMSG :No such channel.\r\n");
+	}
+	channelFromKick = server.getChannel(messageTokens[1]);
+	userToKick = server.doesUserExist(messageTokens[2]);
+	if (userToKick == NULL)
+		return ("401 PRIVMSG :No such nickname.\r\n");
+	else if (!channelFromKick->isUserInChannel(liveUser.getNickname())) {
+		return ("442 PRIVMSG :You're not on that channel.\r\n");
+	} else if (!channelFromKick->isOperator(&liveUser)) {
+		return ("482 PRIVMSG :You're not an operator on this channel.\r\n");
+	} else if (!channelFromKick->isUserInChannel(userToKick->getNickname())) {
+		return ("441 PRIVMSG :User " + userToKick->getNickname() + " is not on this channel.\r\n");
+	} else if (channelFromKick->isOperator(userToKick)) {
+		return ("400 :Error - User " + userToKick->getNickname() + " is an Operator.\r\n");
+	}
+
+	if (messageTokens.size() >= 4) {
+		size_t pos = message.find(":", 0) + 1;
+		if (pos == string::npos)
+			reason = "";
+		else
+			reason = message.substr(pos);
+	}
+	if (reason.length() > 40) {
+		return ("400 :Error - Kick reason is too long\r\n");
+	}
+	kickMessage = channelFromKick->kickUser(&liveUser, userToKick, reason);
+	userToKick->removeChannelUser(channelFromKick->getChannelName());
+	return (kickMessage);
 
 }
 

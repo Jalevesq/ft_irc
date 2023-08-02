@@ -25,6 +25,7 @@ public:
 	//user methods
 	const std::string addUser(User* user);
 	const std::string removeUser(User *user, const std::string &reason);
+	std::string kickUser(User *userOp, User *toKick, const std::string &reason);
 
 	//broadcast
 	void sendNameChange(const User *user, const std::string &message);

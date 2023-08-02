@@ -91,11 +91,6 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
     // ERR_ERRONEUSNICKNAME (432) Returned when a NICK command cannot be successfully completed as the desired nickname contains characters that are disallowed by the server. See the NICK command for more information on characters which are allowed in various IRC servers. The text used in the last param of this message may vary.
     // ERR_NICKNAMEINUSE (433) Returned when a NICK command cannot be successfully completed as the desired nickname is already in use on the network. The text used in the last param of this message may vary.
 
-	// Mettre une protection pour les nickname trop long
-	// Que faire avec le /nick -all <name> ? Weechat le gère tout seul?
-
-	// Quand ':user' renvoie '::user'. why ?
-
     return nickMessage;
 }
 

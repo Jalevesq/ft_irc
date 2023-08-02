@@ -57,13 +57,13 @@ string Part::execute(Server &server,const string& message, User& liveUser) {
 		return ("403 PRIVMSG :No such channel\r\n");
 	} 
 
-	size_t pos = message.find(":", 0) + 1;
-	if (pos == string::npos && messageTokens.size() > 2) {
+	size_t pos = message.find(":", 0);
+	if (pos == string::npos && messageTokens.size() > 2)
 		return ("461 PRIVMSG :Bad format of command. Need ':' before reason to exit.\r\n");
-	} else if (pos == string::npos)
+	else if (pos == string::npos)
 		info = "";
 	else
-		info = message.substr(pos);
+		info = message.substr(pos + 1);
 
 	if (info.length() > 25)
 		return ("400 :Error - Part reason si too long.\r\n");

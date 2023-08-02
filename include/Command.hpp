@@ -19,7 +19,9 @@ using std::cerr;
 # define PART "PART"
 # define PRIV "PRIVMSG"
 # define TOPIC "TOPIC"
-# define CMD_NBR 4
+# define KICK "KICK"
+
+// # define CMD_NBR 4
 
 class Server;
 

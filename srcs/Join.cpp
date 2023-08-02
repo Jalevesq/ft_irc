@@ -58,9 +58,9 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::map<s
 
 // Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.
 // limite par commande de 3 channels d'une shot
-// TO DO ME: Topic, Kick, regarder si Part bien terminé en faisant des tests avec nc
+// TO DO ME: Kick, regarder si Part bien terminé en faisant des tests avec nc, ajouter /opper (ajouter un bool operator au user)
 
-// Mettre un max de channel que le User peut join
+// Mettre un max de channel que le User peut join au total?
 // Quand MODE fait, ajouter: Impossible de join quand ban, invite only, limite utilisateur, password, etc.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 
@@ -83,7 +83,6 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 		channelToJoin = tokenize(tokens[1], ",");
 	if (tokens.size() >= 3)
 		keyword = tokenize(tokens[2], ",");
-
 
 	if (channelToJoin.size() > 2) {
 		return ("400 PRIVMSG :Try to join too many channel at the same time. Nothing has been executed.\r\n");

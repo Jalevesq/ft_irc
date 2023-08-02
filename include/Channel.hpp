@@ -53,9 +53,8 @@ private:
 	Channel();
 	const std::string channelName_;
 	std::string topic_;
-	std::string userTopic_;
 	std::string password_;
-	std::string UserSetTopic_;
+	std::string userSetTopic_;
 	time_t time_;
 	std::map<User *, bool> users_;
 	bool hasPassword_;

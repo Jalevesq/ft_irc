@@ -10,7 +10,7 @@
  *****************************************************************************
 */
 Channel::Channel(const std::string &name, User *user) : channelName_(name), topic_(""),
-	userTopic_(""), password_(""), UserSetTopic_(""), time_(0), hasPassword_(false), mode_(0), userLimit_(0){
+	password_(""), userSetTopic_(""), time_(0), hasPassword_(false), mode_(0), userLimit_(0){
 	users_[user] = true;
 	user->addChannelUser(channelName_);
 }
@@ -39,9 +39,9 @@ void Channel::sendTopic(const User *user) const{
 		topic = "331 " + channelName_ + " :" + channelName_ +"\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
 	} else {
-    	topic = ":" + user->getNickname() + " 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
+    	topic = ":" + user->getNickname() + " 332 " + this->userSetTopic_ + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		topic = ":" + user->getNickname() + " 333 " + user->getNickname() + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
+		topic = ":" + user->getNickname() + " 333 " + this->userSetTopic_  + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
@@ -134,7 +134,7 @@ const std::string Channel::setMode(const unsigned char &mode, User *user){
 void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	topic_ = topic;
 	time_ = time(NULL);
-	userTopic_ = userName;
+	this->userSetTopic_  = userName;
 }
 
 /*

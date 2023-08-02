@@ -49,6 +49,8 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
     string nickMessage;
     string newNickname;
 
+
+    // REFAIRE AVEC TOKENIZER 
 	newNickname = message.substr(4);
     if (newNickname.empty() || (newNickname.size() == 1 && newNickname[0] == ' ')){
 		nickMessage = "431 :No nickname given\r\n"; 

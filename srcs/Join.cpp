@@ -46,7 +46,7 @@ Join::~Join()
 */
 
 // TO re-do with mode?
-const std::string Join::createChannel(Server &server, User &liveUser, std::unordered_map<string, string>::iterator it) const{
+const std::string Join::createChannel(Server &server, User &liveUser, std::map<string, string>::iterator it) const{
 	Channel *channel = new Channel(it->first, server.getUserPointer(liveUser.getFdSocket()));
 	server.addChannel(it->first, channel);
 	std::string tmp = ":" + liveUser.getNickname() + " JOIN " + it->first + "\r\n";

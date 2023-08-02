@@ -87,6 +87,28 @@ void Channel::sendMessage(const User *user, const std::string &message){
 	}
 }
 
+void Channel::sendCurrentMode(const User *user) const{
+	std::ostringstream stream;
+	std::string mode;
+	if ((mode_ & 0b00011111) == 0)
+		mode =  "324 " + user->getNickname() + " " + channelName_ + "\r\n";
+	else{
+		stream << " +";
+		if (mode_ & MODE_USER_LIMIT)
+			stream << "i";
+		if (mode_ & MODE_CHANNEL_OPERATOR)
+			stream << "o";
+		if (mode_ & MODE_CHANNEL_KEY)
+			stream << "k";
+		if (mode_ & MODE_TOPIC_RESTRICTED)
+			stream << "t";
+		if (mode_ & MODE_INVITE_ONLY)
+			stream << "i";
+		std::string mode = "324 " + user->getNickname() + " " + channelName_ + stream.str() + "\r\n";
+	}
+	send(user->getFdSocket(), mode.c_str(), mode.size(), 0);
+}
+
 /*
  *****************************************************************************
  **                            user methods                                 **
@@ -136,7 +158,11 @@ bool Channel::isModeFlagSet(const unsigned char &flag) const {
 	return (mode_ & flag) == flag;
 }
 
-void Channel::setMode(const unsigned char &flag){ mode_ |= flag; }
+void Channel::setMode(const unsigned char &flag, User *user, const char c){
+	(void)c;
+	(void)user;
+	mode_ |= flag;
+}
 
 void Channel::unsetMode(const unsigned char &flag){ mode_ &= ~flag; }
 

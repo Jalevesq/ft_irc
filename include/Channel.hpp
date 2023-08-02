@@ -33,6 +33,7 @@ public:
 	void sendUserLeft(const User *user, const std::string &reason);
 	void sendUserJoin(const User *user);
 	void sendMessage(const User *user, const std::string &message);
+	void sendCurrentMode(const User *user) const;
 
 	//setter
 	void setTopic(const std::string &topic, const std::string &userName);
@@ -51,7 +52,7 @@ public:
 
 	//mode
 	bool isModeFlagSet(const unsigned char &flag) const;
-	void setMode(const unsigned char &flag);
+	void setMode(const unsigned char &flag, User *user, const char c);
 	void unsetMode(const unsigned char &flag);
 	
 private:

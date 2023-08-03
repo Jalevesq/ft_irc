@@ -85,7 +85,7 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 	}
 	long int amount = strtol(number.c_str(), NULL, 10);
 	if (amount > 50 || amount < 1){
-		sendUserError("400 +l user limit argument was over 50\r\n", liveUser.getFdSocket());
+		sendUserError("400 +l user limit argument was over " + std::to_string(MAX_USER) + "\r\n", liveUser.getFdSocket());
 		return;//fix later no key provided not sending to right channel
 	}
 	channel->setUserLimit(amount);

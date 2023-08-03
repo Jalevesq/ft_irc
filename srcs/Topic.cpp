@@ -25,7 +25,6 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 		return ("442 " + channelName + " :You're not on that channel\r\n");
 	}
 
-
 	if (token.size() == 2) {
 		channel->sendTopic(&liveUser);
 		return ("");

@@ -131,10 +131,9 @@ string Join::loop_through_map(std::map<string, string> &channelAndKey,User& live
 }
 
 // TO DO ME: ajouter les modes 
-
+// channel->isModeFlagSet(MODE_USER_LIMIT);
 // Quand MODE fait, ajouter: invite only, limite utilisateur, password.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
-
 	string errorMessage = "";
 
 	std::vector<string> tokens;

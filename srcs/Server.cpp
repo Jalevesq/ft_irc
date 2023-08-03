@@ -93,11 +93,12 @@ void Server::serverRun()
 					disconnectUser(i, userFd);
 					continue;
 				}
-				// FLUSH IF BUFFER OVERLOW 
-				else if (ret >= 1024)
-					buffer[1023] = '\0';
-				else
-					buffer[ret] = '\0';
+				if (ret >= 1023){
+					cout << "BOZO" << endl;
+					fsync(poll_[i].fd);
+					continue;
+				}
+				buffer[ret] = '\0';
 				handleMessage(buffer, liveUser);
 			}
 		}

@@ -93,7 +93,11 @@ void Server::serverRun()
 					disconnectUser(i, userFd);
 					continue;
 				}
-				buffer[ret] = '\0';
+				// FLUSH IF BUFFER OVERLOW 
+				else if (ret >= 1024)
+					buffer[1023] = '\0';
+				else
+					buffer[ret] = '\0';
 				handleMessage(buffer, liveUser);
 			}
 		}

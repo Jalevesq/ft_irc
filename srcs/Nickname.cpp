@@ -57,7 +57,7 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
 
 	size_t pos = message.find(" ");
 	newNickname = message.substr(pos + 1);
-	if (newNickname.find_first_of("\t\n\v\f\r ", 0) != string::npos || newNickname.empty()
+	if (newNickname.find_first_of("\t\n\v\f\r+@ ", 0) != string::npos || newNickname.empty()
 		|| newNickname[0] == '#' || newNickname[0] == '&' || newNickname[0] == ':') {
         nickMessage = "432 '"  + newNickname + "' :Erroneus nickname\r\n";
 	} else if (server.checkNickname(newNickname)) {

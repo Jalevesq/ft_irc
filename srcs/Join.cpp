@@ -50,7 +50,7 @@ Join::~Join()
 // TO re-do with mode?
 void	Join::createChannel(Server &server, User &liveUser, std::map<string, string>::iterator it) const {
 	if (server.getChannelCount() >= MAX_CHANNEL) {
-		string error = "400 :Error - Max channel on server reach. Impossible to create new channel\r\n";
+		string error = "400 :Error - Max channel on server reach. Impossible to create new channel.\r\n";
 		send(liveUser.getFdSocket(), error.c_str(), error.size(), 0);
 		return ;
 	}

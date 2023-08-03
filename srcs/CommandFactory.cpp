@@ -8,6 +8,7 @@
 #include "../include/Topic.hpp"
 #include "../include/Kick.hpp"
 #include "../include/Mode.hpp"
+#include "../include/Oper.hpp"
 
 CommandFactory::CommandFactory(){
 	this->map_[PART] = new Part;
@@ -20,6 +21,7 @@ CommandFactory::CommandFactory(){
 	this->map_[TOPIC] = new Topic;
 	this->map_[KICK] = new Kick;
 	this->map_[MODE] = new Mode;
+	this->map_[OPER] = new Oper;
 }
 
 CommandFactory::~CommandFactory(){

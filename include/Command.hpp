@@ -21,6 +21,7 @@ using std::cerr;
 # define TOPIC "TOPIC"
 # define KICK "KICK"
 # define MODE "MODE"
+# define OPER "OPER"
 
 class Server;
 

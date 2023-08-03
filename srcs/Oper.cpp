@@ -63,7 +63,7 @@ string Oper::execute(Server &server,const string& message, User& liveUser) {
 	password = messageTokens[2];
 
 	if (password != OPER_PASSWORD) {
-		return ("464 PRIVMSG :Bad Password you retard\r\n");
+		return ("464 PRIVMSG :Bad Password\r\n");
 	}
 
 	User *userToOper = server.doesUserExist(userName);

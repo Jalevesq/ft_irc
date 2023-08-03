@@ -148,11 +148,14 @@ void Channel::addUser(User *user){
 	}
 	sendUserJoin(user);
 	user->addChannelUser(channelName_);
-	users_[user] = false;
+	if (user->getOperator())
+		users_[user] = true;
+	else
+		users_[user] = false;
 	std::string tmp = ":" + user->getNickname() + " JOIN " + ":" + channelName_ + "\r\n";
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	sendTopic(user);
-	sendUserList(user);
+	broadCastUserList();
 }
 
 const std::string Channel::removeUser(User *user, const std::string &reason){

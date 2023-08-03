@@ -26,6 +26,7 @@ class Join : public Command
 		// need to set permision and all that, far from done at all
 		virtual string execute(Server &server,const string& message, User& liveUser);
 		void	createChannel(Server &server, User &liveUser,  std::map<string, string>::iterator tokens) const;
+		string	loop_through_map(std::map<string, string> &channelAndKey,User& liveUser, Server &server);
 
 
 	private:

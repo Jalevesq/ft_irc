@@ -54,16 +54,16 @@ void	Join::createChannel(Server &server, User &liveUser, std::map<string, string
 		send(liveUser.getFdSocket(), error.c_str(), error.size(), 0);
 		return ;
 	}
-	Channel *channel = new Channel(it->first, server.getUserPointer(liveUser.getFdSocket()));
+	Channel *channel = new Channel(it->first, &liveUser);
 	server.addChannel(it->first, channel);
 	std::string tmp = ":" + liveUser.getNickname() + " JOIN " + it->first + "\r\n";
 	send(liveUser.getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	channel->sendTopic(&liveUser);
 	channel->sendUserList(&liveUser);
 }
-// TO DO ME:ajouter /opper (ajouter un bool operator au user), faire join en petite function, ajouter les modes 
+// TO DO ME: faire join en petite function, ajouter les modes 
 
-// Quand MODE fait, ajouter: Impossible de join quand ban, invite only, limite utilisateur, password, etc.
+// Quand MODE fait, ajouter: invite only, limite utilisateur, password.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 
 	string errorMessage;

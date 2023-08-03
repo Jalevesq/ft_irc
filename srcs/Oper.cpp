@@ -63,16 +63,27 @@ string Oper::execute(Server &server,const string& message, User& liveUser) {
 	password = messageTokens[2];
 
 	if (password != OPER_PASSWORD) {
-		return ("464 PRIVMSG: Bad Password you retard\r\n");
+		return ("464 PRIVMSG :Bad Password you retard\r\n");
 	}
 
 	User *userToOper = server.doesUserExist(userName);
 	if (userToOper == NULL) {
 		return ("401 PRIVMSG :No such nickname.\r\n");
 	}
+
+	// Send dans tout les channels du userToOper la nouvelle liste de user.
 	userToOper->setOperator(true);
+
+	std::set<string> channelSetUser = userToOper->getChannelSet();
+	std::set<string>::iterator it = channelSetUser.begin();
+	for (; it != channelSetUser.end(); it++) {
+		Channel* channel = server.getChannel(*it);
+		channel->setUserOperator(userToOper, true);
+		channel->broadCastUserList();
+	}
 	string operMessage = ": 381 " + userToOper->getNickname() + " :You are now an IRC operator\r\n";
-	return (operMessage);
+	send(userToOper->getFdSocket(), operMessage.c_str(), operMessage.size(), 0);
+	return ("");
 }
 
 

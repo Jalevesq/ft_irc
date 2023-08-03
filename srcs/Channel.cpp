@@ -53,7 +53,9 @@ void Channel::sendUserList(const User *user){
 	std::string endList;
 
 	for (; it != users_.end(); ++it){
-		if (it->second)
+		if (it->first->getOperator())
+			regularStream << "+";
+		else if (it->second)
 			regularStream << "@";
 		regularStream << it->first->getNickname() << " ";
 	}
@@ -76,7 +78,9 @@ void Channel::broadCastUserList(){
 	std::string regularList;
 
 	for (; it != users_.end(); ++it){
-		if (it->second)
+		if (it->first->getOperator())
+			regularStream << "+";
+		else if (it->second)
 			regularStream << "@";
 		regularStream << it->first->getNickname() << " ";
 	}

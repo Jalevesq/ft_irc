@@ -18,7 +18,7 @@ typedef std::vector<string>::iterator iterator_;
 void Mode::parseModePlus(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel, int &index, string &token){
 	index++;
 	if (token.size() == 1){
-		sendUserError("461 MODE+ :Not enough parameters\r\n", liveUser.getFdSocket());
+		sendUserError("461 MODE :Not enough parameters\r\n", liveUser.getFdSocket());
 		return;
 	}
 	for (; token[index]; index++){
@@ -84,7 +84,7 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 		}
 	}
 	long int amount = strtol(number.c_str(), NULL, 10);
-	if (amount > 50 && amount >= 1){
+	if (amount > 50 || amount < 1){
 		sendUserError("400 +l user limit argument was over 50\r\n", liveUser.getFdSocket());
 		return;//fix later no key provided not sending to right channel
 	}
@@ -157,10 +157,10 @@ void Mode::parseNegativeOP(iterator_ &it, iterator_ &end, User &liveUser, Channe
 		sendUserError("696 " + channel->getChannelName() + " -o :No user were provided\r\n", liveUser.getFdSocket());
 		return;
 	}
-	// if (liveUser.getOperator() == false){
-	// 	sendUserError("481 :Permission Denied, you don't have the right\r\n", liveUser.getFdSocket());
-	// 	return;
-	// }
+	if (liveUser.getOperator() == false){
+		sendUserError("481 :Permission Denied, you don't have the right\r\n", liveUser.getFdSocket());
+		return;
+	}
 	std::string user = *it;
 	if (channel->isUserInChannel(user) == false){
 		sendUserError("401 " + *it + " :No such nickname\r\n", liveUser.getFdSocket());
@@ -207,9 +207,6 @@ const string Mode::parseMode(Channel *channel, std::vector<string> &tokens, User
 			else if (token[index] == '-')
 				parseModeNegatif(it, end, liveUser, channel, index, token); //add error if invalid token?
 		}
-		if (it == tokens.end())
-				return "";
-		it++;
 	} while (it != tokens.end());
 	return "";
 }

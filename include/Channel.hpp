@@ -34,9 +34,14 @@ public:
 	void sendUserJoin(const User *user);
 	void sendMessage(const User *user, const std::string &message);
 	void sendCurrentMode(const User *user) const;
+	void broadCastAll(const std::string &message);
+	void broadCastUserList();
 
 	//setter
 	void setTopic(const std::string &topic, const std::string &userName);
+	void setPassword(const std::string &password);
+	void setUserOperator(User *user, bool flag);
+	void setUserLimit(unsigned int amount);
 
 	//getter
 	const std::string &getChannelName() const;
@@ -49,10 +54,11 @@ public:
 	bool isUserInChannel(const std::string& name);
 	int getMode() const;
 	int getUserLimit() const;
+	User *getUser(const std::string &user);
 
 	//mode
 	bool isModeFlagSet(const unsigned char &flag) const;
-	void setMode(const unsigned char &flag, User *user, const char c);
+	void setMode(const unsigned char &flag);
 	void unsetMode(const unsigned char &flag);
 	
 private:

@@ -41,8 +41,8 @@ void Channel::sendTopic(const User *user) const{
 	} else {
     	topic = ":" + user->getNickname() + " 332 " + this->userSetTopic_ + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		topic = ":" + user->getNickname() + " 333 " + this->userSetTopic_  + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
-		send(userSocket, topic.c_str(), topic.size(), 0);
+		// topic = ":" + user->getNickname() + " 333 " + this->userSetTopic_  + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
+		// send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
 
@@ -70,7 +70,21 @@ void Channel::sendUserLeft(const User *user, const std::string &reason){
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
-//:a!~a@localhost JOIN :#a
+void Channel::broadCastUserList(){
+	std::map<User *, bool>::iterator it = users_.begin();
+	std::ostringstream regularStream;
+	std::string regularList;
+
+	for (; it != users_.end(); ++it){
+		if (it->second)
+			regularStream << "@";
+		regularStream << it->first->getNickname() << " ";
+	}
+	regularList = "353 = " + channelName_ + " :" + regularStream.str() + "\r\n";
+	for (it = users_.begin(); it != users_.end(); ++it)
+		send(it->first->getFdSocket(), regularList.c_str(), regularList.size(), 0);
+}
+
 void Channel::sendUserJoin(const User *user) {
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::string message = ":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n";
@@ -107,6 +121,12 @@ void Channel::sendCurrentMode(const User *user) const{
 		std::string mode = "324 " + user->getNickname() + " " + channelName_ + stream.str() + "\r\n";
 	}
 	send(user->getFdSocket(), mode.c_str(), mode.size(), 0);
+}
+
+void Channel::broadCastAll(const std::string &message){
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it)
+		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
 /*
@@ -148,6 +168,15 @@ void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	this->userSetTopic_  = userName;
 }
 
+void Channel::setPassword(const std::string &password){
+	hasPassword_ = true;
+	password_ = password;
+}
+
+void Channel::setUserOperator(User *user, bool flag) { users_[user] = flag; }
+
+void Channel::setUserLimit(unsigned int amount) { userLimit_ = amount; }
+
 /*
  *****************************************************************************
  **                               mode                                      **
@@ -158,11 +187,7 @@ bool Channel::isModeFlagSet(const unsigned char &flag) const {
 	return (mode_ & flag) == flag;
 }
 
-void Channel::setMode(const unsigned char &flag, User *user, const char c){
-	(void)c;
-	(void)user;
-	mode_ |= flag;
-}
+void Channel::setMode(const unsigned char &flag){ mode_ |= flag; }
 
 void Channel::unsetMode(const unsigned char &flag){ mode_ &= ~flag; }
 
@@ -188,6 +213,16 @@ bool Channel::isUserInChannel(const std::string& name) {
 	}
 	return (false);
 }
+
+User *Channel::getUser(const std::string &name){
+	std::map<User *, bool>::iterator it = this->users_.begin();
+	for (; it != users_.end(); it++) {
+		if (name == it->first->getNickname())
+			return it->first;
+	}
+	return NULL;
+}
+
 const std::string &Channel::getChannelName() const { return channelName_; }
 
 const std::string &Channel::getTopic() const { return topic_; }

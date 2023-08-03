@@ -39,10 +39,10 @@ void Channel::sendTopic(const User *user) const{
 		topic = "331 " + channelName_ + " :" + channelName_ +"\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
 	} else {
-    	topic = ":" + user->getNickname() + " 332 " + this->userSetTopic_ + " " + channelName_ + " :" + topic_ + "\r\n";
+    	topic =  ": 332 " + user->getNickname() + " " + channelName_ + " :" + topic_ + "\r\n";
 		send(userSocket, topic.c_str(), topic.size(), 0);
-		// topic = ":" + user->getNickname() + " 333 " + this->userSetTopic_  + " " + channelName_ + " " + user->getNickname() + " " + std::to_string(time_) + "\r\n";
-		// send(userSocket, topic.c_str(), topic.size(), 0);
+		topic = ":" + this->userSetTopic_ + " 333 " + this->userSetTopic_  + " " + channelName_ + " " + this->userSetTopic_ + " " + std::to_string(time_) + "\r\n";
+		send(userSocket, topic.c_str(), topic.size(), 0);
 	}
 }
 
@@ -109,7 +109,7 @@ void Channel::sendCurrentMode(const User *user) const{
 	else{
 		stream << " +";
 		if (mode_ & MODE_USER_LIMIT)
-			stream << "i";
+			stream << "l";
 		if (mode_ & MODE_CHANNEL_OPERATOR)
 			stream << "o";
 		if (mode_ & MODE_CHANNEL_KEY)
@@ -154,6 +154,18 @@ const std::string Channel::removeUser(User *user, const std::string &reason){
 	sendUserLeft(user, reason);
 	return ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
 }
+
+std::string Channel::kickUser(User *userOp, User *toKick, const std::string &reason) {
+	std::string message, partMessage = "";
+	message = ":" + userOp->getNickname() + " KICK " + channelName_ + " " +  toKick->getNickname() + " :" + reason + "\r\n";
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it){
+		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
+	}
+	removeUser(toKick, "");
+	return ("");
+}
+
 
 /*
  *****************************************************************************

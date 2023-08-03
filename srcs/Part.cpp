@@ -2,6 +2,7 @@
 #include "../include/Channel.hpp"
 #include "../include/Server.hpp"
 #include "../include/User.hpp"
+#include "../include/Utility.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -44,32 +45,37 @@ Part::~Part()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+// PART #abc :WeeChat 4.0.2
+
 string Part::execute(Server &server,const string& message, User& liveUser) {
-	string channelName, info, partMessage;
+	string channelName = "", info = "", partMessage = "";
+	std::vector<string> messageTokens = tokenize(message, " ");
 
-	size_t start = message.find('#');
-    size_t end = message.find(':', start);
+	if (messageTokens.size() <= 1) {
+		return ("461 PRIVMSG " + liveUser.getNickname() + " PART :Not enough parameters.\r\n");
+	} else if (!server.doesChannelExist(messageTokens[1])) {
+		return ("403 PRIVMSG :No such channel\r\n");
+	} 
 
+	size_t pos = message.find(":", 0);
+	if (pos == string::npos && messageTokens.size() > 2)
+		return ("461 PRIVMSG :Bad format of command. Need ':' before reason to exit.\r\n");
+	else if (pos == string::npos)
+		info = "";
+	else
+		info = message.substr(pos + 1);
 
-	// NEED TO PATCH THIS ? Try to crash it with nc
-    if (start == std::string::npos || end == std::string::npos) {
-        // Handle error
-        return ("");
-    }
-    channelName = message.substr(start, end - (start + 1));
-    info = message.substr(end + 1);
-
-	std::set<string> userChannelName = liveUser.getChannelSet();
-	if (server.doesChannelExist(channelName) == false) {
-		partMessage = "403 PRIVMSG :No such channel\r\n";
-	} else if (userChannelName.find(channelName) == userChannelName.end()) {
-		partMessage = "442 PRIVMSG " + channelName + " :You're not on that channel\r\n";
+	if (info.length() > 25)
+		return ("400 :Error - Part reason si too long.\r\n");
+	Channel *channelToLeave = server.getChannel(messageTokens[1]);
+	channelName = channelToLeave->getChannelName();
+	if (!channelToLeave->isUserInChannel(liveUser.getNickname())) {
+		return ("442 PRIVMSG " + channelName + " :You're not on that channel\r\n");
 	} else {
-		Channel *channel = server.getChannel(channelName);
-		partMessage = channel->removeUser(&liveUser, info);
-		if (channel->getUserCount() == 0)
-			server.removeChannel(channel->getChannelName());
+		partMessage = channelToLeave->removeUser(&liveUser, info);
 		liveUser.removeChannelUser(channelName);
+		if (channelToLeave->getUserCount() == 0)
+			server.removeChannel(channelName);
 	}
 
 	return (partMessage);

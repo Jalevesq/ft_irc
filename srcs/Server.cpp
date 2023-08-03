@@ -1,6 +1,6 @@
 #include "../include/Server.hpp"
 
-Server::Server(): userCount_(0), channelCount_(0){
+Server::Server(): userCount_(0) {
 
 	struct pollfd listennerPoll;
 	listennerPoll.events = POLLIN;
@@ -105,7 +105,7 @@ void Server::serverRun()
 //////////////////////////////////////////////////////////////////////
 
 void Server::handleMessage(const std::string &message, User& liveUser) {
-	string finalMessage = "";
+	string finalMessage;
 	string userMessage = "";
 	std::vector<string> cmd;
 
@@ -122,13 +122,14 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 	cmd = factory_.getCmd();
 	std::vector<string>::iterator it = cmd.begin();
 	for (; it != cmd.end(); ++it){
+		finalMessage = "";
 		Command *cmd = factory_.CreateCommand();
 		if (cmd) {
 			if (liveUser.getIsRegister() == false)
 				finalMessage = Auth(cmd, liveUser, *it);
 			else
 				finalMessage = cmd->execute(*this, *it, liveUser); 
-		} else {
+		} else if (*it != "CAP LS 302") {
 			finalMessage = "421 PRIVMSG :Unknown Command.\r\n";
 		}
 		if (!finalMessage.empty())
@@ -143,18 +144,20 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 
 	if (cmdName == PING) {
 		message = cmd->execute(*this, argument, liveUser);
-		// return (message);
 	}
 	else if (liveUser.getIsPass() == false) {
-		if (cmd->getName() == PASSW) {
+		if (cmdName == PASSW) {
 			message = cmd->execute(*this, argument, liveUser);
 		} else {
-			message = "451 PRIVMSG :You are not registered. Enter the password first.\r\n";
+			message = "451 PRIVMSG :You need to enter the password first.\r\n";
 		}
-	}
-	else if (cmdName == NICK || cmdName == USER)
+	} else if (cmdName == PASSW && this->password_.empty()) {
+		return ("451 PRIVMSG :There is no password on this server.\r\n");
+	} else if (cmdName == PASSW) {
+		return ("451 PRIVMSG :You've already enter the password.\r\n");
+	} else if (cmdName == NICK || cmdName == USER) {
 		message = cmd->execute(*this, argument, liveUser);
-	else {
+	} else {
 		message = "451 PRIVMSG :You are not registered. Enter you're Nickname and/or your username.\r\n";
 	}
 
@@ -196,6 +199,12 @@ void Server::acceptUser(){
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
 	if (newFd == -1)
 		throw std::runtime_error("Accept failure"); // fix later
+	if (listUser_.size() >= MAX_USER) {
+		string error = "400 :Error - Too many user on server. You will be disconnected.\r\n";
+		send(newFd, error.c_str(), error.size(), 0);
+		close(newFd);
+		return ;
+	}
 	std::cout << "New connection accepted, socket fd: " << newFd  << ". User ID: " << (newFd - 3) << std::endl;
 	createUser(newFd);
 }
@@ -218,7 +227,6 @@ void Server::createUser(int& newFd){
 	}
 	else {
 		newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
-		cout << "'" << this->password_ << "'" << endl;
 	}
 
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
@@ -271,13 +279,9 @@ User *Server::doesUserExist(const string &name) {
 
 const int &Server::getUserCount() const { return userCount_; }
 
-const int &Server::getChannelCount() const { return channelCount_; }
+int Server::getChannelCount() const { return this->channels_.size(); }
 
 const int &Server::getFd() const { return poll_[0].fd; }
-
-void Server::setUserCount(int count){ userCount_ += count; }
-
-void Server::setChannelCount(int count){ channelCount_ += count; }
 
 Channel *Server::getChannel(const std::string &name) { return channels_[name];}
 

@@ -7,8 +7,9 @@ Topic::Topic(){}
 
 Topic::~Topic(){}
 
-// Check if operator mode is on.
+// Check if only operator mode is on in channel.
 // TOPIC #abc :fuck
+// TOPIC #abc
 std::string Topic::execute(Server &server, const string &message, User &liveUser){
 	std::string sendTopicMessage;
 	std::string topic;
@@ -29,13 +30,13 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 		channel->sendTopic(&liveUser);
 		return ("");
 	}
-	size_t position = 1 + message.find(":");
+	size_t position = message.find(":");
 	if (position == string::npos)
 		return ("461 PRIVMSG :Bad format of command. Need ':' before topic to execute.\r\n");	
 	if (token[2][0] == ':' && token[2].length() == 1) {
 		topic = "";
 	} else {
-		topic = message.substr(position);
+		topic = message.substr(position + 1);
 		if (topic.length() > 35)
 			return ("417 PRIVMSG :topic is too long.\r\n");
 	}

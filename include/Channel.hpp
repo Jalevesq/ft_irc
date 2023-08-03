@@ -13,7 +13,6 @@ class User;
 #define MODE_CHANNEL_OPERATOR   0x08 // Bit 3 represents mode (o) ????
 #define MODE_USER_LIMIT         0x10 // Bit 4 represents mode (i) if user limit is on
 
-
 class Channel{
 public:
 	Channel(const std::string &name, User* user);
@@ -23,7 +22,7 @@ public:
 	//Channel &operator=(const Channel &rhs);
 
 	//user methods
-	const std::string addUser(User* user);
+	void	addUser(User* user);
 	const std::string removeUser(User *user, const std::string &reason);
 	std::string kickUser(User *userOp, User *toKick, const std::string &reason);
 

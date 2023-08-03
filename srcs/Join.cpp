@@ -48,22 +48,25 @@ Join::~Join()
 */
 
 // TO re-do with mode?
-const std::string Join::createChannel(Server &server, User &liveUser, std::map<string, string>::iterator it) const{
+void	Join::createChannel(Server &server, User &liveUser, std::map<string, string>::iterator it) const {
+	if (server.getChannelCount() >= MAX_CHANNEL) {
+		string error = "400 :Error - Max channel on server reach. Impossible to create new channel.\r\n";
+		send(liveUser.getFdSocket(), error.c_str(), error.size(), 0);
+		return ;
+	}
 	Channel *channel = new Channel(it->first, server.getUserPointer(liveUser.getFdSocket()));
 	server.addChannel(it->first, channel);
 	std::string tmp = ":" + liveUser.getNickname() + " JOIN " + it->first + "\r\n";
 	send(liveUser.getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	channel->sendTopic(&liveUser);
 	channel->sendUserList(&liveUser);
-	return "";
 }
-// TO DO ME: essayer de tout fuck up avec nc, ajouter /opper (ajouter un bool operator au user)
-// Fuck up nc: topic, part, pass
+// TO DO ME:ajouter /opper (ajouter un bool operator au user), faire join en petite function, ajouter les modes 
 
 // Quand MODE fait, ajouter: Impossible de join quand ban, invite only, limite utilisateur, password, etc.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 
-	string joinMessage, errorMessage;
+	string errorMessage;
 	string joinChannel = "";
 	string keyChannel = "";
 
@@ -106,7 +109,7 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 	std::map<std::string, std::string>::iterator it = channelAndKey.begin();
 	for (; it != channelAndKey.end(); it++) {
 		errorMessage = "";
-		if (liveUser.getChannelSet().size() > 9) {
+		if (liveUser.getChannelSet().size() > MAX_CHANNEL_PER_USER) {
     		return ("400 :Error - You have reached your maximum channel limit (10)\r\n");
 		}
 		if (it->first[0] != '#')
@@ -123,12 +126,12 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 			send(liveUser.getFdSocket(), errorMessage.c_str(), errorMessage.size(), 0);
 		else if (server.doesChannelExist(it->first)) {
 			Channel *channel = server.getChannel(it->first);
-			joinMessage = channel->addUser(&liveUser);
+			channel->addUser(&liveUser);
 		} else {
-			joinMessage = createChannel(server, liveUser, it);
+			createChannel(server, liveUser, it);
 		}
 	}
-	return (joinMessage);
+	return ("");
 }
 
 /*

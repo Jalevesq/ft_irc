@@ -23,15 +23,16 @@
 # include "CommandFactory.hpp"
 # include "Channel.hpp"
 
+#define MAX_USER 25
+#define MAX_CHANNEL 35
+#define MAX_CHANNEL_PER_USER 10
+#define OPER_PASSWORD "bozo.com"
+
 using std::string;
 using std::cout;
 using std::endl;
 using std::cerr;
 
-#define MAX_USER 99
-
-
-// class Command;
 class Server{
 public:
  	Server();
@@ -46,14 +47,10 @@ public:
 
 	// Getter
 	const int &getUserCount() const;
-	const int &getChannelCount() const;
+	int getChannelCount() const;
 	const int &getFd() const;
 	Channel *getChannel(const std::string &name);
 	const string& getPassword() const;
-
-	// Setter
-	void setUserCount(int count);
-	void setChannelCount(int count);
 
 	// Everything related to user
 	User *doesUserExist(const std::string &name);
@@ -84,9 +81,8 @@ private:
 	// std::vector<User *> userVector_;
 	std::set<string> nicknameList_;
 	std::vector<struct pollfd> poll_;
+	int userCount_;
 	struct sockaddr_in address_;
 	CommandFactory factory_;
-	int userCount_;
-	int channelCount_;
 	string password_;
 };

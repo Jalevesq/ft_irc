@@ -2,7 +2,6 @@
 #include "../include/Utility.hpp"
 #include "../include/Server.hpp"
 #include "../include/User.hpp"
-#define RPL_CHANLIMIT "999"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -61,21 +60,8 @@ void	Join::createChannel(Server &server, User &liveUser, std::map<string, string
 	channel->sendTopic(&liveUser);
 	channel->sendUserList(&liveUser);
 }
-// TO DO ME: faire join en petite function, ajouter les modes 
 
-// Quand MODE fait, ajouter: invite only, limite utilisateur, password.
-std::string Join::execute(Server &server,const string& message, User& liveUser) {
-
-	string errorMessage;
-	string joinChannel = "";
-	string keyChannel = "";
-
-	std::vector<string> tokens;
-	std::vector<string> channelToJoin;
-	std::vector<string> keyword;
-	std::map<string, string> channelAndKey;
-
-	tokens = tokenize(message, " ");
+string errorChecker(std::vector<string> &tokens, std::vector<string> &channelToJoin, std::vector<string> &keyword, User& liveUser) {
 	if (tokens.size() <= 1)
 		return ("461 PRIVMSG " + liveUser.getNickname() + " JOIN :Not enough parameters\r\n");
 	else if (tokens.size() > 3)
@@ -91,6 +77,12 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 	} else if (keyword.size() > channelToJoin.size()) {
 		return ("400 :Error - You entered more keyword than channel. Nothing has been executed.\r\n");
 	}
+	return ("");
+}
+
+void 	fill_map_channel_n_key(std::map<string, string> &channelAndKey, std::vector<string> &channelToJoin, std::vector<string> &keyword) {
+	string keyChannel = "";
+	string joinChannel = "";
 
 	for (unsigned int i = 0; i <= channelToJoin.size(); i++) {
 		if (!keyword.empty()) {
@@ -104,6 +96,10 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 
 		channelAndKey[joinChannel] = keyChannel;
 	}
+}
+
+string Join::loop_through_map(std::map<string, string> &channelAndKey,User& liveUser, Server &server) {
+	string errorMessage;
 
 	// needs more checkup for password?
 	std::map<std::string, std::string>::iterator it = channelAndKey.begin();
@@ -132,6 +128,30 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 		}
 	}
 	return ("");
+}
+
+// TO DO ME: ajouter les modes 
+
+// Quand MODE fait, ajouter: invite only, limite utilisateur, password.
+std::string Join::execute(Server &server,const string& message, User& liveUser) {
+
+	string errorMessage = "";
+
+	std::vector<string> tokens;
+	std::vector<string> channelToJoin;
+	std::vector<string> keyword;
+	std::map<string, string> channelAndKey;
+
+	tokens = tokenize(message, " ");
+	errorMessage = errorChecker(tokens, channelToJoin, keyword, liveUser);
+	if (!errorMessage.empty()) {
+		return (errorMessage);
+	}
+
+	fill_map_channel_n_key(channelAndKey, channelToJoin, keyword);
+	errorMessage = loop_through_map(channelAndKey, liveUser, server);
+	
+	return (errorMessage);
 }
 
 /*

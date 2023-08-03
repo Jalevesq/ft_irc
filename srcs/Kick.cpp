@@ -73,9 +73,9 @@ string Kick::execute(Server &server,const string& message, User& liveUser) {
 		return ("400 :Error - You can't kick yourself dumbfuck.\r\n");
 	}  else if (channelFromKick->isOperator(userToKick) && liveUser.getOperator() == false) {
 		// userToKick is channel Op et userThatKick is not global op
-		return ("723 Kick :Error - User " + userToKick->getNickname() + " is a Channel Operator.\r\n");
+		return ("723 Kick: '" + userToKick->getNickname() + "' is a Channel Operator.\r\n");
 	} else if (userToKick->getOperator()) {
-		return ("400 Kick :User " + userToKick->getNickname() + " is a Global Operator.\r\n");
+		return ("723 Kick: '" + userToKick->getNickname() + "' is a Global Operator.\r\n");
 	}
 
 	if (messageTokens.size() >= 4) {

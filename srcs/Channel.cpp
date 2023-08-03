@@ -70,7 +70,21 @@ void Channel::sendUserLeft(const User *user, const std::string &reason){
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
-//:a!~a@localhost JOIN :#a
+void Channel::broadCastUserList(){
+	std::map<User *, bool>::iterator it = users_.begin();
+	std::ostringstream regularStream;
+	std::string regularList;
+
+	for (; it != users_.end(); ++it){
+		if (it->second)
+			regularStream << "@";
+		regularStream << it->first->getNickname() << " ";
+	}
+	regularList = "353 = " + channelName_ + " :" + regularStream.str() + "\r\n";
+	for (it = users_.begin(); it != users_.end(); ++it)
+		send(it->first->getFdSocket(), regularList.c_str(), regularList.size(), 0);
+}
+
 void Channel::sendUserJoin(const User *user) {
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::string message = ":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n";
@@ -85,6 +99,34 @@ void Channel::sendMessage(const User *user, const std::string &message){
 		if (it->first->getFdSocket() != user->getFdSocket())
 			send(it->first->getFdSocket(), messageToSend.c_str(), messageToSend.size(), 0);
 	}
+}
+
+void Channel::sendCurrentMode(const User *user) const{
+	std::ostringstream stream;
+	std::string mode;
+	if ((mode_ & 0b00011111) == 0)
+		mode =  "324 " + user->getNickname() + " " + channelName_ + "\r\n";
+	else{
+		stream << " +";
+		if (mode_ & MODE_USER_LIMIT)
+			stream << "i";
+		if (mode_ & MODE_CHANNEL_OPERATOR)
+			stream << "o";
+		if (mode_ & MODE_CHANNEL_KEY)
+			stream << "k";
+		if (mode_ & MODE_TOPIC_RESTRICTED)
+			stream << "t";
+		if (mode_ & MODE_INVITE_ONLY)
+			stream << "i";
+		std::string mode = "324 " + user->getNickname() + " " + channelName_ + stream.str() + "\r\n";
+	}
+	send(user->getFdSocket(), mode.c_str(), mode.size(), 0);
+}
+
+void Channel::broadCastAll(const std::string &message){
+	std::map<User *, bool>::iterator it = users_.begin();
+	for (; it != users_.end(); ++it)
+		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
 /*
@@ -138,6 +180,15 @@ void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	this->userSetTopic_  = userName;
 }
 
+void Channel::setPassword(const std::string &password){
+	hasPassword_ = true;
+	password_ = password;
+}
+
+void Channel::setUserOperator(User *user, bool flag) { users_[user] = flag; }
+
+void Channel::setUserLimit(unsigned int amount) { userLimit_ = amount; }
+
 /*
  *****************************************************************************
  **                               mode                                      **
@@ -174,6 +225,16 @@ bool Channel::isUserInChannel(const std::string& name) {
 	}
 	return (false);
 }
+
+User *Channel::getUser(const std::string &name){
+	std::map<User *, bool>::iterator it = this->users_.begin();
+	for (; it != users_.end(); it++) {
+		if (name == it->first->getNickname())
+			return it->first;
+	}
+	return NULL;
+}
+
 const std::string &Channel::getChannelName() const { return channelName_; }
 
 const std::string &Channel::getTopic() const { return topic_; }

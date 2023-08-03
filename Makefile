@@ -2,8 +2,7 @@ NAME = irc
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g 
-#-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 #CFLAGS = -std=c++98
 

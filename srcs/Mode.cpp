@@ -7,45 +7,7 @@
 Mode::Mode() {}
 Mode::~Mode() {}	
 
-/*
-i (Invite-only channel):
-Mode flag: +i
-Description: This mode makes the channel invite-only, meaning only invited users can join the channel.
-Parameter: This mode does not require any parameters.
-t (Restrict TOPIC command to channel operators):
-
-Mode flag: +t
-Description: This mode restricts the TOPIC command, allowing only channel operators to change the channel's topic.
-Parameter: This mode does not require any parameters.
-k (Channel key - password):
-
-Mode flag: +k
-Description: This mode sets a channel key (password) that users need to provide to join the channel.
-Parameter: The channel key (password) is required as a parameter for this mode.
-o (Channel operator privilege):
-
-Mode flag: +o
-Description: This mode gives channel operator privilege to a user, allowing them to moderate the channel.
-Parameter: The nickname of the user to be granted operator status is required as a parameter for this mode.
-l (User limit to channel):
-
-Mode flag: +l
-Description: This mode sets a limit on the number of users who can join the channel.
-Parameter: The maximum number of users allowed in the channel is required as a parameter for this mode.
-*/
-
-//:BOZO5 472 hey a :is unknown mode char to me for #a
-//:user 472 user e :is unkonwn mode char to me for #a
-
-
-//:irc.localhost 349 hey #a :End of Channel Exception List
-/*ERR_UMODEUNKNOWNFLAG (501)
-
-  "<client> :Unknown MODE flag"
-
-Indicates that a MODE command affecting a user contained a MODE letter that was not recognized. The text used in the last param of this message may vary.*/
-//+li or -
-typedef std::vector<string>::iterator iterator;
+typedef std::vector<string>::iterator iterator_;
 
 /*
  *****************************************************************************
@@ -53,44 +15,48 @@ typedef std::vector<string>::iterator iterator;
  *****************************************************************************
 */
 
-void Mode::parseModePlus(iterator &it, iterator &end, User &liveUser, Channel *channel){
-	string parameter = *it;
-	if (parameter.size() == 1){
+void Mode::parseModePlus(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel, int &index, string &token){
+	index++;
+	if (token.size() == 1){
 		sendUserError("461 MODE+ :Not enough parameters\r\n", liveUser.getFdSocket());
 		return;
 	}
-	for (int i = 1; parameter[i]; i++){
-		if (parameter[i] == 'i')
+	for (; token[index]; index++){
+		if (token[index] == 'i')
 			setNoArgument(liveUser, channel, MODE_INVITE_ONLY);
-		else if (parameter[i] == 't')
+		else if (token[index] == 't')
 			setNoArgument(liveUser, channel, MODE_TOPIC_RESTRICTED);
-		else if (parameter[i] == 'k')
+		else if (token[index] == 'k')
 			parseKeyMode(it, end, liveUser, channel);
-		else if (parameter[i] == 'o')
+		else if (token[index] == 'o')
 			parseModeOp(it, end, liveUser, channel);
-		else if (parameter[i] == 'l')
+		else if (token[index] == 'l')
 			parseModeLimit(it, end, liveUser, channel);
+		else if (token[index] == '-')
+			return;
 		else
-			sendInvalidToken(channel->getChannelName(), liveUser, parameter[i]);
+			sendInvalidToken(channel->getChannelName(), liveUser, token[index]);
 	}
 }
 
-void Mode::parseKeyMode(iterator &it, iterator &end, User &liveUser, Channel *channel){
+void Mode::parseKeyMode(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	it++;
+	if (it != end)
+		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " k + :No key were provided\r\n", liveUser.getFdSocket());
 		return;
 	}
 	channel->setPassword(*it);
 	channel->setMode(MODE_CHANNEL_KEY);
-	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " The channel is now password protected\r\n";
+	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +k\r\n";
 	channel->broadCastAll(message);
 }
 
-void Mode::parseModeOp(iterator &it, iterator &end, User &liveUser, Channel *channel){
+void Mode::parseModeOp(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	it++;
+	if (it != end)
+		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " + :No user were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -101,14 +67,15 @@ void Mode::parseModeOp(iterator &it, iterator &end, User &liveUser, Channel *cha
 	}
 	channel->setMode(MODE_CHANNEL_OPERATOR);
 	channel->setUserOperator(channel->getUser(*it), true);
-	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " " + *it + " has been promoted to operator\r\n";
+	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +o\r\n";
 	channel->broadCastAll(message);
 	channel->broadCastUserList();
 }
 
-void Mode::parseModeLimit(iterator &it, iterator &end, User &liveUser, Channel *channel){
+void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	it++;
+	if (it != end)
+		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " + l :No number were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -127,7 +94,7 @@ void Mode::parseModeLimit(iterator &it, iterator &end, User &liveUser, Channel *
 	}
 	channel->setUserLimit(amount);
 	channel->setMode(MODE_USER_LIMIT);
-	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " The channel now has a limit of " + number + " of users\r\n";
+	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +l\r\n";
 	channel->broadCastAll(message);
 }
 
@@ -135,11 +102,11 @@ void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag
 	std::string message;
 	if (flag == MODE_INVITE_ONLY){
 		channel->setMode(MODE_INVITE_ONLY);
-		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " The channel is invite only now +(i)\r\n";
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +i\r\n";
 	}
 	else{
 		channel->setMode(MODE_TOPIC_RESTRICTED);
-		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " The topic can now only be changed by operator +(t)\r\n";
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +t\r\n";
 	}
 	channel->broadCastAll(message);
 }
@@ -150,12 +117,64 @@ void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag
  *****************************************************************************
 */
 
-void Mode::parseModeNegatif(iterator &it, iterator &end, User &liveUser, Channel *channel){
-	std::string code = *it;
-	(void)it;
-	(void)end;
-	(void)liveUser;
-	(void)channel;
+void Mode::parseModeNegatif(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel, int &index, string &token){
+	string parameter = token;
+	if (parameter.size() == 1){
+		sendUserError("461 MODE+ :Not enough parameters\r\n", liveUser.getFdSocket());
+		return;
+	}
+	for (; parameter[index]; index++){
+		if (parameter[index] == 'i')
+			setNoArgumentNegative(liveUser, channel, MODE_INVITE_ONLY);
+		else if (parameter[index] == 't')
+			setNoArgumentNegative(liveUser, channel, MODE_TOPIC_RESTRICTED);
+		else if (parameter[index] == 'k')
+			setNoArgumentNegative(liveUser, channel, MODE_CHANNEL_KEY);
+		else if (parameter[index] == 'o')
+			parseNegativeOP(it, end, liveUser, channel);
+		else if (parameter[index] == 'l')
+			setNoArgumentNegative(liveUser, channel, MODE_USER_LIMIT);
+		else if (parameter[index] == '+')
+			return;
+		else
+			sendInvalidToken(channel->getChannelName(), liveUser, parameter[index]);
+	}
+}
+
+void Mode::setNoArgumentNegative(User &user, Channel *channel, const unsigned char &flag){
+	std::string message;
+	channel->unsetMode(flag);
+	if (flag == MODE_INVITE_ONLY)
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -i\r\n";
+	else if (flag == MODE_TOPIC_RESTRICTED)
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -t\r\n";
+	else if (flag == MODE_CHANNEL_KEY)
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -k\r\n";
+	else if (flag == MODE_USER_LIMIT)
+		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -l\r\n";
+	channel->broadCastAll(message);
+}
+
+void Mode::parseNegativeOP(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
+	if (it != end)
+		++it;
+	if (it == end){
+		sendUserError("696 " + channel->getChannelName() + " -o :No user were provided\r\n", liveUser.getFdSocket());
+		return;
+	}
+	// if (liveUser.getOperator() == false){
+	// 	sendUserError("481 :Permission Denied, you don't have the right\r\n", liveUser.getFdSocket());
+	// 	return;
+	// }
+	std::string user = *it;
+	if (channel->isUserInChannel(user) == false){
+		sendUserError("401 " + *it + " :No such nickname\r\n", liveUser.getFdSocket());
+		return;
+	}
+	channel->setUserOperator(channel->getUser(user), false);
+	std::string message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " -o\r\n";
+	channel->broadCastAll(message);
+	channel->broadCastUserList();
 }
 
 /*
@@ -173,21 +192,30 @@ void Mode::sendInvalidToken(const string channelName, User &liveUser, const char
 	send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);
 }
 
-
-const string Mode::parseMode(Channel *channel, std::vector<string> &tokens, User &liveUser){
+const string Mode::parseMode(Channel *channel, std::vector<string> &tokens, User &liveUser)
+{
 	std::vector<string>::iterator it = tokens.begin();
 	std::vector<string>::iterator end = tokens.end();
-	do{
+	it += 2;
+	do
+	{
 		std::string token = *it;
-		if (token[0] == '+')
-			parseModePlus(it, end, liveUser, channel);
-		else if (token[0] == '-')
-			parseModeNegatif(it, end, liveUser, channel);
-		if (it == tokens.end())
-			return ""; //fix return invalid token or something ~~~
 		it++;
-	} 
-	while(it != tokens.end());
+		cout << token << endl;
+		if (token[0] != '+' && token[0] != '-')
+			return "400 :mega bozo\r\n";
+		int index = 0;
+		while (token[index])
+		{
+			if (token[index] == '+')
+				parseModePlus(it, end, liveUser, channel, index, token);
+			else if (token[index] == '-')
+				parseModeNegatif(it, end, liveUser, channel, index, token); //add error if invalid token?
+		}
+		if (it == tokens.end())
+				return "";
+		it++;
+	} while (it != tokens.end());
 	return "";
 }
 

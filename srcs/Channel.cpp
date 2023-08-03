@@ -109,7 +109,7 @@ void Channel::sendCurrentMode(const User *user) const{
 	else{
 		stream << " +";
 		if (mode_ & MODE_USER_LIMIT)
-			stream << "i";
+			stream << "l";
 		if (mode_ & MODE_CHANNEL_OPERATOR)
 			stream << "o";
 		if (mode_ & MODE_CHANNEL_KEY)

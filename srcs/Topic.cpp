@@ -42,7 +42,7 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 
 	if (channel->isModeFlagSet(MODE_TOPIC_RESTRICTED)) {
 		if (!channel->isOperator(&liveUser)) {
-			return ("482 " + channelName + " :You're not channel operator");
+			return ("482 " + channelName + " :You're not channel operator\r\n");
 		}
 	}
 

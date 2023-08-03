@@ -184,7 +184,7 @@ void Mode::sendUserError(const string &message, int fd){
 }
 
 void Mode::sendInvalidToken(const string channelName, User &liveUser, const char c){
-	std::string message = ":" + liveUser.getNickname() + " 472 " + c + " " + channelName + " :is unkonwn mode char to me for " + channelName + "\r\n";
+	std::string message = ":" + liveUser.getNickname() + " 472 " + c + " " + channelName + " :is unknown mode char to me for " + channelName + "\r\n";
 	send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);
 }
 

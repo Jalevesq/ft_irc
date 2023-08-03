@@ -101,15 +101,17 @@ void 	fill_map_channel_n_key(std::map<string, string> &channelAndKey, std::vecto
 bool checkMode(Channel *channel, User *liveUser, string keyword) {
 	string error = "";
 	string channelName = channel->getChannelName();
+	if (liveUser->getOperator())
+		return (true);
 	if (channel->isModeFlagSet(MODE_CHANNEL_KEY)) {
-  		error = "475 " + channelName + " :Cannot join channel (+k)\r\n";
+  		error = "475 " + channelName + " :Cannot join, bad channel key (+k)\r\n";
 		if (keyword != channel->getPassword()) {
 			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
 			return (false);
 		}
 	}
 	if (channel->isModeFlagSet(MODE_USER_LIMIT)) {
-		error =  "471 " + channelName + " :Cannot join channel (+l)\r\n";
+		error =  "471 " + channelName + " :Cannot join, limit user in channel reach (+l)\r\n";
 		if (channel->getUserList().size() >= static_cast<unsigned long>(channel->getUserLimit())) {
 			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
 			return (false);

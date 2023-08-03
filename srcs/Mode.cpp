@@ -41,8 +41,6 @@ void Mode::parseModePlus(iterator_ &it, iterator_ &end, User &liveUser, Channel 
 
 void Mode::parseKeyMode(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	if (it != end)
-		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " k + :No key were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -51,12 +49,11 @@ void Mode::parseKeyMode(iterator_ &it, iterator_ &end, User &liveUser, Channel *
 	channel->setMode(MODE_CHANNEL_KEY);
 	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +k\r\n";
 	channel->broadCastAll(message);
+	it++;
 }
 
 void Mode::parseModeOp(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	if (it != end)
-		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " + :No user were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -70,12 +67,11 @@ void Mode::parseModeOp(iterator_ &it, iterator_ &end, User &liveUser, Channel *c
 	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +o\r\n";
 	channel->broadCastAll(message);
 	channel->broadCastUserList();
+	it++;
 }
 
 void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
 	std::string message;
-	if (it != end)
-		it++;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " + l :No number were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -96,6 +92,7 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 	channel->setMode(MODE_USER_LIMIT);
 	message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " +l\r\n";
 	channel->broadCastAll(message);
+	it++;
 }
 
 void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag){
@@ -156,8 +153,6 @@ void Mode::setNoArgumentNegative(User &user, Channel *channel, const unsigned ch
 }
 
 void Mode::parseNegativeOP(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel){
-	if (it != end)
-		++it;
 	if (it == end){
 		sendUserError("696 " + channel->getChannelName() + " -o :No user were provided\r\n", liveUser.getFdSocket());
 		return;
@@ -175,6 +170,7 @@ void Mode::parseNegativeOP(iterator_ &it, iterator_ &end, User &liveUser, Channe
 	std::string message = ":" + liveUser.getNickname() + " MODE " + channel->getChannelName() + " -o\r\n";
 	channel->broadCastAll(message);
 	channel->broadCastUserList();
+	++it;
 }
 
 /*
@@ -201,7 +197,6 @@ const string Mode::parseMode(Channel *channel, std::vector<string> &tokens, User
 	{
 		std::string token = *it;
 		it++;
-		cout << token << endl;
 		if (token[0] != '+' && token[0] != '-')
 			return "400 :mega bozo\r\n";
 		int index = 0;

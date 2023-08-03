@@ -1,6 +1,6 @@
 #include "../include/Nickname.hpp"
 #include "../include/Server.hpp"
-
+#include "../include/Utility.hpp"
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
@@ -43,32 +43,20 @@ Nickname::~Nickname()
 /*
 ** --------------------------------- METHODS ----------------------------------
 */
-
+// NICK Wiz
+// :WiZ NICK Kilroy  
 
 std::string Nickname::execute(Server &server,const string& message, User& liveUser) {
     string nickMessage;
     string newNickname;
+	std::vector<string> tokensMessage = tokenize(message, " ");
 
-
-    // REFAIRE AVEC TOKENIZER 
-	newNickname = message.substr(4);
-    if (newNickname.empty() || (newNickname.size() == 1 && newNickname[0] == ' ')){
-		nickMessage = "431 :No nickname given\r\n"; 
-		return (nickMessage);
+	if (tokensMessage.size() <= 1) {
+		return ("431 :No nickname given\r\n");
 	}
 
-    size_t firstNonSpace = newNickname.find_first_not_of(" ");
-    if (firstNonSpace != std::string::npos) {
-        size_t lastNonSpace = newNickname.find_last_not_of("\r\n");
-        if (lastNonSpace != std::string::npos) {
-            newNickname = newNickname.substr(firstNonSpace, lastNonSpace - firstNonSpace + 1);
-        } else {
-            newNickname = "";
-        }
-    } else {
-        newNickname = "";
-    }
-
+	size_t pos = message.find(" ");
+	newNickname = message.substr(pos + 1);
 	if (newNickname.find_first_of("\t\n\v\f\r ", 0) != string::npos || newNickname.empty()
 		|| newNickname[0] == '#' || newNickname[0] == '&' || newNickname[0] == ':') {
         nickMessage = "432 '"  + newNickname + "' :Erroneus nickname\r\n";
@@ -87,11 +75,6 @@ std::string Nickname::execute(Server &server,const string& message, User& liveUs
         liveUser.setNickname(newNickname);
         sendChannelNickChange(server, liveNickname, liveUser); //Broadcast to other users
     }
-
-    // Error nickname
-    // ERR_NONICKNAMEGIVEN (431) Returned when a nickname parameter is expected for a command but isn’t given.
-    // ERR_ERRONEUSNICKNAME (432) Returned when a NICK command cannot be successfully completed as the desired nickname contains characters that are disallowed by the server. See the NICK command for more information on characters which are allowed in various IRC servers. The text used in the last param of this message may vary.
-    // ERR_NICKNAMEINUSE (433) Returned when a NICK command cannot be successfully completed as the desired nickname is already in use on the network. The text used in the last param of this message may vary.
 
     return nickMessage;
 }

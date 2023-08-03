@@ -76,11 +76,11 @@ string Kick::execute(Server &server,const string& message, User& liveUser) {
 	}
 
 	if (messageTokens.size() >= 4) {
-		size_t pos = message.find(":", 0) + 1;
+		size_t pos = message.find(":", 0);
 		if (pos == string::npos)
-			reason = "";
+			return ("461 PRIVMSG :Bad format of command. Need ':' before reason to kick.\r\n");
 		else
-			reason = message.substr(pos);
+			reason = message.substr(pos + 1);
 	}
 	if (reason.length() > 40) {
 		return ("400 :Error - Kick reason is too long\r\n");

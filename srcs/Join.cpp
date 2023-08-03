@@ -57,10 +57,8 @@ const std::string Join::createChannel(Server &server, User &liveUser, std::map<s
 	channel->sendUserList(&liveUser);
 	return "";
 }
-
-// Faire fonctionner join avec plusieurs join channel d'affile + accepter keyword.
-// limite par commande de 3 channels d'une shot
 // TO DO ME: essayer de tout fuck up avec nc, ajouter /opper (ajouter un bool operator au user)
+// Fuck up nc: topic, part, pass
 
 // Quand MODE fait, ajouter: Impossible de join quand ban, invite only, limite utilisateur, password, etc.
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
@@ -78,7 +76,7 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 	if (tokens.size() <= 1)
 		return ("461 PRIVMSG " + liveUser.getNickname() + " JOIN :Not enough parameters\r\n");
 	else if (tokens.size() > 3)
-		return ("400 :Error - Too many parameter.\r\n");
+		return ("400 :Error - Too many parameter in command join.\r\n");
 	
 	if (tokens.size() >= 2)
 		channelToJoin = tokenize(tokens[1], ",");
@@ -109,10 +107,12 @@ std::string Join::execute(Server &server,const string& message, User& liveUser) 
 	for (; it != channelAndKey.end(); it++) {
 		errorMessage = "";
 		if (liveUser.getChannelSet().size() > 9) {
-    		return ("400 :Error - You have reached the maximum channel limit\r\n");
+    		return ("400 :Error - You have reached your maximum channel limit (10)\r\n");
 		}
 		if (it->first[0] != '#')
 			errorMessage = "403 PRIVMSG '" + it->first + "' :Channel name does not have '#' has prefix.\r\n";
+		else if (it->first.find(":", 0) != string::npos)
+			errorMessage = "403 PRIVMSG '" + it->first + "' :Forbidden char ':' in channel name.\r\n";
 		else if (it->first.length() > 10)
 			errorMessage = "400 :Channel name is too long: " + it->first + "\r\n";
 		else if (it->second.length() > 10)

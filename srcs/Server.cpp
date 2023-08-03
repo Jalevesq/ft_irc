@@ -49,19 +49,19 @@ void Server::initServer(char **argv){
 	fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");
-	this->address_.sin_port = htons(atoi(port.c_str())); //if this doesn't compile on mac put stoi instead
+	this->address_.sin_port = htons(atoi(port.c_str()));
 	this->address_.sin_family = AF_INET;
 	this->address_.sin_addr.s_addr = htonl(INADDR_ANY);
 	fcntl(fdSocket, F_SETFL, O_NONBLOCK);
 	ret = bind(fdSocket, (struct sockaddr*)&address_, sizeof(address_));
 	if (ret == -1){
 		close(fdSocket);
-		throw std::runtime_error("Bind failure"); // check later to close fd maybe?
+		throw std::runtime_error("Bind failure");
 	}
 	ret = listen(fdSocket, MAX_USER);
 	if (ret == -1){
 		close(fdSocket);
-		throw std::runtime_error("Listen failure"); // check later to close fd maybe?
+		throw std::runtime_error("Listen failure");
 	}
 	this->poll_[0].fd = fdSocket;
 }
@@ -85,8 +85,6 @@ void Server::serverRun()
 			if (this->poll_[i].revents & (POLLHUP | POLLERR | POLLNVAL)){
 				cout << "User '" << this->listUser_[userFd]->getNickname() << "' (fd: " << poll_[i].fd << ") disconnected" << endl;
 				disconnectUser(i, userFd);
-				// return; // ?
-				// break; // ?
 			}
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
@@ -111,8 +109,7 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 	string userMessage = "";
 	std::vector<string> cmd;
 
-	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") says: " << message;
-
+	cout << "User '" << liveUser.getNickname() << "'" << " (fd: " << liveUser.getFdSocket() << ") sends: " << message;
 
 	liveUser.appendMessage(message);
     userMessage = liveUser.getMessage();
@@ -131,9 +128,11 @@ void Server::handleMessage(const std::string &message, User& liveUser) {
 				finalMessage = Auth(cmd, liveUser, *it);
 			else
 				finalMessage = cmd->execute(*this, *it, liveUser); 
-			if (!finalMessage.empty())
-				send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
+		} else {
+			finalMessage = "421 PRIVMSG :Unknown Command.\r\n";
 		}
+		if (!finalMessage.empty())
+			send(liveUser.getFdSocket(), finalMessage.c_str(), finalMessage.size(), 0);
 		factory_.popCommand();
 	}
 }
@@ -149,11 +148,15 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 	else if (liveUser.getIsPass() == false) {
 		if (cmd->getName() == PASSW) {
 			message = cmd->execute(*this, argument, liveUser);
+		} else {
+			message = "451 PRIVMSG :You are not registered. Enter the password first.\r\n";
 		}
-		// return (message);
 	}
 	else if (cmdName == NICK || cmdName == USER)
 		message = cmd->execute(*this, argument, liveUser);
+	else {
+		message = "451 PRIVMSG :You are not registered. Enter you're Nickname and/or your username.\r\n";
+	}
 
 	if (!liveUser.getNickname().empty() && !liveUser.getUsername().empty()) {
 		liveUser.setIsRegister(true);

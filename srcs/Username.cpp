@@ -1,5 +1,6 @@
 #include "../include/Username.hpp"
 #include "../include/Utility.hpp"
+#include "../include/Username.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -53,11 +54,15 @@ Username::~Username()
 // }
 
 string  Username::execute(Server &server, const string& message, User& liveUser){
+	(void)server;
 	std::vector<std::string> tokens;
 	string token, finalMessage = "";
 	size_t index = 0;
-  size_t end = message.find(" ");
-	(void)server;
+	size_t end = message.find(" ");
+
+	if (liveUser.getIsRegister() == true) {
+		return ("463 PRIVMSG :You're already register.\r\n");
+	}
 
 	while (end != std::string::npos){
 		token = message.substr(index, end - index);

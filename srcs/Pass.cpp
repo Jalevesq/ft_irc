@@ -1,5 +1,6 @@
 #include "../include/Pass.hpp"
 #include "../include/Server.hpp"
+#include "../include/Utility.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -41,15 +42,22 @@ Pass::~Pass()
 ** --------------------------------- METHODS ----------------------------------
 */
 
+// PASS secretpasswordhere
+
 string Pass::execute(Server &server, const string& message, User& liveUser) {
 	string entryPassword, finalMessage;
-	(void)liveUser;
+	std::vector<string> tokensMessage;
 	const string& serverPassword = server.getPassword();
 
-	entryPassword = message.substr(5);
-	if (entryPassword.empty())
-		finalMessage = "461 PRIVMSG :Need more parameter\r\n";
-	else if (entryPassword == serverPassword) {
+	if (liveUser.getIsPass() == true)
+		return ("463 PRIVMSG :You're already register.\r\n");
+
+	tokensMessage = tokenize(message, " ");
+	if (tokensMessage.size() <= 1)
+		return ("461 PRIVMSG :Need more parameter\r\n");
+
+	entryPassword = tokensMessage[1];
+	if (entryPassword == serverPassword) {
 		liveUser.setIsPass (true);
 		finalMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
 	} else {

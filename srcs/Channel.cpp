@@ -135,10 +135,13 @@ void Channel::broadCastAll(const std::string &message){
  *****************************************************************************
 */
 
-const std::string Channel::addUser(User *user){
+void Channel::addUser(User *user){
 	std::map<User *, bool>::iterator it = users_.find(user);
-	if (it != users_.end())
-		return ("443 PRIVMSG :You already are on this channel.\r\n");
+	if (it != users_.end()) {
+		string error = "443 PRIVMSG :You already are on this channel.\r\n";
+		send(user->getFdSocket(), error.c_str(), error.size(), 0);
+		return ;
+	}
 	sendUserJoin(user);
 	user->addChannelUser(channelName_);
 	users_[user] = false;
@@ -146,7 +149,6 @@ const std::string Channel::addUser(User *user){
 	send(user->getFdSocket(), tmp.c_str(), tmp.size(), 0);
 	sendTopic(user);
 	sendUserList(user);
-	return "";
 }
 
 const std::string Channel::removeUser(User *user, const std::string &reason){

@@ -98,6 +98,29 @@ void 	fill_map_channel_n_key(std::map<string, string> &channelAndKey, std::vecto
 	}
 }
 
+bool checkMode(Channel *channel, User *liveUser, string keyword) {
+	string error = "";
+	string channelName = channel->getChannelName();
+	if (channel->isModeFlagSet(MODE_CHANNEL_KEY)) {
+  		error = "475 " + channelName + " :Cannot join channel (+k)\r\n";
+		if (keyword != channel->getPassword()) {
+			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
+			return (false);
+		}
+	}
+	if (channel->isModeFlagSet(MODE_USER_LIMIT)) {
+		error =  "471 " + channelName + " :Cannot join channel (+l)\r\n";
+		if (channel->getUserList().size() >= static_cast<unsigned long>(channel->getUserLimit())) {
+			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
+			return (false);
+		}
+	}
+	if (channel->isModeFlagSet(MODE_INVITE_ONLY)) {
+		// if not invite, return false
+	}
+	return (true);
+}
+
 string Join::loop_through_map(std::map<string, string> &channelAndKey,User& liveUser, Server &server) {
 	string errorMessage;
 
@@ -118,10 +141,15 @@ string Join::loop_through_map(std::map<string, string> &channelAndKey,User& live
 			errorMessage = "400 :Error - Keyword for channel " + it->first + " is too long.\r\n";
 		else if (it->second.find(" ", 0) != string::npos)
 			errorMessage = "696 " + it->first + "k :Forbidden char in keyword\r\n";
-		if (!errorMessage.empty())
+		if (!errorMessage.empty()) {
 			send(liveUser.getFdSocket(), errorMessage.c_str(), errorMessage.size(), 0);
-		else if (server.doesChannelExist(it->first)) {
+			continue;
+		}
+
+		if (server.doesChannelExist(it->first)) {
 			Channel *channel = server.getChannel(it->first);
+			if (!checkMode(channel, &liveUser, it->second))
+				continue;
 			channel->addUser(&liveUser);
 		} else {
 			createChannel(server, liveUser, it);
@@ -132,7 +160,7 @@ string Join::loop_through_map(std::map<string, string> &channelAndKey,User& live
 
 // TO DO ME: ajouter les modes 
 // channel->isModeFlagSet(MODE_USER_LIMIT);
-// Quand MODE fait, ajouter: invite only, limite utilisateur, password.
+// Quand MODE fait, ajouter: invite only
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 	string errorMessage = "";
 

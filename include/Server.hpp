@@ -27,7 +27,6 @@
 #define MAX_USER 25
 #define MAX_CHANNEL 35
 #define MAX_CHANNEL_PER_USER 10
-#define MAX_USER_INVITE_LIST 2
 #define OPER_PASSWORD "bozo.com"
 
 using std::string;

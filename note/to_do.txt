@@ -1,4 +1,0 @@
-- Flush le fd quand le buffer est pété
-- Ajouter invite (et le mettre dans join)
-- Retirer les erreurs temp (mega bozo, etc)
-- Refaire une chier de test avec nc

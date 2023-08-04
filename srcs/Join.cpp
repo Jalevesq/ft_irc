@@ -102,6 +102,13 @@ bool checkMode(Channel *channel, User *liveUser, string keyword) {
 	string channelName = channel->getChannelName();
 	if (liveUser->getOperator())
 		return (true);
+	if (channel->isModeFlagSet(MODE_INVITE_ONLY)) {
+		error = "471 PRIVMSG :Cannot join, invite only channel (+i)\r\n";
+		if (!channel->isUserInInviteList(liveUser)) {
+			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
+			return (false);
+		}
+	}
 	if (channel->isModeFlagSet(MODE_CHANNEL_KEY)) {
   		error = "475 " + channelName + " :Cannot join, bad channel key (+k)\r\n";
 		if (keyword != channel->getPassword()) {
@@ -116,13 +123,6 @@ bool checkMode(Channel *channel, User *liveUser, string keyword) {
 			return (false);
 		}
 	}
-	if (channel->isModeFlagSet(MODE_INVITE_ONLY)) {
-		error = "471 PRIVMSG :Cannot join, invite only channel (+i)\r\n";
-		if (!channel->isUserInInviteList(liveUser)) {
-			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
-			return (false);
-		}
-	}
 	return (true);
 }
 
@@ -132,8 +132,8 @@ string Join::loop_through_map(std::map<string, string> &channelAndKey,User& live
 	std::map<std::string, std::string>::iterator it = channelAndKey.begin();
 	for (; it != channelAndKey.end(); it++) {
 		errorMessage = "";
-		if (liveUser.getChannelSet().size() > MAX_CHANNEL_PER_USER) {
-    		return ("400 :Error - You have reached your maximum channel limit (10)\r\n");
+		if (liveUser.getChannelSet().size() >= MAX_CHANNEL_PER_USER) {
+    		return ("400 :Error - You have reached your maximum channel limit: " + std::to_string(MAX_CHANNEL_PER_USER) + "\r\n");
 		}
 		if (it->first[0] != '#')
 			errorMessage = "403 PRIVMSG '" + it->first + "' :Channel name does not have '#' has prefix.\r\n";

@@ -51,15 +51,18 @@ ifndef PORT
 PORT = 6667
 endif
 
+ifndef PASS
+PASS = pass
+endif
 run:all
 	@printf "Running on this ip \033[0;32m"
 	@hostname
 	@printf "\033[0;37m"
-	./$(NAME) $(PORT)
+	./$(NAME) $(PORT) $(PASS)
 #add password later
 
 leaks:all
-	 valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./$(NAME) $(PORT)
+	 valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./$(NAME) $(PORT) $(PASS)
 
 docker:
 	 docker run -ti weechat/weechat

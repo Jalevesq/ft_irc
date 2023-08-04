@@ -42,12 +42,6 @@ Oper::~Oper()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-//RPL_YOUREOPER (381)  
-// "<client> :You are now an IRC operator"
-// Sent to a client which has just successfully issued an OPER command and gained operator status. The text used in the last param of this message varies wildly.
-
-
-// /oper <user> <password>
 string Oper::execute(Server &server,const string& message, User& liveUser) {
 	std::vector<string> messageTokens;
 	string userName, password;
@@ -71,9 +65,8 @@ string Oper::execute(Server &server,const string& message, User& liveUser) {
 		return ("401 PRIVMSG :No such nickname.\r\n");
 	}
 
-	// Send dans tout les channels du userToOper la nouvelle liste de user.
-	userToOper->setOperator(true);
 
+	userToOper->setOperator(true);
 	std::set<string> channelSetUser = userToOper->getChannelSet();
 	std::set<string>::iterator it = channelSetUser.begin();
 	for (; it != channelSetUser.end(); it++) {

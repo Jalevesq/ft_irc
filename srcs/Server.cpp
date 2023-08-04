@@ -36,16 +36,16 @@ void Server::initServer(char **argv){
 	int ret;
 	int fdSocket;
 	std::string port = argv[1];
+	this->password_ = argv[2];
 	if (port.empty())
 		throw std::runtime_error("Port provided is empty");
 	if (port.find_first_not_of("0123456789") != port.npos || port.size() != 4)
 		throw std::runtime_error("Port provided is invalid");
 
-	// SET LE PASSWORD OBLIGATOIRE AVANT DE PUSH
-	if (argv[2]) {
-		this->password_ = argv[2];
-		if (password_.length() > 10)
-			throw(std::runtime_error("Password too long"));
+	if (password_.length() > 10) {
+		throw(std::runtime_error("Password too long"));
+		if (password_.find("\t\n\v\f\r ", 0) != string::npos)
+			throw(std::runtime_error("Forbidden char in password"));
 	}
 
 	fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -207,7 +207,7 @@ void Server::disconnectUser(int index, int fd){
 	}
 	delete listUser_[fd];
 	this->poll_.erase(poll_.begin() + index);
-	listUser_.erase(fd); // double check
+	listUser_.erase(fd);
 	this->userCount_--;
 }
 
@@ -246,15 +246,8 @@ void Server::createUser(int& newFd){
 	this->listUser_[newFd] = newUser;
 	userCount_++;
 
-	string newUserMessage;
-	if (this->password_.empty()) {
-		listUser_[newFd]->setIsPass(true);
-		newUserMessage = "451 PRIVMSG :You are not registered. Please give a nickname (/nick <nickname>) and a Username (USER <user> 0 * :<real name>)\r\n";
-	}
-	else {
-		newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
-	}
 
+	string newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 }
 

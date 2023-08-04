@@ -47,7 +47,6 @@ class User
 		std::set<string> getChannelSet();
 		// User( User const & src  );
 		// User &		operator=( User const & rhs );
-		// Quand channel se delete, le channel va voir dans chacun de ses user de la inviteList et remove son existence
 		unsigned long int getSizeInviteList();
 		std::vector<Channel *> returnInviteList();
 		void addChannelInInviteList(Channel *channel);
@@ -65,7 +64,5 @@ class User
 		std::vector<Channel *> inviteInChannel_;
 		std::set<string> channels_;
 };
-
-// std::ostream &			operator<<( std::ostream & o, User const & i );
 
 #endif /* ************************************************************ USER_H */

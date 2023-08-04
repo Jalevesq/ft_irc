@@ -7,7 +7,6 @@
 class CommandFactory{
 public:
 	CommandFactory();
-	// add other garbage later
 	~CommandFactory();
 
 	Command *CreateCommand();

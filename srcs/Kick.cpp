@@ -41,9 +41,6 @@ Kick::~Kick()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// KICK #Finnish Matthew   
-// KICK #Finnish John :Speaking English
-
 string Kick::execute(Server &server,const string& message, User& liveUser) {
 	(void)server;
 	(void)message;
@@ -72,7 +69,6 @@ string Kick::execute(Server &server,const string& message, User& liveUser) {
 	} else if (userToKick->getNickname() == liveUser.getNickname()) {
 		return ("400 :Error - You can't kick yourself dumbfuck.\r\n");
 	}  else if (channelFromKick->isOperator(userToKick) && liveUser.getOperator() == false) {
-		// userToKick is channel Op et userThatKick is not global op
 		return ("723 Kick: '" + userToKick->getNickname() + "' is a Channel Operator.\r\n");
 	} else if (userToKick->getOperator()) {
 		return ("723 Kick: '" + userToKick->getNickname() + "' is a Global Operator.\r\n");

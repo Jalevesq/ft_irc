@@ -89,9 +89,7 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
 		return ("412 PRIVMSG :No text to send\r\n");
 	}
 
-	// This is dest
 	infoMessage.push_back(messageToken[1]);
-	// this is msg
 	infoMessage.push_back("");
 
 	size_t pos = message.find(":", 0);

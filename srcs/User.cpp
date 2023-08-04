@@ -60,7 +60,6 @@ void User::clearMessage() {
 
 void User::appendMessage(const string& appendMessage) {
 	string newMessage = "";
-	// rm \n if there is no \r before
 	for (unsigned long int i = 0; i < appendMessage.size(); i++) {
 		if (appendMessage[i] != '\n' || (appendMessage[i] == '\n'
 			&& ( i - 1 <= appendMessage.size() && appendMessage[i - 1] == '\r')))
@@ -137,10 +136,6 @@ void User::removeChannelUser(const string &name){
 std::set<string> User::getChannelSet() { return channels_;}
 
 /* ************************************************************************** */
-
-		// void addChannelInInviteList(Channel *channel);
-		// void removeChannelInInviteList(Channel *channel);
-		// void clearChannelInInviteList();
 
 void User::addChannelInInviteList(Channel *channel) {
 	this->inviteInChannel_.push_back(channel);

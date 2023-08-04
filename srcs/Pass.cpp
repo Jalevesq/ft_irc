@@ -42,8 +42,6 @@ Pass::~Pass()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// PASS secretpasswordhere
-
 string Pass::execute(Server &server, const string& message, User& liveUser) {
 	string entryPassword, finalMessage;
 	std::vector<string> tokensMessage;

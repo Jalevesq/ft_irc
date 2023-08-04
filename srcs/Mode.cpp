@@ -83,6 +83,10 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 		return;
 	}
 	std::string number = *it;
+	if (number.size() > 2){
+		sendUserError("400 +l invalid size\r\n", liveUser.getFdSocket());
+		return;
+	}
 	for (int i = 0; number[i]; i++){
 		if (number[i] < '0' || number[i] > '9'){
 			sendUserError("696 " + channel->getChannelName() + " +l :Argument wasn't a digit\r\n", liveUser.getFdSocket());
@@ -90,9 +94,13 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 		}
 	}
 	long int amount = strtol(number.c_str(), NULL, 10);
+	if (amount == 0){
+		sendUserError("400 +l can't set the limit of user to 0\r\n", liveUser.getFdSocket());
+		return;
+	}
 	if (amount > 50 || amount < 1){
 		sendUserError("400 +l user limit argument was over " + std::to_string(MAX_USER) + "\r\n", liveUser.getFdSocket());
-		return;//fix later no key provided not sending to right channel
+		return;
 	}
 	channel->setUserLimit(amount);
 	channel->setMode(MODE_USER_LIMIT);

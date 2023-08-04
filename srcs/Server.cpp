@@ -223,8 +223,9 @@ void Server::sendUserToTheShadowRealm(int fd) const {
 void Server::acceptUser(){
 	socklen_t addressLength = sizeof(address_);;
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
-	if (newFd == -1)
-		throw std::runtime_error("Accept failure");
+	if (newFd == -1) {
+		return ;
+	}
 	if (listUser_.size() >= MAX_USER) {
 		string error = "400 :Error - Too many user on server. You will be disconnected.\r\n";
 		send(newFd, error.c_str(), error.size(), 0);

@@ -45,8 +45,6 @@ Part::~Part()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// PART #abc :WeeChat 4.0.2
-
 string Part::execute(Server &server,const string& message, User& liveUser) {
 	string channelName = "", info = "", partMessage = "";
 	std::vector<string> messageTokens = tokenize(message, " ");

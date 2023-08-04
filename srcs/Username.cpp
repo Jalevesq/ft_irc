@@ -45,14 +45,6 @@ Username::~Username()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// static bool isNotEmptyString(const std::string &str){
-//  for (int index = 0; str[index]; index++){
-// 		if (str[index] != ' ' )
-// 			return true;
-// 	}
-// 	return false;
-// }
-
 string  Username::execute(Server &server, const string& message, User& liveUser){
 	(void)server;
 	std::vector<std::string> tokens;
@@ -84,10 +76,8 @@ string  Username::execute(Server &server, const string& message, User& liveUser)
 		finalMessage = "400 :Wrong character, follow the prototype given in register instruction.\r\n";
 	else {
 		liveUser.setUsername(tokens[1]);
-		finalMessage = ""; // que renvoyer ?
+		finalMessage = "";
 	}
-
-	// SI le username fail, how tf c'est possible de renvoyer la commande quand on se co avec weechat ? Déconnecter la personne si le user fail ou la laisser se démerder?
 
 	return (finalMessage);
 }

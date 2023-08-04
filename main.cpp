@@ -13,9 +13,8 @@ static void stop(int sigHandler){
 }
 
 int main(int argc, char **argv) {
-	//SET LE PASSWORD OBLIGATOIRE AVANT DE PUSH
-	if (argc < 2){
-		cerr << "Wrong number of argument" << endl;
+	if (argc < 3){
+		cerr << "./irc <port> <password>" << endl;
 		return 1;
 	}
 	signal(SIGINT, stop);

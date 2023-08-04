@@ -7,9 +7,6 @@ Topic::Topic(){}
 
 Topic::~Topic(){}
 
-// Check if only operator mode is on in channel.
-// TOPIC #abc :fuck
-// TOPIC #abc
 std::string Topic::execute(Server &server, const string &message, User &liveUser){
 	std::string sendTopicMessage;
 	std::string topic;

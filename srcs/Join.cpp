@@ -46,7 +46,6 @@ Join::~Join()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// TO re-do with mode?
 void	Join::createChannel(Server &server, User &liveUser, std::map<string, string>::iterator it) const {
 	if (server.getChannelCount() >= MAX_CHANNEL) {
 		string error = "400 :Error - Max channel on server reach. Impossible to create new channel.\r\n";
@@ -130,7 +129,6 @@ bool checkMode(Channel *channel, User *liveUser, string keyword) {
 string Join::loop_through_map(std::map<string, string> &channelAndKey,User& liveUser, Server &server) {
 	string errorMessage;
 
-	// needs more checkup for password?
 	std::map<std::string, std::string>::iterator it = channelAndKey.begin();
 	for (; it != channelAndKey.end(); it++) {
 		errorMessage = "";
@@ -164,9 +162,6 @@ string Join::loop_through_map(std::map<string, string> &channelAndKey,User& live
 	return ("");
 }
 
-// TO DO ME: ajouter les modes 
-// channel->isModeFlagSet(MODE_USER_LIMIT);
-// Quand MODE fait, ajouter: invite only
 std::string Join::execute(Server &server,const string& message, User& liveUser) {
 	string errorMessage = "";
 

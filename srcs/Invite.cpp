@@ -46,10 +46,6 @@ Invite::~Invite()
 ** --------------------------------- METHODS ----------------------------------
 */
 
-// INVITE user #abc
-// Si mode only invite is ON, check que le liveUser est un operateur
-// send l'invite directement sur le FD du nickname ciblé (Checker si nickname existe)
-// Check to can't invite yourself
 string Invite::execute(Server &server,const string& message, User& liveUser) {
 	string userNickname, channelName;
 	std::vector<string> tokensMessage = tokenize(message, " ");

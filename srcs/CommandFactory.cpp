@@ -36,7 +36,7 @@ Command *CommandFactory::CreateCommand(){
 	if (map_.find(cmd) != map_.end())
 		return map_[cmd];
 	else
-		return NULL; //temporaire
+		return NULL;
 }
 
 std::string CommandFactory::ParseCommand(const std::string &command){

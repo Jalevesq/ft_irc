@@ -2,7 +2,8 @@ NAME = irc
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g 
+#-fsanitize=address
 
 #CFLAGS = -std=c++98
 
@@ -57,7 +58,7 @@ run:all
 #add password later
 
 leaks:all
-	 valgrind --leak-check=yes ./$(NAME) $(PORT)
+	 valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./$(NAME) $(PORT)
 
 docker:
 	 docker run -ti weechat/weechat

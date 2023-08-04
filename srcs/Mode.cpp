@@ -79,14 +79,14 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 	std::string number = *it;
 	for (int i = 0; number[i]; i++){
 		if (number[i] < '0' || number[i] > '9'){
-			sendUserError("400 +l argument provided wasn't a digit\r\n", liveUser.getFdSocket());
+			sendUserError("696 " + channel->getChannelName() + " +l :Argument wasn't a digit\r\n", liveUser.getFdSocket());
 			return;
 		}
 	}
 	long int amount = strtol(number.c_str(), NULL, 10);
 	if (amount > 50 || amount < 1){
-		sendUserError("400 +l user limit argument was over 50\r\n", liveUser.getFdSocket());
-		return;//fix later no key provided not sending to right channel
+		sendUserError("696 " + channel->getChannelName() + " +l :Digit was over 50\r\n", liveUser.getFdSocket());
+		return;
 	}
 	channel->setUserLimit(amount);
 	channel->setMode(MODE_USER_LIMIT);
@@ -198,14 +198,14 @@ const string Mode::parseMode(Channel *channel, std::vector<string> &tokens, User
 		std::string token = *it;
 		it++;
 		if (token[0] != '+' && token[0] != '-')
-			return "400 :mega bozo\r\n";
+			return "696 " + channel->getChannelName() + " MODE :Invalid parameter\r\n";
 		int index = 0;
 		while (token[index])
 		{
 			if (token[index] == '+')
 				parseModePlus(it, end, liveUser, channel, index, token);
 			else if (token[index] == '-')
-				parseModeNegatif(it, end, liveUser, channel, index, token); //add error if invalid token?
+				parseModeNegatif(it, end, liveUser, channel, index, token);
 		}
 	} while (it != tokens.end());
 	return "";
@@ -222,6 +222,8 @@ string Mode::execute(Server &server, const string& message, User& liveUser){
 		channel->sendCurrentMode(&liveUser);
 		return "";
 	}
+	if (channel->isUserInChannel(liveUser.getNickname()) == false)
+		return ":" + liveUser.getNickname() + " 442 " + channel->getChannelName() + " :You're not on that channel\r\n";
 	if (channel->isOperator(&liveUser) == false)
 		return ":" + liveUser.getNickname() + " 482 " + liveUser.getNickname() + " " + tokens[1] + " :You're not channel operator\r\n";
 	return parseMode(channel, tokens, liveUser);

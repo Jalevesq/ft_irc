@@ -1,5 +1,7 @@
 #include "../include/Server.hpp"
 
+extern bool g_serverStop;
+
 Server::Server(): userCount_(0) {
 
 	struct pollfd listennerPoll;
@@ -73,11 +75,13 @@ void Server::initServer(char **argv){
 void Server::serverRun()
 {
 	int userFd;
-	char buffer[1024];
-	while (true)
+	int ret;
+	char buffer[BUFFER_SIZE];
+	while (g_serverStop != true)
 	{
-		poll(this->poll_.data(), this->userCount_ + 1, 25);
-			// throw std::runtime_error("Poll failure"); // fix later
+		ret = poll(this->poll_.data(), this->userCount_ + 1, 25);
+		if (ret == -1)
+			throw std::runtime_error("Poll failure");
 		if (this->poll_[0].revents & POLLIN)
 			acceptUser();
 		for (int i = 1; i <= userCount_; i++){
@@ -88,14 +92,14 @@ void Server::serverRun()
 			}
 			else if (poll_[i].revents & POLLIN){
 				User &liveUser = *this->listUser_[userFd];
-				int ret = recv(poll_[i].fd, buffer, 1024, MSG_DONTWAIT);
+				int ret = recv(poll_[i].fd, buffer, BUFFER_SIZE, MSG_DONTWAIT);
 				if (ret <= 0){
 					disconnectUser(i, userFd);
 					continue;
 				}
-				if (ret >= 1023){
-					cout << "BOZO" << endl;
-					fsync(poll_[i].fd);
+				if (ret == BUFFER_SIZE){
+					sendUserToTheShadowRealm(userFd);
+					disconnectUser(i, userFd);
 					continue;
 				}
 				buffer[ret] = '\0';
@@ -193,6 +197,11 @@ void Server::disconnectUser(int index, int fd){
 	this->poll_.erase(poll_.begin() + index);
 	listUser_.erase(fd); // double check
 	this->userCount_--;
+}
+
+void Server::sendUserToTheShadowRealm(int fd) const {
+	std::string message = "400 :Sent to the shadow realm due to spamming🤡.\r\n";
+	send(fd, message.c_str(), message.size(), 0);
 }
 
 //////////////////////////////////////

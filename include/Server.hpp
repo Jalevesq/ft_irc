@@ -23,6 +23,7 @@
 # include "CommandFactory.hpp"
 # include "Channel.hpp"
 
+#define BUFFER_SIZE 1024
 #define MAX_USER 25
 #define MAX_CHANNEL 35
 #define MAX_CHANNEL_PER_USER 10
@@ -57,6 +58,7 @@ public:
 	void createUser(int &newFd);
 	void acceptUser();
 	void disconnectUser(int index, int fd);
+	void sendUserToTheShadowRealm(int fd) const;
 
 	// Eveything related to message recieved
 	void handleMessage(const std::string &message, User& liveUser);

@@ -43,8 +43,6 @@ Nickname::~Nickname()
 /*
 ** --------------------------------- METHODS ----------------------------------
 */
-// NICK Wiz
-// :WiZ NICK Kilroy  
 
 std::string Nickname::execute(Server &server,const string& message, User& liveUser) {
     string nickMessage;

@@ -183,13 +183,25 @@ const string Server::Auth(Command *cmd, User &liveUser, const string &argument){
 //	   Deleting user because 'Disconnect' signal recieve from fd     //
 ///////////////////////////////////////////////////////////////////////
 
+void deleteInviteList(User *liveUser) {
+	std::vector<Channel *> userInviteList = liveUser->returnInviteList();
+	std::vector<Channel *>::iterator it = userInviteList.begin();
+	for (; it != userInviteList.end(); it++) {
+		(*it)->removeUserInInviteList(liveUser);
+	}
+	liveUser->clearChannelInInviteList();
+}
+
 void Server::disconnectUser(int index, int fd){
-	if (checkNickname(listUser_[fd]->getNickname()))
-		removeNickname(listUser_[fd]->getNickname());
-	std::set<string> set = listUser_[fd]->getChannelSet();
+	User *liveUser = listUser_[fd];
+	if (checkNickname(liveUser->getNickname()))
+		removeNickname(liveUser->getNickname());
+	if (liveUser->getSizeInviteList() > 0)
+		deleteInviteList(liveUser);
+	std::set<string> set = liveUser->getChannelSet();
 	std::set<string>::iterator it = set.begin();
 	for (; it != set.end(); ++it){
-		channels_[*it]->removeUser(listUser_[fd], "Has disconnected");
+		channels_[*it]->removeUser(liveUser, "Has disconnected");
 		if (channels_[*it]->getUserCount() == 0)
 			removeChannel(channels_[*it]->getChannelName());
 	}

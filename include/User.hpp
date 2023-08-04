@@ -6,6 +6,7 @@
 # include <poll.h>
 # include <set>
 # include <unistd.h>
+# include "Channel.hpp"
 
 using std::string;
 using std::cout;
@@ -44,9 +45,15 @@ class User
 		void addChannelUser(const string &name);
 		void removeChannelUser(const string &name);
 		std::set<string> getChannelSet();
-		//std::set<string>::iterator getChannelEnd();
 		// User( User const & src  );
 		// User &		operator=( User const & rhs );
+		// Quand channel se delete, le channel va voir dans chacun de ses user de la inviteList et remove son existence
+		unsigned long int getSizeInviteList();
+		std::vector<Channel *> returnInviteList();
+		void addChannelInInviteList(Channel *channel);
+		void removeChannelInInviteList(Channel *channel);
+		void clearChannelInInviteList();
+
 
 	private:
 		string	message_;
@@ -55,6 +62,7 @@ class User
 		bool	operator_;
 		bool	isRegistered_[2];
 		int		fdSocket_;
+		std::vector<Channel *> inviteInChannel_;
 		std::set<string> channels_;
 };
 

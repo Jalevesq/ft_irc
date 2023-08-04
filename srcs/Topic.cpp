@@ -25,7 +25,6 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 		return ("442 " + channelName + " :You're not on that channel\r\n");
 	}
 
-
 	if (token.size() == 2) {
 		channel->sendTopic(&liveUser);
 		return ("");
@@ -40,6 +39,13 @@ std::string Topic::execute(Server &server, const string &message, User &liveUser
 		if (topic.length() > 35)
 			return ("417 PRIVMSG :topic is too long.\r\n");
 	}
+
+	if (channel->isModeFlagSet(MODE_TOPIC_RESTRICTED)) {
+		if (!channel->isOperator(&liveUser)) {
+			return ("482 " + channelName + " :You're not channel operator\r\n");
+		}
+	}
+
 	channel->setTopic(topic, liveUser.getNickname());
 
 	std::map<User *, bool> userList = channel->getUserList();

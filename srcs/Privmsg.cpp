@@ -94,10 +94,10 @@ std::string Privmsg::execute(Server &server,const string& message, User& liveUse
 	// this is msg
 	infoMessage.push_back("");
 
-	size_t pos = message.find(":", 0) + 1;
+	size_t pos = message.find(":", 0);
 	if (pos == string::npos)
 		return ("461 PRIVMSG :Bad format of command. Need ':' before message to send.\r\n");
-	infoMessage[MSG] += message.substr(pos);
+	infoMessage[MSG] += message.substr(pos + 1);
 
 	if (infoMessage[MSG].length() > 100) {
 		privMessage = "417 PRIVMSG :message is too long\r\n";

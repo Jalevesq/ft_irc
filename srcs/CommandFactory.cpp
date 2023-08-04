@@ -9,6 +9,7 @@
 #include "../include/Kick.hpp"
 #include "../include/Mode.hpp"
 #include "../include/Oper.hpp"
+#include "../include/Invite.hpp"
 
 CommandFactory::CommandFactory(){
 	this->map_[PART] = new Part;
@@ -22,6 +23,7 @@ CommandFactory::CommandFactory(){
 	this->map_[KICK] = new Kick;
 	this->map_[MODE] = new Mode;
 	this->map_[OPER] = new Oper;
+	this->map_[INVITE] = new Invite;
 }
 
 CommandFactory::~CommandFactory(){

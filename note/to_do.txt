@@ -1,5 +1,4 @@
-- Check leaks?
-- Optimiser la façon d'ajouter commande? Possible utiliser enum au lieu de define?
-- On ouvre et set bien les ports ? Mieux comprendre les fonctions de socket/port. Voir examrank06. Utilise des fonctions de socket qui semble utile que nous n'utilisons pas.
-
-- Quand quelqu'un disconnect le serv close? wtf?
+- Flush le fd quand le buffer est pété
+- Ajouter invite (et le mettre dans join)
+- Retirer les erreurs temp (mega bozo, etc)
+- Refaire une chier de test avec nc

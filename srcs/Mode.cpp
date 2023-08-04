@@ -85,8 +85,9 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 	}
 	long int amount = strtol(number.c_str(), NULL, 10);
 	if (amount > 50 || amount < 1){
+		//sendUserError("400 +l user limit argument was over " + std::to_string(MAX_USER) + "\r\n", liveUser.getFdSocket());
 		sendUserError("696 " + channel->getChannelName() + " +l :Digit was over 50\r\n", liveUser.getFdSocket());
-		return;
+		return;//fix later no key provided not sending to right channel
 	}
 	channel->setUserLimit(amount);
 	channel->setMode(MODE_USER_LIMIT);
@@ -99,6 +100,7 @@ void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag
 	std::string message;
 	if (flag == MODE_INVITE_ONLY){
 		channel->setMode(MODE_INVITE_ONLY);
+		channel->clearUserInInviteList();
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +i\r\n";
 	}
 	else{
@@ -184,7 +186,7 @@ void Mode::sendUserError(const string &message, int fd){
 }
 
 void Mode::sendInvalidToken(const string channelName, User &liveUser, const char c){
-	std::string message = ":" + liveUser.getNickname() + " 472 " + c + " " + channelName + " :is unkonwn mode char to me for " + channelName + "\r\n";
+	std::string message = ":" + liveUser.getNickname() + " 472 " + c + " " + channelName + " :is unknown mode char to me for " + channelName + "\r\n";
 	send(liveUser.getFdSocket(), message.c_str(), message.size(), 0);
 }
 

@@ -4,18 +4,19 @@
 #include <sstream>
 #include <string>
 
-/*
- *****************************************************************************
- **                              orthordox                                  **
- *****************************************************************************
-*/
 Channel::Channel(const std::string &name, User *user) : channelName_(name), topic_(""),
-	password_(""), userSetTopic_(""), time_(0), hasPassword_(false), mode_(0), userLimit_(0){
+	password_(""), userSetTopic_(""), time_(0), mode_(0), userLimit_(0){
 	users_[user] = true;
 	user->addChannelUser(channelName_);
 }
 
-Channel::~Channel() {}
+Channel::~Channel() {
+	std::vector<User *>::iterator it = this->inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		(*it)->removeChannelInInviteList(this);
+	}
+	inviteList_.clear();
+}
 
 /*
  *****************************************************************************
@@ -114,15 +115,13 @@ void Channel::sendCurrentMode(const User *user) const{
 		stream << " +";
 		if (mode_ & MODE_USER_LIMIT)
 			stream << "l";
-		if (mode_ & MODE_CHANNEL_OPERATOR)
-			stream << "o";
 		if (mode_ & MODE_CHANNEL_KEY)
 			stream << "k";
 		if (mode_ & MODE_TOPIC_RESTRICTED)
 			stream << "t";
 		if (mode_ & MODE_INVITE_ONLY)
 			stream << "i";
-		std::string mode = "324 " + user->getNickname() + " " + channelName_ + stream.str() + "\r\n";
+		mode =  "324 " + user->getNickname() + " " + channelName_ + stream.str() + "\r\n";
 	}
 	send(user->getFdSocket(), mode.c_str(), mode.size(), 0);
 }
@@ -145,7 +144,8 @@ void Channel::addUser(User *user){
 		string error = "443 PRIVMSG :You already are on this channel.\r\n";
 		send(user->getFdSocket(), error.c_str(), error.size(), 0);
 		return ;
-	}
+	} else if (isUserInInviteList(user))
+		removeUserInInviteList(user);
 	sendUserJoin(user);
 	user->addChannelUser(channelName_);
 	if (user->getOperator())
@@ -175,7 +175,6 @@ std::string Channel::kickUser(User *userOp, User *toKick, const std::string &rea
 	return ("");
 }
 
-
 /*
  *****************************************************************************
  **                              setter                                     **
@@ -189,10 +188,7 @@ void Channel::setTopic(const std::string &topic, const std::string &userName) {
 	this->userSetTopic_  = userName;
 }
 
-void Channel::setPassword(const std::string &password){
-	hasPassword_ = true;
-	password_ = password;
-}
+void Channel::setPassword(const std::string &password) { password_ = password; }
 
 void Channel::setUserOperator(User *user, bool flag) { users_[user] = flag; }
 
@@ -244,6 +240,35 @@ User *Channel::getUser(const std::string &name){
 	return NULL;
 }
 
+bool Channel::isUserInInviteList(User *liveUser) {
+	string liveUserNickname = liveUser->getNickname();
+	std::vector<User *>::iterator it = inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		if ((*it)->getNickname() == liveUserNickname)
+			return (true);
+	}
+	return (false);
+}
+
+void Channel::addUserInInviteList(User *liveUser) {
+	this->inviteList_.push_back(liveUser);
+}
+
+void Channel::removeUserInInviteList(User *liveUser) {
+	string liveUserNickname = liveUser->getNickname();
+	std::vector<User *>::iterator it = inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		if ((*it)->getNickname() == liveUserNickname) {
+			inviteList_.erase(it);
+			break;
+		}
+	}
+}
+
+void Channel::clearUserInInviteList() {
+	this->inviteList_.clear();
+}
+
 const std::string &Channel::getChannelName() const { return channelName_; }
 
 const std::string &Channel::getTopic() const { return topic_; }
@@ -253,8 +278,6 @@ const std::string &Channel::getPassword() const { return password_; }
 const std::map<User *, bool> &Channel::getUserList() const { return users_; }
 
 int Channel::getUserCount() const { return users_.size(); }
-
-bool Channel::hasPassword() const { return hasPassword_; }
 
 int Channel::getMode() const { return mode_; }
 

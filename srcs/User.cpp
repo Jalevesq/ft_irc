@@ -1,4 +1,5 @@
 #include "../include/User.hpp"
+#include "../include/Channel.hpp"
 
 /*
 ** ------------------------------- CONSTRUCTOR --------------------------------
@@ -136,3 +137,35 @@ void User::removeChannelUser(const string &name){
 std::set<string> User::getChannelSet() { return channels_;}
 
 /* ************************************************************************** */
+
+		// void addChannelInInviteList(Channel *channel);
+		// void removeChannelInInviteList(Channel *channel);
+		// void clearChannelInInviteList();
+
+void User::addChannelInInviteList(Channel *channel) {
+	this->inviteInChannel_.push_back(channel);
+}
+
+void User::removeChannelInInviteList(Channel *channel) {
+	string channelNickname= channel->getChannelName();
+	std::vector<Channel *>::iterator it = inviteInChannel_.begin();
+	for (; it != inviteInChannel_.end(); it++) {
+		if ((*it)->getChannelName() == channelNickname) {
+			inviteInChannel_.erase(it);
+			break;
+		}
+	}
+}
+
+std::vector<Channel *> User::returnInviteList() {
+	return (this->inviteInChannel_);
+}
+
+
+unsigned long int User::getSizeInviteList() {
+	return (this->inviteInChannel_.size());
+}
+
+void User::clearChannelInInviteList() {
+	this->inviteInChannel_.clear();
+}

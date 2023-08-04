@@ -224,7 +224,7 @@ void Server::acceptUser(){
 	socklen_t addressLength = sizeof(address_);;
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
 	if (newFd == -1)
-		throw std::runtime_error("Accept failure"); // fix later
+		throw std::runtime_error("Accept failure");
 	if (listUser_.size() >= MAX_USER) {
 		string error = "400 :Error - Too many user on server. You will be disconnected.\r\n";
 		send(newFd, error.c_str(), error.size(), 0);
@@ -246,8 +246,8 @@ void Server::createUser(int& newFd){
 	this->listUser_[newFd] = newUser;
 	userCount_++;
 
-
 	string newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
+
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 }
 

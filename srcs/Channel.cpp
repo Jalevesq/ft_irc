@@ -28,7 +28,6 @@ void Channel::sendNameChange(const User *user, const std::string &oldNickname){
 	std::string message = ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
 	std::map<User *, bool>::iterator it = users_.begin();
 	for (; it != users_.end(); ++it){
-		// if (it->first->getFdSocket() != user->getFdSocket())
 		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 	}
 }
@@ -66,13 +65,6 @@ void Channel::sendUserList(const User *user){
 	send(user->getFdSocket(), endList.c_str(), endList.size(), 0);
 }
 
-void Channel::sendUserLeft(const User *user, const std::string &reason){
-	std::map<User *, bool>::iterator it = users_.begin();
-	std::string message = ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
-	for (; it != users_.end(); ++it)
-		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
-}
-
 void Channel::broadCastUserList(){
 	std::map<User *, bool>::iterator it = users_.begin();
 	std::ostringstream regularStream;
@@ -88,13 +80,6 @@ void Channel::broadCastUserList(){
 	regularList = "353 = " + channelName_ + " :" + regularStream.str() + "\r\n";
 	for (it = users_.begin(); it != users_.end(); ++it)
 		send(it->first->getFdSocket(), regularList.c_str(), regularList.size(), 0);
-}
-
-void Channel::sendUserJoin(const User *user) {
-	std::map<User *, bool>::iterator it = users_.begin();
-	std::string message = ":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n";
-	for (; it != users_.end(); ++it)
-		send(it->first->getFdSocket(), message.c_str(), message.size(), 0);
 }
 
 void Channel::sendMessage(const User *user, const std::string &message){
@@ -146,7 +131,7 @@ void Channel::addUser(User *user){
 		return ;
 	} else if (isUserInInviteList(user))
 		removeUserInInviteList(user);
-	sendUserJoin(user);
+	broadCastAll(":" + user->getNickname() + " JOIN :" + channelName_ + "\r\n");
 	user->addChannelUser(channelName_);
 	if (user->getOperator())
 		users_[user] = true;
@@ -160,7 +145,7 @@ void Channel::addUser(User *user){
 
 const std::string Channel::removeUser(User *user, const std::string &reason){
 	users_.erase(user);
-	sendUserLeft(user, reason);
+	broadCastAll(":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n");
 	return ":" + user->getNickname() + " PART " + channelName_ + " :" + reason + "\r\n";
 }
 

@@ -25,15 +25,17 @@ void Mode::parseModePlus(iterator_ &it, iterator_ &end, User &liveUser, Channel 
 		if (token[index] == 'i')
 			setNoArgument(liveUser, channel, MODE_INVITE_ONLY);
 		else if (token[index] == 't')
-			setNoArgument(liveUser, channel, MODE_TOPIC_RESTRICTED);
+			setNoArgument(liveUser, channel, MODE_TOPIC_RESTRICTED);	
 		else if (token[index] == 'k')
 			parseKeyMode(it, end, liveUser, channel);
 		else if (token[index] == 'o')
 			parseModeOp(it, end, liveUser, channel);
 		else if (token[index] == 'l')
 			parseModeLimit(it, end, liveUser, channel);
-		else if (token[index] == '-')
+		else if (token[index] == '-' && token[index + 1] != '-' && token[index + 1] != '+')
 			return;
+		else if (token[index] == '+' && token[index + 1] != '-' && token[index + 1] != '+')
+			continue;
 		else
 			sendInvalidToken(channel->getChannelName(), liveUser, token[index]);
 	}
@@ -99,11 +101,21 @@ void Mode::parseModeLimit(iterator_ &it, iterator_ &end, User &liveUser, Channel
 void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag){
 	std::string message;
 	if (flag == MODE_INVITE_ONLY){
+		if (channel->isModeFlagSet(MODE_INVITE_ONLY)){
+			message = ": 400 " + user.getNickname() + " channel " + channel->getChannelName() + " +i :Mode is already set\r\n";
+			sendUserError(message, user.getFdSocket());
+			return;
+		}
 		channel->setMode(MODE_INVITE_ONLY);
 		channel->clearUserInInviteList();
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +i\r\n";
 	}
 	else{
+		if (channel->isModeFlagSet(MODE_TOPIC_RESTRICTED)){
+			message = ": 400 " + user.getNickname() + " channel " + channel->getChannelName() + " +t :Mode is already set\r\n";
+			sendUserError(message, user.getFdSocket());
+			return;
+		}
 		channel->setMode(MODE_TOPIC_RESTRICTED);
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +t\r\n";
 	}
@@ -117,6 +129,7 @@ void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag
 */
 
 void Mode::parseModeNegatif(iterator_ &it, iterator_ &end, User &liveUser, Channel *channel, int &index, string &token){
+	index++;
 	string parameter = token;
 	if (parameter.size() == 1){
 		sendUserError("461 MODE+ :Not enough parameters\r\n", liveUser.getFdSocket());
@@ -133,24 +146,45 @@ void Mode::parseModeNegatif(iterator_ &it, iterator_ &end, User &liveUser, Chann
 			parseNegativeOP(it, end, liveUser, channel);
 		else if (parameter[index] == 'l')
 			setNoArgumentNegative(liveUser, channel, MODE_USER_LIMIT);
-		else if (parameter[index] == '+')
+		else if (parameter[index] == '+' && parameter[index + 1] != '-' && parameter[index + 1] != '+')
 			return;
+		else if (parameter[index] == '-' && parameter[index + 1] != '-' && parameter[index + 1] != '+')
+			continue;
 		else
 			sendInvalidToken(channel->getChannelName(), liveUser, parameter[index]);
 	}
 }
 
+void Mode::sendUnsetError(const std::string &mode, Channel *channel, User &user){
+	std::string errorMessage;
+	errorMessage = ": 400 " + user.getNickname() + " Channel " + channel->getChannelName() 
+		+ " " + mode + " :Mode is already not set\r\n";
+	sendUserError(errorMessage, user.getFdSocket());
+}
+
 void Mode::setNoArgumentNegative(User &user, Channel *channel, const unsigned char &flag){
 	std::string message;
-	channel->unsetMode(flag);
-	if (flag == MODE_INVITE_ONLY)
+	if (flag == MODE_INVITE_ONLY){
+		if (channel->isModeFlagSet(MODE_INVITE_ONLY) == false)
+			return sendUnsetError("-i", channel, user);
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -i\r\n";
-	else if (flag == MODE_TOPIC_RESTRICTED)
+	}
+	else if (flag == MODE_TOPIC_RESTRICTED){
+		if (channel->isModeFlagSet(MODE_TOPIC_RESTRICTED) == false)
+			return sendUnsetError("-t", channel, user);
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -t\r\n";
-	else if (flag == MODE_CHANNEL_KEY)
+	}
+	else if (flag == MODE_CHANNEL_KEY){
+		if (channel->isModeFlagSet(MODE_CHANNEL_KEY) == false)
+			return sendUnsetError("-k", channel, user);
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -k\r\n";
-	else if (flag == MODE_USER_LIMIT)
+	}
+	else if (flag == MODE_USER_LIMIT){
+		if (channel->isModeFlagSet(MODE_USER_LIMIT) == false)
+			return sendUnsetError("-l", channel, user);
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " -l\r\n";
+	}
+	channel->unsetMode(flag);
 	channel->broadCastAll(message);
 }
 

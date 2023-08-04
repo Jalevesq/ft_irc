@@ -26,6 +26,7 @@ public:
 	void parseModeNegatif(std::vector<string>::iterator &it, std::vector<string>::iterator &end, User &liveUser, Channel *channel, int &index, string &token);
 	void setNoArgumentNegative(User &user, Channel *channel, const unsigned char &flag);
 	void parseNegativeOP(std::vector<string>::iterator &it, std::vector<string>::iterator &end, User &liveUser, Channel *channel);
+	void sendUnsetError(const std::string &mode, Channel *channel, User &user);
 
 	//utility
 	const string parseMode(Channel *channel, std::vector<string> &tokens, User &liveUser);

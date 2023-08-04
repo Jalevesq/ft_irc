@@ -25,7 +25,8 @@ SRC =	main.cpp \
 			./srcs/Topic.cpp \
 			./srcs/Kick.cpp \
 			./srcs/Mode.cpp \
-			./srcs/Oper.cpp
+			./srcs/Oper.cpp \
+			./srcs/Invite.cpp
 
 OBJS = $(SRC:.cpp=.o)
 

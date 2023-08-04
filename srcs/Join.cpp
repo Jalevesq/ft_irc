@@ -118,7 +118,11 @@ bool checkMode(Channel *channel, User *liveUser, string keyword) {
 		}
 	}
 	if (channel->isModeFlagSet(MODE_INVITE_ONLY)) {
-		// if not invite, return false
+		error = "471 PRIVMSG :Cannot join, invite only channel (+i)\r\n";
+		if (!channel->isUserInInviteList(liveUser)) {
+			send(liveUser->getFdSocket(), error.c_str(), error.size(), 0);
+			return (false);
+		}
 	}
 	return (true);
 }

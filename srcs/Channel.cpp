@@ -15,7 +15,13 @@ Channel::Channel(const std::string &name, User *user) : channelName_(name), topi
 	user->addChannelUser(channelName_);
 }
 
-Channel::~Channel() {}
+Channel::~Channel() {
+	std::vector<User *>::iterator it = this->inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		(*it)->removeChannelInInviteList(this);
+	}
+	inviteList_.clear();
+}
 
 /*
  *****************************************************************************
@@ -145,7 +151,8 @@ void Channel::addUser(User *user){
 		string error = "443 PRIVMSG :You already are on this channel.\r\n";
 		send(user->getFdSocket(), error.c_str(), error.size(), 0);
 		return ;
-	}
+	} else if (isUserInInviteList(user))
+		removeUserInInviteList(user);
 	sendUserJoin(user);
 	user->addChannelUser(channelName_);
 	if (user->getOperator())
@@ -242,6 +249,35 @@ User *Channel::getUser(const std::string &name){
 			return it->first;
 	}
 	return NULL;
+}
+
+bool Channel::isUserInInviteList(User *liveUser) {
+	string liveUserNickname = liveUser->getNickname();
+	std::vector<User *>::iterator it = inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		if ((*it)->getNickname() == liveUserNickname)
+			return (true);
+	}
+	return (false);
+}
+
+void Channel::addUserInInviteList(User *liveUser) {
+	this->inviteList_.push_back(liveUser);
+}
+
+void Channel::removeUserInInviteList(User *liveUser) {
+	string liveUserNickname = liveUser->getNickname();
+	std::vector<User *>::iterator it = inviteList_.begin();
+	for (; it != inviteList_.end(); it++) {
+		if ((*it)->getNickname() == liveUserNickname) {
+			inviteList_.erase(it);
+			break;
+		}
+	}
+}
+
+void Channel::clearUserInInviteList() {
+	this->inviteList_.clear();
 }
 
 const std::string &Channel::getChannelName() const { return channelName_; }

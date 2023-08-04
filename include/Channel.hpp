@@ -60,6 +60,12 @@ public:
 	bool isModeFlagSet(const unsigned char &flag) const;
 	void setMode(const unsigned char &flag);
 	void unsetMode(const unsigned char &flag);
+
+	// userList
+	bool isUserInInviteList(User *liveUser);
+	void addUserInInviteList(User *liveUser);
+	void removeUserInInviteList(User *liveUser);
+	void clearUserInInviteList();
 	
 private:
 	Channel();
@@ -68,6 +74,7 @@ private:
 	std::string password_;
 	std::string userSetTopic_;
 	time_t time_;
+	std::vector<User *> inviteList_;
 	std::map<User *, bool> users_;
 	bool hasPassword_;
 	unsigned char mode_;

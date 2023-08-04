@@ -99,6 +99,7 @@ void Mode::setNoArgument(User &user, Channel *channel, const unsigned char &flag
 	std::string message;
 	if (flag == MODE_INVITE_ONLY){
 		channel->setMode(MODE_INVITE_ONLY);
+		channel->clearUserInInviteList();
 		message = ":" + user.getNickname() + " MODE " + channel->getChannelName() + " +i\r\n";
 	}
 	else{

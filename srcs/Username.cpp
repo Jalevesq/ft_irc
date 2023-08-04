@@ -47,39 +47,39 @@ Username::~Username()
 
 string  Username::execute(Server &server, const string& message, User& liveUser){
 	(void)server;
-	std::vector<std::string> tokens;
-	string token, finalMessage = "";
-	size_t index = 0;
-	size_t end = message.find(" ");
+	string username, realName;
+	std::vector<string> tokenMessage = tokenize(message, " ");
 
 	if (liveUser.getIsRegister() == true) {
 		return ("463 PRIVMSG :You're already register.\r\n");
 	}
 
-	while (end != std::string::npos){
-		token = message.substr(index, end - index);
-		if (isNotEmptyString(token) && token.find(" ") == std::string::npos)
-			tokens.push_back(token);
-		index = end + 1;
-		end = message.find(" ", index);
+	if (tokenMessage.size() < 5) {
+		return ("461 USER :Not enough parameters\r\n");
 	}
-	token = message.substr(index);
-	if (isNotEmptyString(token) && token.find(" ") == std::string::npos)
-		tokens.push_back(token);
-
-	// Accepter les espaces dans le real name.
-	if (tokens.size() != 5)
-		finalMessage = "461 USER :Not enough parameters\r\n";
-	else if (tokens[1].length() > USERLEN)
-		finalMessage = "005 letpun :User is too long\r\n";
-	else if (tokens[2] != "0" || tokens[3] != "*")
-		finalMessage = "400 :Wrong character, follow the prototype given in register instruction.\r\n";
-	else {
-		liveUser.setUsername(tokens[1]);
-		finalMessage = "";
+	username = tokenMessage[1];
+	if (username.find("\t\n\v\f\r @+",0) != string::npos) {
+		return("400 :Forbidden char in username.\r\n");
+	} else if (username.length() > USERLEN ) {
+		return("005 letpun :User is too long\r\n");
 	}
-
-	return (finalMessage);
+	if (tokenMessage[2].size() > 1 || tokenMessage[2][0] != '0') {
+		return ("400 :Wrong character, suppose to be '0'. follow the prototype given in register instruction.\r\n");
+	} else if (tokenMessage[3].size() > 1 || tokenMessage[3][0] != '*') {
+		return("400 :Wrong character, suppose to be '*', follow the prototype given in register instruction.\r\n");
+	}
+	size_t pos = message.find(":");
+	if (pos == string::npos) {
+		return ("461 PRIVMSG :Bad format of command. Need ':' before real name to execute.\r\n");	
+	}
+	realName = message.substr(pos + 1);
+	if (realName.empty())
+		return ("400 :No realname given\r\n");
+	if (realName.find("\t\n\v\f\r") != string::npos) {
+		return ("400 :Forbidden char in real name.\r\n");
+	}
+	liveUser.setUsername(username);
+	return ("");
 }
 
 /*

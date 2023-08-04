@@ -44,10 +44,11 @@ void Server::initServer(char **argv){
 
 	if (password_.length() > 10) {
 		throw(std::runtime_error("Password too long"));
-		if (password_.find("\t\n\v\f\r ", 0) != string::npos)
-			throw(std::runtime_error("Forbidden char in password"));
 	}
-
+	if (password_.find("\t\n\v\f\r ", 0) != string::npos)
+		throw(std::runtime_error("Forbidden char in password"));
+	if (password_.empty())
+		throw std::runtime_error("Password provided is empty");
 	fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");

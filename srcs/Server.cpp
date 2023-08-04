@@ -44,10 +44,11 @@ void Server::initServer(char **argv){
 
 	if (password_.length() > 10) {
 		throw(std::runtime_error("Password too long"));
-		if (password_.find("\t\n\v\f\r ", 0) != string::npos)
-			throw(std::runtime_error("Forbidden char in password"));
 	}
-
+	if (password_.find("\t\n\v\f\r ", 0) != string::npos)
+		throw(std::runtime_error("Forbidden char in password"));
+	if (password_.empty())
+		throw std::runtime_error("Password provided is empty");
 	fdSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fdSocket == -1)
 		throw std::runtime_error("Socket couldn't be initialize");
@@ -223,8 +224,9 @@ void Server::sendUserToTheShadowRealm(int fd) const {
 void Server::acceptUser(){
 	socklen_t addressLength = sizeof(address_);;
 	int newFd = accept(poll_[0].fd, (struct sockaddr *)&address_, &addressLength);
-	if (newFd == -1)
-		throw std::runtime_error("Accept failure"); // fix later
+	if (newFd == -1) {
+		return ;
+	}
 	if (listUser_.size() >= MAX_USER) {
 		string error = "400 :Error - Too many user on server. You will be disconnected.\r\n";
 		send(newFd, error.c_str(), error.size(), 0);
@@ -246,8 +248,8 @@ void Server::createUser(int& newFd){
 	this->listUser_[newFd] = newUser;
 	userCount_++;
 
-
 	string newUserMessage = "451 PRIVMSG: This server has a password. what's the password ?\r\n";
+
 	send(newFd, newUserMessage.c_str(), newUserMessage.size(), 0);
 }
 

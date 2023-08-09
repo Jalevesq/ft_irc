@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 		cerr << "./irc <port> <password>" << endl;
 		return 1;
 	}
-	signal(SIGINT, stop);
+	signal(SIGINT, stop); //a
 	signal(SIGQUIT, SIG_IGN);
 	try{
 		Server server;

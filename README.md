@@ -34,4 +34,4 @@ Pour démarrer le serveur, exécutez la commande suivante :
 - `<port>` : Numéro du port sur lequel le serveur écoutera les connexions entrantes.
 - `<password>` : Mot de passe requis pour s'identifier auprès du serveur IRC.
 
-Ce projet a été réalisé en collaboration avec @.
+Ce projet a été réalisé en collaboration avec [@Dave demers.](https://github.com/Producks)

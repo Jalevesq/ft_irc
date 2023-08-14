@@ -29,7 +29,8 @@ Naviguez dans le répertoire du projet et compilez-le en utilisant la commande s
 3. **Démarrer le Serveur**:
 Après compilation, exécutez le serveur avec la commande suivante :
 Pour démarrer le serveur, exécutez la commande suivante :
-./irc <port> <password>
+   ```shell
+   ./irc <port> <password>
 
 - `<port>` : Numéro du port sur lequel le serveur écoutera les connexions entrantes.
 - `<password>` : Mot de passe requis pour s'identifier auprès du serveur IRC.

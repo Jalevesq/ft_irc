@@ -1,6 +1,6 @@
 # Serveur IRC en C++98 - Projet 42
 
-Bienvenue sur le projet **ircserv** réalisé dans le cadre de l'école 42. Ce projet consiste à développer un serveur IRC (Internet Relay Chat) en C++98, permettant la communication en temps réel entre plusieurs clients.
+Bienvenue sur le projet **ft_irc** réalisé dans le cadre de l'école 42. Ce projet consiste à développer un serveur IRC (Internet Relay Chat) en C++98, permettant la communication en temps réel entre plusieurs clients.
 
 ## Présentation du Projet
 
